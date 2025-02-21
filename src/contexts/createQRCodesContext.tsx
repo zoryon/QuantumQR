@@ -1,6 +1,6 @@
 "use client";
 
-import { QRCodeTypes } from "@/types/QRCode";
+import { QRCodeTypes } from "@/types/QRCodeType";
 import { createContext, useContext, useState } from "react"
 
 type QrCreatorContextType = {
@@ -25,10 +25,6 @@ type QrCreatorContextType = {
 }
 
 export const QrCreatorContext = createContext<QrCreatorContextType>(null!);
-
-export function useQrCreator() {
-    return useContext(QrCreatorContext);
-}
 
 export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
     const [step, setStep] = useState<number>(1);
@@ -56,4 +52,8 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
             {children}
         </QrCreatorContext.Provider>
     );
+}
+
+export function useQrCreator() {
+    return useContext(QrCreatorContext);
 }

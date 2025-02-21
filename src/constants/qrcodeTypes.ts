@@ -1,4 +1,4 @@
-import { QRCodeTypes } from "@/types/QRCode";
+import { QRCodeTypes } from "@/types/QRCodeType";
 
 export const QR_CODE_CARDS: { 
     title: QRCodeTypes,

@@ -11,5 +11,6 @@ export const cardDetailsFormSchema = z.object({
     lastName: z.string().min(2).max(25),
     email: z.string().email(),
     phoneNumber: z.string().min(10).max(15),
-    address: z.string().min(5).max(50)
+    address: z.string().min(5).max(50),
+    websiteUrl: z.string().url()
 });

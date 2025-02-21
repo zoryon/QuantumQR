@@ -23,7 +23,7 @@ const VCardForm = () => {
 
     async function onSubmit(values: z.infer<typeof cardDetailsFormSchema>) {
         try {
-            const res = await fetch("/api/qrcode/create", {
+            const res = await fetch("/api/qrcodes/create", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -53,6 +53,7 @@ const VCardForm = () => {
             email: "",
             phoneNumber: "",
             address: "",
+            websiteUrl: "",
         },
     });
 
@@ -136,8 +137,20 @@ const VCardForm = () => {
                             <FormMessage />
                         </FormItem>
                     )}
-                />            
-                
+                />
+                <FormField
+                    control={form.control}
+                    name="websiteUrl"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Website URL</FormLabel>
+                            <FormControl>
+                                <Input type="text" placeholder="your website's url" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />   
                 <Button type="submit">Create</Button>
             </form>
         </Form>

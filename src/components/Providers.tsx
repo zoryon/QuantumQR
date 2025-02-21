@@ -1,4 +1,5 @@
 import { QrCreatorProvider } from "@/contexts/createQRCodesContext";
+import { QrCodeListProvider } from "@/contexts/qrCodesListContext";
 
 const Providers = ({
     children
@@ -6,9 +7,11 @@ const Providers = ({
     children: React.ReactNode;
 }) => {
     return (
-        <QrCreatorProvider>
-            {children}
-        </QrCreatorProvider>
+        <QrCodeListProvider>
+            <QrCreatorProvider>
+                {children}
+            </QrCreatorProvider>
+        </QrCodeListProvider>
     );
 }
 
