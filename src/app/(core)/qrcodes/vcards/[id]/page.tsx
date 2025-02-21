@@ -5,7 +5,12 @@ import { verifySession } from '@/lib/session';
 import { cookies } from 'next/headers';
 import { notFound, redirect } from 'next/navigation';
 
-export default async function VCardPage({ params }: { params: { id: string } }) {
+export default async function VCardPage({
+    params: paramsPromise,
+  }: {
+    params: Promise<{ id: string }>;
+  }) {
+    const params = await paramsPromise;
     const { id } = params;
     if (!id) {
         return notFound();
