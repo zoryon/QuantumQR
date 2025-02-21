@@ -1,39 +1,29 @@
-import { createConnection } from "@/lib/db";
+import getPrismaClient from "@/lib/db";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { cookies } from 'next/headers';
-import { User } from "@/types/User";
 import { createSignedSessionToken } from "@/lib/session";
 
-console.log("blyat")
-export async function POST(request: Request) {
+export async function POST(req: Request) {
     try {
-        const { username, password } = await request.json();
+        const prisma = getPrismaClient();
+        const { username, password } = await req.json();
 
         if (typeof username !== "string" || typeof password !== "string" || !username.trim() || !password.trim()) {
             return NextResponse.json({ error: "Invalid input" }, { status: 400 });
         }
 
-        const db = await createConnection();
+        // Find user using Prisma
+        const user = await prisma.users.findUnique({
+            where: { username: username.trim() }
+        });
 
-        // executing sql's select statement (avoiding SQL injection)
-        const [result] = await db.execute(`
-                SELECT * 
-                FROM users AS u
-                WHERE u.username = ?
-                `,
-            [username.trim()]
-        );
-
-        if (!Array.isArray(result)) throw new Error("Database error");
-        if (result.length === 0) {
+        if (!user) {
             return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
         }
 
         // fetching user from the returned rows
-        const user = result[0] as User;
         const isMatching = await bcrypt.compare(password, user.password);
-
         if (!isMatching) {
             return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
         }
@@ -55,9 +45,6 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: true }, { status: 200 });
     } catch (error: any) {
         console.error(error);
-        return NextResponse.json(
-            { error: error.message || "Internal server error" },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: error.message }, { status: 500 } );
     }
 }

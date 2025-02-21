@@ -13,7 +13,7 @@ export async function middleware(req: NextRequest) {
     }
 
     // Handle register & login (auth) api access
-    if (req.nextUrl.pathname.startsWith("/api/auth")) {
+    if (req.nextUrl.pathname.startsWith("/api/auth") && !req.nextUrl.pathname.endsWith("/logout")) {
         return isAuthenticated
             ? NextResponse.redirect(new URL("/", req.url))
             : NextResponse.next();

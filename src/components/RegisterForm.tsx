@@ -1,6 +1,6 @@
 "use client";
 
-import { formSchema } from "@/lib/formSchema";
+import { authFormSchema } from "@/lib/schemas";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 const RegisterForm = () => {
     const router = useRouter();
 
-    async function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: z.infer<typeof authFormSchema>) {
         try {
             const res = await fetch("/api/auth/register", {
                 method: "POST",
@@ -42,8 +42,8 @@ const RegisterForm = () => {
         }
     }
      
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const form = useForm<z.infer<typeof authFormSchema>>({
+        resolver: zodResolver(authFormSchema),
         defaultValues: {
             username: "",
             password: ""
