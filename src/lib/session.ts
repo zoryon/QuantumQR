@@ -1,30 +1,22 @@
+import { SignJWT, jwtVerify } from 'jose';
+
+const secretKey = new TextEncoder().encode(process.env.SESSION_SECRET!);
+
 export async function createSignedSessionToken(userId: number): Promise<string> {
+    const alg = 'HS256';
+    return await new SignJWT({ userId })
+        .setProtectedHeader({ alg })
+        .setIssuedAt()
+        .setExpirationTime('7d')
+        .sign(secretKey);
+}
+
+export async function verifySession(token: string) {
     try {
-        const expires = new Date();
-        expires.setDate(expires.getDate() + 7);
-
-        const sessionData = JSON.stringify({
-            userId,
-            expires: expires.toISOString(),
-        });
-
-        const encodedData = Buffer.from(sessionData).toString('base64');
-        const signature = await crypto.subtle.sign(
-            'HMAC',
-            await crypto.subtle.importKey(
-                'raw',
-                new TextEncoder().encode(process.env.SESSION_SECRET!),
-                { name: 'HMAC', hash: 'SHA-256' },
-                false,
-                ['sign']
-            ),
-            new TextEncoder().encode(encodedData)
-        );
-
-        const signatureHex = Buffer.from(signature).toString('hex');
-        return `${encodedData}.${signatureHex}`;
+        const { payload } = await jwtVerify(token, secretKey);
+        return payload; // The decoded payload (e.g., { userId, iat, exp })
     } catch (error) {
-        console.error("Error creating session token: ", error);
-        throw new Error("Failed to create session token");
+        console.error("Error verifying session token:", error);
+        return null;
     }
 }
