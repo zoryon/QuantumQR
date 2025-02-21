@@ -30,7 +30,24 @@ export async function GET() {
         }
 
         // Transform results into typed response
-        const typedQRCodes: QRCode[] = qrCodes.map((qr: qrcodes & { vcardqrcodes: vcardqrcodes | null }) => {
+        const typedQRCodes: QRCode[] = qrCodes.map((qr: {
+            name: string;
+            id: number;
+            userId: number;
+            url: string;
+            createdAt: Date | null;
+            updatedAt: Date | null;
+        } & {
+            vcardqrcodes: {
+                qrCodeid: number;
+                firstName: string;
+                lastName: string;
+                phoneNumber: string | null;
+                email: string | null;
+                websiteUrl: string | null;
+                address: string | null;
+            } | null
+        }) => {
             if (qr.vcardqrcodes) {
                 return {
                     ...qr,
