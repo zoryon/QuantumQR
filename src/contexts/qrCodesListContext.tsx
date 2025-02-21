@@ -29,6 +29,7 @@ export function QrCodeListProvider({ children }: { children: React.ReactNode }) 
       const data = await response.json();
       setQrCodes(data);
     } catch (err) {
+      console.error(err);
       setError("Failed to load QR codes");
     } finally {
       setLoading(false);

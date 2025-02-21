@@ -6,7 +6,7 @@ const Step1 = () => {
 
     return (
         <div>
-            <h1>{step}. Choose your QR code's type</h1>
+            <h1>{step}. Choose your QR code&apos;s type</h1>
             <div>
                 <QRCodesCard />
             </div>
