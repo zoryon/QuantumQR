@@ -1,0 +1,22 @@
+CREATE DATABASE qrcodegen;
+USE qrcodegen;
+
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE admins (
+    id INT PRIMARY KEY,
+    FOREIGN KEY(id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE qrcodes (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) UNIQUE NOT NULL,
+    userId INT NOT NULL,
+    content TEXT NOT NULL, -- this is the website's link
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+);
