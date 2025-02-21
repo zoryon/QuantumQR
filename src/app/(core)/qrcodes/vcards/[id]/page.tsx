@@ -1,9 +1,7 @@
 
 
 import { getPrismaClient } from '@/lib/db';
-import { verifySession } from '@/lib/session';
-import { cookies } from 'next/headers';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 
 export default async function VCardPage({
     params: paramsPromise,
@@ -24,12 +22,6 @@ export default async function VCardPage({
     }
 
     // Get session token and verify session
-    const sessionToken = (await cookies()).get('session_token')?.value;
-    const session = await verifySession(sessionToken || "");
-    if (!session) {
-        return redirect("/login");
-    }
-
     const prisma = getPrismaClient();
     
     const vcard = await prisma.vcardqrcodes.findUnique({
@@ -42,7 +34,7 @@ export default async function VCardPage({
     const qrcode = await prisma.qrcodes.findUnique({
         where: { id: vcard.qrCodeid },
     });
-    if (!qrcode || session.userId !== qrcode.userId) {
+    if (!qrcode) {
         return notFound();
     }
 

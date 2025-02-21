@@ -19,6 +19,11 @@ export async function middleware(req: NextRequest) {
             : NextResponse.next();
     }
 
+    // Handle QR codes page access
+    if (req.nextUrl.pathname.startsWith("/qrcodes/")) {
+        NextResponse.next();
+    }
+
     // Protect all other routes
     if (!isAuthenticated) {
         return NextResponse.redirect(new URL("/login", req.url));
