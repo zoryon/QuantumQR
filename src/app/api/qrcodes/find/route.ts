@@ -1,7 +1,6 @@
 import getPrismaClient from "@/lib/db";
 import { verifySession } from "@/lib/session";
 import { QRCode } from "@/types/QRCodeType";
-import { qrcodes, vcardqrcodes } from "@prisma/client";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
