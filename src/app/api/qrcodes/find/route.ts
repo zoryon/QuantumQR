@@ -56,7 +56,6 @@ export async function GET() {
             }
 
             // Add other type checks here
-            // ...
 
             // Fallback for unknown types (shouldn't happen if DB is properly maintained)
             return {
