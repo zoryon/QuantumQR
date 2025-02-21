@@ -1,6 +1,7 @@
 import getPrismaClient from "@/lib/db";
 import { verifySession } from "@/lib/session";
 import { QRCode } from "@/types/QRCodeType";
+import { qrcodes, vcardqrcodes } from "@prisma/client";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -29,7 +30,7 @@ export async function GET() {
         }
 
         // Transform results into typed response
-        const typedQRCodes: QRCode[] = qrCodes.map((qr) => {
+        const typedQRCodes: QRCode[] = qrCodes.map((qr: qrcodes & { vcardqrcodes: vcardqrcodes | null }) => {
             if (qr.vcardqrcodes) {
                 return {
                     ...qr,
