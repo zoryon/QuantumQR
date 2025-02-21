@@ -21,7 +21,7 @@ export async function middleware(req: NextRequest) {
 
     // Handle QR codes page access
     if (req.nextUrl.pathname.startsWith("/qrcodes/")) {
-        NextResponse.next();
+        return NextResponse.next();
     }
 
     // Protect all other routes
