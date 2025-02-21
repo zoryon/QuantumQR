@@ -6,7 +6,7 @@ import { cookies } from 'next/headers';
 import { notFound, redirect } from 'next/navigation';
 
 export default async function VCardPage({ params }: { params: { id: string } }) {
-    const { id } = await params;
+    const { id } = params;
     if (!id) {
         return notFound();
     }

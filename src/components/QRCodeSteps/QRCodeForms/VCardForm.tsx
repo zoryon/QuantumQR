@@ -65,9 +65,9 @@ const VCardForm = () => {
                     name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>QR Code's Name</FormLabel>
+                            <FormLabel>QR Code&apos;s Name</FormLabel>
                             <FormControl>
-                                <Input type="text" placeholder="your qr code's name" {...field} />
+                                <Input type="text" placeholder="your qr code&apos;s name" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -145,7 +145,7 @@ const VCardForm = () => {
                         <FormItem>
                             <FormLabel>Website URL</FormLabel>
                             <FormControl>
-                                <Input type="text" placeholder="your website's url" {...field} />
+                                <Input type="text" placeholder="your website&apos;s url" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
