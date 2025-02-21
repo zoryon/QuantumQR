@@ -1,28 +1,27 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { verifySession } from "./lib/middlewareHelpers";
+import { verifySession } from "./lib/session";
 
-export async function middleware(request: NextRequest) {
-    const sessionToken = request.cookies.get("session_token")?.value;
-    const session = sessionToken ? await verifySession(sessionToken) : null;
-    const isAuthenticated = !!session?.id;
+export async function middleware(req: NextRequest) {
+    const token = req.cookies.get("session_token")?.value;
+    const isAuthenticated = await verifySession(token || "");
 
     // Handle register & login page access
-    if (request.nextUrl.pathname === "/register" || request.nextUrl.pathname === "/login") {
+    if (req.nextUrl.pathname === "/register" || req.nextUrl.pathname === "/login") {
         return isAuthenticated
-            ? NextResponse.redirect(new URL("/", request.url))
+            ? NextResponse.redirect(new URL("/", req.url))
             : NextResponse.next();
     }
 
     // Handle register & login (auth) api access
-    if (request.nextUrl.pathname.startsWith("/api/auth")) {
+    if (req.nextUrl.pathname.startsWith("/api/auth")) {
         return isAuthenticated
-            ? NextResponse.redirect(new URL("/", request.url))
+            ? NextResponse.redirect(new URL("/", req.url))
             : NextResponse.next();
     }
 
     // Protect all other routes
     if (!isAuthenticated) {
-        return NextResponse.redirect(new URL("/login", request.url));
+        return NextResponse.redirect(new URL("/login", req.url));
     }
 
     return NextResponse.next()
