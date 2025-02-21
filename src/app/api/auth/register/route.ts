@@ -1,10 +1,11 @@
-import { createConnection } from "@/lib/db";
 import { NextResponse } from "next/server";
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
+import getPrismaClient from "@/lib/db";
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
     try {
-        const { username, password } = await request.json();
+        const prisma = getPrismaClient();
+        const { username, password } = await req.json();
 
         if (typeof username !== "string" || typeof password !== "string" || !username.trim() || !password.trim()) {
             return NextResponse.json({ error: "Invalid input" }, { status: 400 });
@@ -17,16 +18,15 @@ export async function POST(request: Request) {
             );
         }
 
-        const db = await createConnection();
-
-        // Executing sql's select statement (avoiding SQL injection)
+        // Executing sql"s select statement (avoiding SQL injection)
         // Looking for the same exesisting username
-        const [result] = await db.execute(
-            'SELECT id FROM users WHERE username = ?',
-            [username]
-        );
+        let user = await prisma.users.findUnique({
+            where: {
+                username,
+            },
+        });
 
-        if (Array.isArray(result) && result.length > 0) {
+        if (user) {
             return NextResponse.json(
                 { error: "Username already exists" },
                 { status: 409 }
@@ -36,19 +36,26 @@ export async function POST(request: Request) {
         // Hashing the password to be stored in the DB
         const hashedPasswd = await bcrypt.hash(password, 10);
 
-        // Executing sql's insert statement (avoiding SQL injection)
-        await db.execute(`
-                INSERT INTO users(username, password) 
-                VALUES (?, ?)
-                `,
-            [username, hashedPasswd]
-        );
+        // Executing sql"s insert statement (avoiding SQL injection)
+        user = await prisma.users.create({
+            data: {
+                username,
+                password: hashedPasswd,
+            },
+        });
+
+        if (!user) {
+            return NextResponse.json(
+                { error: "Failed to create user" },
+                { status: 500 }
+            );
+        }
 
         return NextResponse.json({ success: true }, { status: 201 });
     } catch (error: any) {
         console.error(error);
         return NextResponse.json(
-            { error: error.message || "Internal server error" },
+            { error: error.message },
             { status: 500 }
         );
     }

@@ -12,11 +12,22 @@ CREATE TABLE admins (
     FOREIGN KEY(id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE qrcodes (
+CREATE TABLE qrCodes (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) UNIQUE NOT NULL,
     userId INT NOT NULL,
-    content TEXT NOT NULL, -- this is the website's link
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE vCardQRCodes (
+    id INT PRIMARY KEY,
+    firstName VARCHAR(255) NOT NULL,
+    lastName VARCHAR(255) NOT NULL,
+    phoneNumber VARCHAR(255),
+    email VARCHAR(255),
+    website VARCHAR(255),
+    address VARCHAR(255),
+    FOREIGN KEY (id) REFERENCES qrcodes(id) ON DELETE CASCADE
 );
