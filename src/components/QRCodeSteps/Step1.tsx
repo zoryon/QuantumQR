@@ -1,8 +1,8 @@
 import { QR_CODE_CARDS } from "@/constants/qrcodeTypes";
-import { useQrCreator } from "@/contexts/createQRCodesContext";
+import { useQrCodeCreator } from "@/contexts/createQRCodesContext";
 
 const Step1 = () => {
-    const { step } = useQrCreator();
+    const { step } = useQrCodeCreator();
 
     return (
         <div>
@@ -15,7 +15,7 @@ const Step1 = () => {
 }
 
 const QRCodesCard = () => {
-    const { setQrType, setStep, step } = useQrCreator();
+    const { setQrType, setStep, step } = useQrCodeCreator();
 
     return (
         QR_CODE_CARDS.map((type, index) => (

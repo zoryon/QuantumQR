@@ -7,7 +7,7 @@ type QrCodeListContextType = {
   qrCodes: QRCode[];
   loading: boolean;
   error: string | null;
-  refresh: () => Promise<void>;
+  refreshQrCodesList: () => Promise<void>;
 };
 
 export const QrCodeListContext = createContext<QrCodeListContextType>(null!);
@@ -20,13 +20,13 @@ export function QrCodeListProvider({ children }: { children: React.ReactNode }) 
   const fetchQrCodes = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/qrcodes/find", {
+      const res = await fetch("/api/qrcodes/find", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
       });
-      const data = await response.json();
+      const data = await res.json();
       setQrCodes(data);
     } catch (err) {
       console.error(err);
@@ -42,7 +42,7 @@ export function QrCodeListProvider({ children }: { children: React.ReactNode }) 
 
   return (
     <QrCodeListContext.Provider value={{
-      qrCodes, loading, error, refresh: fetchQrCodes
+      qrCodes, loading, error, refreshQrCodesList: fetchQrCodes
     }}>
       {children}
     </QrCodeListContext.Provider>

@@ -25,14 +25,14 @@ export default async function VCardPage({
     const prisma = getPrismaClient();
     
     const vcard = await prisma.vcardqrcodes.findUnique({
-        where: { qrCodeid: qrCodeId },
+        where: { qrCodeId: qrCodeId },
     });
     if (!vcard) {
         return notFound();
     }
 
     const qrcode = await prisma.qrcodes.findUnique({
-        where: { id: vcard.qrCodeid },
+        where: { id: vcard.qrCodeId },
     });
     if (!qrcode) {
         return notFound();

@@ -9,7 +9,7 @@ export async function GET() {
         const sessionToken = (await cookies()).get("session_token")?.value;
         const session = await verifySession(sessionToken || "");
 
-        if (!session) {
+        if (!session?.userId) {
             return NextResponse.json({ error: "Not authorized" }, { status: 401 });
         }
 
@@ -25,7 +25,7 @@ export async function GET() {
         });
 
         if (!qrCodes) {
-            return NextResponse.json({ error: "No QR codes found" }, { status: 404 });
+            return NextResponse.json({ error: "Internal server error" }, { status: 500 });
         }
 
         // Transform results into typed response
@@ -38,7 +38,7 @@ export async function GET() {
             updatedAt: Date | null;
         } & {
             vcardqrcodes: {
-                qrCodeid: number;
+                qrCodeId: number;
                 firstName: string;
                 lastName: string;
                 phoneNumber: string | null;
@@ -50,7 +50,7 @@ export async function GET() {
             if (qr.vcardqrcodes) {
                 return {
                     ...qr,
-                    type: 'vcard',
+                    type: "vcard",
                     ...qr.vcardqrcodes,
                 };
             }
@@ -60,11 +60,18 @@ export async function GET() {
             // Fallback for unknown types (shouldn't happen if DB is properly maintained)
             return {
                 ...qr,
-                type: 'unknown',
+                type: "unknown",
             } as any;
         });
 
-        return NextResponse.json(typedQRCodes, { status: 200 });
+        const safeQRCodes = typedQRCodes.map(qr => ({
+            ...qr,
+            id: Number(qr.id),
+            userId: Number(qr.userId),
+            qrCodeid: Number(qr.qrCodeId)
+        }));
+
+        return NextResponse.json(safeQRCodes, { status: 200 });
     } catch (error) {
         console.error(error);
         return NextResponse.json({ error: (error as Error).message }, { status: 500 });

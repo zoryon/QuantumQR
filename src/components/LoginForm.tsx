@@ -15,8 +15,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import { useQrCodeList } from "@/contexts/qrCodesListContext";
 
 const LoginForm = () => {
+    const { refreshQrCodesList } = useQrCodeList();
     const router = useRouter();
 
     async function onSubmit(values: z.infer<typeof authFormSchema>) {
@@ -36,6 +38,7 @@ const LoginForm = () => {
             // const data = await res.json()
             if (await res.json()) {
                 router.push("/");
+                await refreshQrCodesList();
             }
         } catch (error: any) {
             console.error("Error during login:", error.message);

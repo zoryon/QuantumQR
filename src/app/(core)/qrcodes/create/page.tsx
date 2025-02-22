@@ -2,10 +2,10 @@
 
 import Step1 from "@/components/QRCodeSteps/Step1";
 import Step2 from "@/components/QRCodeSteps/Step2";
-import { useQrCreator } from "@/contexts/createQRCodesContext";
+import { useQrCodeCreator } from "@/contexts/createQRCodesContext";
 
 const CreatePage = () => {
-    const { step } = useQrCreator();
+    const { step } = useQrCodeCreator();
 
     return (
         <div>

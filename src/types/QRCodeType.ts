@@ -1,6 +1,6 @@
 export type QRCodeTypes = "vCard";
 
-export type QRCodeBase = {
+export type BaseQrCode = {
     id: number;
     name: string;
     userId: number;
@@ -10,7 +10,7 @@ export type QRCodeBase = {
     type: string;
 };
 
-export type VCardQRCode = QRCodeBase & {
+export type VCardQRCode = {
     type: 'vCard';
     firstName: string;
     lastName: string;
@@ -18,6 +18,7 @@ export type VCardQRCode = QRCodeBase & {
     email?: string;
     websiteUrl?: string;
     address?: string;
+    qrCodeId?: number;
 };
 
-export type QRCode = VCardQRCode;
+export type QRCode = BaseQrCode & VCardQRCode;

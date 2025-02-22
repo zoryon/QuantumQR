@@ -16,7 +16,7 @@ export async function verifySession(token: string) {
         const { payload }: { payload: JWTPayload } = await jwtVerify(token, secretKey);
         return payload; // The decoded payload (e.g., { userId, iat, exp })
     } catch (error) {
-        console.error("Error verifying session token:", error);
+        console.error("Error verifying session token: ", error);
         return null;
     }
 }

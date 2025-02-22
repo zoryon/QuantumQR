@@ -23,12 +23,12 @@ CREATE TABLE qrCodes (
 );
 
 CREATE TABLE vCardQRCodes (
-    qrCodeid INT PRIMARY KEY,
+    qrCodeId INT PRIMARY KEY,
     firstName VARCHAR(255) NOT NULL,
     lastName VARCHAR(255) NOT NULL,
     phoneNumber VARCHAR(255),
     email VARCHAR(255),
     websiteUrl VARCHAR(255),
     address VARCHAR(255),
-    FOREIGN KEY (qrCodeid) REFERENCES qrcodes(id) ON DELETE CASCADE
+    FOREIGN KEY (qrCodeId) REFERENCES qrcodes(id) ON DELETE CASCADE
 );

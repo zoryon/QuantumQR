@@ -14,12 +14,10 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useQrCreator } from "@/contexts/createQRCodesContext";
-import { useRouter } from "next/navigation";
+import { useQrCodeCreator } from "@/contexts/createQRCodesContext";
 
 const VCardForm = () => {
-    const { qrType } = useQrCreator();
-    const router = useRouter();
+    const { qrType, setCreated } = useQrCodeCreator();
 
     async function onSubmit(values: z.infer<typeof cardDetailsFormSchema>) {
         try {
@@ -37,7 +35,7 @@ const VCardForm = () => {
 
             // const data = await res.json()
             if (await res.json()) {
-                router.push("/");
+                setCreated(true);
             }
         } catch (error: any) {
             console.error("Error during QR code creation:", error.message);
