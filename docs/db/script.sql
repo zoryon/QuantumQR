@@ -30,5 +30,5 @@ CREATE TABLE vCardQRCodes (
     email VARCHAR(255),
     websiteUrl VARCHAR(255),
     address VARCHAR(255),
-    FOREIGN KEY (qrCodeId) REFERENCES qrcodes(id) ON DELETE CASCADE
+    FOREIGN KEY (qrCodeId) REFERENCES qrCodes(id) ON DELETE CASCADE
 );
