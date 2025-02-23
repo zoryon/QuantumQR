@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import Link from "next/link";
+import DownloadButton from "@/components/DownloadButton";
 
 const HomePage = () => {
   const { qrCodes, isLoading } = useQrCodeList();
@@ -76,7 +77,10 @@ const QRCodeList = ({
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {qrCodes.map((qrCode) => {
-        const createdDate = new Date(qrCode.createdAt).toLocaleDateString("it-IT", {
+        const createdDate = new Date(qrCode.createdAt!).toLocaleDateString("it-IT", {
+          dateStyle: "medium",
+        });
+        const updatedDate = new Date(qrCode.updatedAt!).toLocaleDateString("it-IT", {
           dateStyle: "medium",
         });
 
@@ -95,7 +99,7 @@ const QRCodeList = ({
                 </span>
               </div>
               {/* Example scans count */}
-              <span className="text-xs text-gray-500">{0} scans</span>
+              <span className="text-xs text-gray-500">{qrCode.scans} scans</span>
             </div>
 
             {/* Middle Row: QR image + Name + Link + Date */}
@@ -114,23 +118,24 @@ const QRCodeList = ({
                   {qrCode.name}
                 </h3>
                 <p className="mt-1 truncate text-xs text-gray-400">
-                  {qrCode.websiteUrl ?? "https://qr-code.click"}
+                  Updated: {updatedDate}
                 </p>
-                <p className="mt-1 text-[11px] text-gray-500">
-                  Modified: {createdDate}
+                <p className="mt-1 text-[10px] text-gray-500">
+                  Created: {createdDate}
                 </p>
               </div>
             </div>
 
             {/* Bottom Row: Download + Edit/Delete */}
             <div className="mt-4 flex items-center justify-between">
-              <Button
-                variant="outline"
+              <DownloadButton
+                url={qrCode.url}
+                firstName={qrCode.firstName}
+                lastName={qrCode.lastName}
+                icon="fas fa-download mr-2"
+                isShadBtn={true}
                 className="rounded-md border-gray-700 text-xs font-medium text-gray-200 hover:border-indigo-500 hover:bg-gray-800 hover:text-indigo-400"
-              >
-                <i className="fas fa-download mr-2" />
-                Download
-              </Button>
+              />
               <div className="flex gap-2">
                 <Button
                   variant="ghost"

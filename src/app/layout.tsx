@@ -13,11 +13,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "QuantumQR | Home Page",
-  description: "Generate & Manage QR codes",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{

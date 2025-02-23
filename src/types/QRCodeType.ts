@@ -5,20 +5,23 @@ export type BaseQrCode = {
     name: string;
     userId: number;
     url: string;
-    createdAt: string;
-    updatedAt: string;
-    type: string;
+    scans: number;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    type: QRCodeTypes;
 };
 
 export type VCardQRCode = {
-    type: 'vCard';
+    type: "vCard";
     firstName: string;
     lastName: string;
-    phoneNumber?: string;
-    email?: string;
-    websiteUrl?: string;
-    address?: string;
-    qrCodeId?: number;
+    phoneNumber: string | null;
+    email: string | null;
+    websiteUrl: string | null;
+    address: string | null;
+    qrCodeId: number;
 };
 
 export type QRCode = BaseQrCode & VCardQRCode;
+
+export type VCardResponse = BaseQrCode & VCardQRCode;
