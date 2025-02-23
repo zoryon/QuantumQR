@@ -20,7 +20,7 @@ const LoginPage = () => {
 
       <footer className="backdrop-blur-sm">
         <p className="text-center text-gray-400">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href="/register" className="text-indigo-400 hover:text-indigo-300 transition-colors">
             Register here
           </Link>

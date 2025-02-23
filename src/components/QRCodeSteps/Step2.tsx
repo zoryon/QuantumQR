@@ -12,6 +12,7 @@ const Step2 = () => {
     const { refreshQrCodesList } = useQrCodeList();
     const router = useRouter();
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (created !== true) return;
 

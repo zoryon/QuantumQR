@@ -1,5 +1,6 @@
 import getPrismaClient from "@/lib/db";
 import { verifySession } from "@/lib/session";
+import { omit } from "@/lib/utils";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -26,7 +27,7 @@ export async function GET() {
         }
 
         // destructuring user object to remove sensitive data
-        const { id, password, ...publicData } = user;
+        const publicData = omit(user, ["id", "password"]);
         
         // return user's public data
         return NextResponse.json(publicData, { status: 200 });

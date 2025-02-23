@@ -180,7 +180,7 @@ const EmptyState = () => (
       </div>
     </div>
     <h2 className="mb-2 text-xl font-bold text-gray-100 sm:text-2xl">
-      You don't have any QR codes yet
+      You don&apos;t have any QR codes yet
     </h2>
     <p className="mb-6 max-w-md text-sm text-gray-400/90">
       Create a new QR code to start tracking your scans and manage your links securely.
