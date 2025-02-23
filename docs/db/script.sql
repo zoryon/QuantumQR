@@ -12,7 +12,7 @@ CREATE TABLE admins (
     FOREIGN KEY(id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE qrCodes (
+CREATE TABLE qrcodes (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) UNIQUE NOT NULL,
     userId INT NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE qrCodes (
     FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE vCardQRCodes (
+CREATE TABLE vcardqrcodes (
     qrCodeId INT PRIMARY KEY,
     firstName VARCHAR(255) NOT NULL,
     lastName VARCHAR(255) NOT NULL,
@@ -30,5 +30,5 @@ CREATE TABLE vCardQRCodes (
     email VARCHAR(255),
     websiteUrl VARCHAR(255),
     address VARCHAR(255),
-    FOREIGN KEY (qrCodeId) REFERENCES qrCodes(id) ON DELETE CASCADE
+    FOREIGN KEY (qrCodeId) REFERENCES qrcodes(id) ON DELETE CASCADE
 );
