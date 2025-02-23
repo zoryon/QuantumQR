@@ -4,35 +4,42 @@ import { QRCode } from "@/types/QRCodeType";
 import { createContext, useContext, useEffect, useState } from "react"
 
 type QrCodeListContextType = {
-  qrCodes: QRCode[];
-  loading: boolean;
-  error: string | null;
-  refreshQrCodesList: () => Promise<void>;
+  qrCodes: QRCode[],
+  setQrCodes: React.Dispatch<React.SetStateAction<QRCode[]>>,
+  isLoading: boolean,
+  error: string | null,
+  refreshQrCodesList: () => Promise<void>,
 };
 
 export const QrCodeListContext = createContext<QrCodeListContextType>(null!);
 
 export function QrCodeListProvider({ children }: { children: React.ReactNode }) {
   const [qrCodes, setQrCodes] = useState<QRCode[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchQrCodes = async () => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       const res = await fetch("/api/qrcodes/find", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
       });
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch QR codes");
+      }
+
       const data = await res.json();
+
       setQrCodes(data);
     } catch (err) {
-      console.error(err);
+      console.log(err);
       setError("Failed to load QR codes");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -42,7 +49,7 @@ export function QrCodeListProvider({ children }: { children: React.ReactNode }) 
 
   return (
     <QrCodeListContext.Provider value={{
-      qrCodes, loading, error, refreshQrCodesList: fetchQrCodes
+      qrCodes, setQrCodes, isLoading, error, refreshQrCodesList: fetchQrCodes
     }}>
       {children}
     </QrCodeListContext.Provider>

@@ -11,8 +11,10 @@ export async function createSignedSessionToken(userId: number): Promise<string> 
         .sign(secretKey);
 }
 
-export async function verifySession(token: string) {
+export async function verifySession(token: string | undefined) {
     try {
+        if (!token) throw new Error("No session token provided");
+
         const { payload }: { payload: JWTPayload } = await jwtVerify(token, secretKey);
         return payload; // The decoded payload (e.g., { userId, iat, exp })
     } catch (error) {

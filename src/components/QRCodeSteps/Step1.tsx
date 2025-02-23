@@ -1,37 +1,41 @@
 import { QR_CODE_CARDS } from "@/constants/qrcodeTypes";
 import { useQrCodeCreator } from "@/contexts/createQRCodesContext";
 
-const Step1 = () => {
-    const { step } = useQrCodeCreator();
-
-    return (
-        <div>
-            <h1>{step}. Choose your QR code&apos;s type</h1>
-            <div>
-                <QRCodesCard />
-            </div>
+const Step1 = () => (
+    <div className="space-y-8">
+        <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-100 mb-2">Create New Quantum Code</h1>
+            <p className="text-gray-400">Select your QR code type to begin</p>
         </div>
-    );
-}
+        <QRCodesCard />
+    </div>
+);
 
 const QRCodesCard = () => {
-    const { setQrType, setStep, step } = useQrCodeCreator();
+    const { setQrType, handleNext } = useQrCodeCreator();
 
     return (
-        QR_CODE_CARDS.map((type, index) => (
-            <div 
-                key={index} 
-                className="min-w-[100px] min-h-[100px] w-[8vw] h-[8vw] bg-secondary text-sm cursor-pointer"
-                onClick={() => {
-                    setQrType(type.title);
-                    setStep(step + 1);
-                }}
-            >
-                <h2>{type.title}</h2>
-                <p>{type.description}</p>
-            </div>
-        ))
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cons-4 gap-4">
+            {QR_CODE_CARDS.map((type, index) => (
+                <div
+                    key={index}
+                    className="group relative bg-gray-700/20 rounded-xl p-6 cursor-pointer border-2 border-transparent hover:border-indigo-400/30 transition-all"
+                    onClick={() => {
+                        setQrType(type.title);
+                        handleNext();
+                    }}
+                >
+                    <div className="flex flex-col items-center text-center">
+                        <div className="w-16 h-16 bg-indigo-500/10 rounded-lg flex items-center justify-center mb-4 transition-all group-hover:bg-indigo-500/20">
+                            <i className={`${type.icon} text-2xl text-indigo-400/80`} />
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-100 mb-2">{type.title}</h3>
+                        <p className="text-sm text-gray-400/80">{type.description}</p>
+                    </div>
+                </div>
+            ))}
+        </div>
     );
-}
+};
 
 export default Step1;

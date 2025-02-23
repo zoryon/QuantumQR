@@ -72,3 +72,28 @@ body {
     @apply bg-background text-foreground dark;
   }
 }
+
+/* float */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* gradient rotate */
+@keyframes gradient-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-gradient-rotate {
+  animation: gradient-rotate 20s linear infinite;
+}

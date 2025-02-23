@@ -6,8 +6,9 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
     try {
+        // If user is not logged-in -> block access
         const sessionToken = (await cookies()).get("session_token")?.value;
-        const session = await verifySession(sessionToken || "");
+        const session = await verifySession(sessionToken);
 
         if (!session?.userId) {
             return NextResponse.json({ error: "Not authorized" }, { status: 401 });

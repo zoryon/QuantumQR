@@ -3,13 +3,18 @@ import { verifySession } from "./lib/session";
 
 export async function middleware(req: NextRequest) {
     const token = req.cookies.get("session_token")?.value;
-    const isAuthenticated = await verifySession(token || "");
+    const isAuthenticated = await verifySession(token);
 
     // Handle register & login page access
     if (req.nextUrl.pathname === "/register" || req.nextUrl.pathname === "/login") {
         return isAuthenticated
             ? NextResponse.redirect(new URL("/", req.url))
             : NextResponse.next();
+    }
+
+    // Handle QR codes page access
+    if (req.nextUrl.pathname.startsWith("/qrcodes/") && !req.nextUrl.pathname.startsWith("/qrcodes/create")) {
+        return NextResponse.next();
     }
 
     // Handle register & login (auth) api access
@@ -19,9 +24,9 @@ export async function middleware(req: NextRequest) {
             : NextResponse.next();
     }
 
-    // Handle QR codes page access
-    if (req.nextUrl.pathname.startsWith("/qrcodes/")) {
-        return NextResponse.next();
+    // For all other API routes, return JSON error if not authenticated.
+    if (req.nextUrl.pathname.startsWith("/api/") && !isAuthenticated) {
+        return NextResponse.json({ error: "Not authorized" }, { status: 404 });
     }
 
     // Protect all other routes
@@ -43,4 +48,4 @@ export const config = {
         */
         "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
     ],
-}
+}   

@@ -20,7 +20,9 @@ type QrCreatorContextType = {
     setDesignOptions: React.Dispatch<React.SetStateAction<DesignOptions>>,
     created: boolean,
     setCreated: React.Dispatch<React.SetStateAction<boolean>>,
-    reset: () => void
+    reset: () => void,
+    handlePrev: () => void,
+    handleNext: () => void
 }
 
 const initialVCardData: VCardData = {
@@ -48,11 +50,17 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
 
     function reset() {
         setCreated(false);
-        setStep(1);
         setQrType("vCard");
         setVCardData(initialVCardData);
         setDesignOptions(initialDesignOptions);
     }
+
+    const handlePrev = () => setStep(prev => Math.max(prev - 1, 1));
+
+    const handleNext = () => {
+        if (step === 1 && !qrType) return null;
+        setStep(prev => Math.min(prev + 1, 2));
+    };
 
     return (
         <QrCreatorContext.Provider value={{
@@ -61,7 +69,8 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
             vCardData, setVCardData,
             designOptions, setDesignOptions,
             created, setCreated,
-            reset
+            reset,
+            handlePrev, handleNext
         }}>
             {children}
         </QrCreatorContext.Provider>

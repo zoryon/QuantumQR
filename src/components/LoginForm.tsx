@@ -15,10 +15,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-import { useQrCodeList } from "@/contexts/qrCodesListContext";
 
 const LoginForm = () => {
-    const { refreshQrCodesList } = useQrCodeList();
     const router = useRouter();
 
     async function onSubmit(values: z.infer<typeof authFormSchema>) {
@@ -38,7 +36,6 @@ const LoginForm = () => {
             // const data = await res.json()
             if (await res.json()) {
                 router.push("/");
-                await refreshQrCodesList();
             }
         } catch (error: any) {
             console.error("Error during login:", error.message);
@@ -55,17 +52,23 @@ const LoginForm = () => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="min-w-[300px] w-[22vw] space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-gray-800/40 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-700/50">
+                {/* Form fields */}
                 <FormField
                     control={form.control}
                     name="username"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Username</FormLabel>
+                            <FormLabel className="text-gray-300">Username</FormLabel>
                             <FormControl>
-                                <Input type="text" placeholder="your username" {...field} />
+                                <Input
+                                    type="text"
+                                    placeholder="your username"
+                                    {...field}
+                                    className="bg-gray-700/20 border-gray-600/50 focus:border-indigo-400/50 focus:ring-indigo-400/50 text-gray-100"
+                                />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-red-400/80" />
                         </FormItem>
                     )}
                 />
@@ -74,15 +77,26 @@ const LoginForm = () => {
                     name="password"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Password</FormLabel>
+                            <FormLabel className="text-gray-300">Password</FormLabel>
                             <FormControl>
-                                <Input type="password" placeholder="your password" {...field} />
+                                <Input
+                                    type="password"
+                                    placeholder="your password"
+                                    {...field}
+                                    className="bg-gray-700/20 border-gray-600/50 focus:border-indigo-400/50 focus:ring-indigo-400/50 text-gray-100"
+                                />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-red-400/80" />
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Submit</Button>
+
+                <Button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg shadow-indigo-500/20"
+                >
+                    Sign In
+                </Button>
             </form>
         </Form>
     );

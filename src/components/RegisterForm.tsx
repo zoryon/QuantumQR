@@ -52,7 +52,7 @@ const RegisterForm = () => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="min-w-[300px] w-[22vw] space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 backdrop-blur-sm rounded-2xl p-8">
                 <FormField
                     control={form.control}
                     name="username"
@@ -79,7 +79,12 @@ const RegisterForm = () => {
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Submit</Button>
+                <Button 
+                    type="submit" 
+                    className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600"
+                >
+                    Submit
+                </Button>
             </form>
         </Form>
     );
