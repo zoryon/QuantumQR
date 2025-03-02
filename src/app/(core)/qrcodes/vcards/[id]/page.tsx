@@ -1,3 +1,5 @@
+"use server";
+
 import DownloadButton from "@/components/DownloadButton";
 import ScanIncrementer from "@/components/ScanIncremente";
 import ShareButton from "@/components/ShareButton";

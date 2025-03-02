@@ -4,6 +4,10 @@ import { QRCode } from "@/types/QRCodeType";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
+const typeMappings = [
+    { relation: "vcardqrcodes", type: "vCards" as const },
+];
+
 export async function GET() {
     try {
         // If user is not logged-in -> block access
@@ -16,12 +20,17 @@ export async function GET() {
 
         const prisma = getPrismaClient();
 
+        // Dynamically build include object
+        const include = typeMappings.reduce((acc, mapping) => {
+            acc[mapping.relation] = true;
+            return acc;
+        }, {} as Record<string, boolean>);
+
         // Fetch QR codes with all possible relations
         const qrCodes = await prisma.qrcodes.findMany({
-            where: { userId: session.userId as number },
+            where: { userId: Number(session.userId) },
             include: {
-                vcardqrcodes: true,
-                // Add other includes here as you create new types
+                ...include,
             },
         });
 
@@ -30,46 +39,32 @@ export async function GET() {
         }
 
         // Transform results into typed response
-        const typedQRCodes: QRCode[] = qrCodes.map((qr: {
-            name: string;
-            id: number;
-            userId: number;
-            url: string;
-            createdAt: Date | null;
-            updatedAt: Date | null;
-        } & {
-            vcardqrcodes: {
-                qrCodeId: number;
-                firstName: string;
-                lastName: string;
-                phoneNumber: string | null;
-                email: string | null;
-                websiteUrl: string | null;
-                address: string | null;
-            } | null
-        }) => {
-            if (qr.vcardqrcodes) {
-                return {
-                    ...qr,
-                    type: "vcard",
-                    ...qr.vcardqrcodes,
-                };
+        const typedQRCodes = qrCodes.map((qr): QRCode => {
+            for (const mapping of typeMappings) {
+                const relationData = qr[mapping.relation];
+                if (relationData) {
+                    return {
+                        ...qr,
+                        type: mapping.type,
+                        ...(typeof relationData === 'object' && relationData !== null ? relationData : {}),
+                        qrCodeId: Number((relationData as any).qrCodeId),
+                    } as QRCode;
+                }
             }
 
-            // Add other type checks here
-
-            // Fallback for unknown types (shouldn't happen if DB is properly maintained)
             return {
                 ...qr,
                 type: "unknown",
-            } as any;
+            } as unknown as QRCode;
         });
 
+        // Safe number conversion
         const safeQRCodes = typedQRCodes.map(qr => ({
             ...qr,
             id: Number(qr.id),
             userId: Number(qr.userId),
-            qrCodeid: Number(qr.qrCodeId)
+            scans: Number(qr.scans),
+            ...("qrCodeId" in qr && { qrCodeId: Number(qr.qrCodeId) }),
         }));
 
         return NextResponse.json(safeQRCodes, { status: 200 });

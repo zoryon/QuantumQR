@@ -3,11 +3,11 @@
 import { useQrCodeList } from "@/contexts/qrCodesListContext";
 import { QRCode } from "@/types/QRCodeType";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import DownloadButton from "@/components/DownloadButton";
 import DeleteBtn from "@/components/DeleteBtn";
 import CreateBtn from "@/components/global/CreateBtn";
+import EditBtn from "@/components/EditBtn";
 
 const HomePage = () => {
   const { qrCodes, isLoading } = useQrCodeList();
@@ -87,7 +87,7 @@ const QRCodeList = ({
 
                 {/* Example “type” label; adjust as needed */}
                 <span className="rounded-full bg-indigo-500/10 px-2 py-0.5 text-xs font-medium text-indigo-400">
-                  vCard
+                  {qrCode.type}
                 </span>
               </div>
               {/* Example scans count */}
@@ -129,13 +129,7 @@ const QRCodeList = ({
                 className="rounded-md border-gray-700 text-xs font-medium text-gray-200 hover:border-indigo-500 hover:bg-gray-800 hover:text-indigo-400"
               />
               <div className="flex gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 rounded-md text-indigo-400/80 hover:bg-indigo-400/10 hover:text-indigo-400"
-                >
-                  <i className="fas fa-pen-to-square" />
-                </Button>
+                <EditBtn qrCode={qrCode} />
                 <DeleteBtn qrCode={qrCode} />
               </div>
             </div>
