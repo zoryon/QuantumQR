@@ -1,4 +1,4 @@
-export type ContactPointsType = "url" | "email" | "tel" | "address";
+export type ContactPointsType = "url" | "mailto" | "tel" | "address";
 
 export type ContactPoint = {
     icon: string;

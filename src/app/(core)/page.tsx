@@ -5,8 +5,9 @@ import { QRCode } from "@/types/QRCodeType";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import Link from "next/link";
 import DownloadButton from "@/components/DownloadButton";
+import DeleteBtn from "@/components/DeleteBtn";
+import CreateBtn from "@/components/global/CreateBtn";
 
 const HomePage = () => {
   const { qrCodes, isLoading } = useQrCodeList();
@@ -16,19 +17,12 @@ const HomePage = () => {
   // Filter or transform the qrCodes if needed
   const filteredQRCodes = searchQuery
     ? qrCodes.filter((code) =>
-        code.name.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      code.name.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     : qrCodes;
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">
-      {/* Floating Action Button (Mobile) */}
-      <Button
-        className="fixed bottom-6 right-6 z-50 h-12 w-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 p-0 shadow-2xl shadow-indigo-500/30 transition-transform hover:scale-110 sm:hidden"
-      >
-        <i className="fas fa-plus text-lg" />
-      </Button>
-
       <main className="mx-auto max-w-7xl px-4 sm:px-8 py-8">
         {/* Title / Subheading */}
         <h1 className="mb-2 text-2xl font-bold tracking-tight sm:text-3xl">
@@ -72,8 +66,6 @@ const QRCodeList = ({
 }: {
   qrCodes: QRCode[];
 }) => {
-  const { setQrCodes } = useQrCodeList();
-
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {qrCodes.map((qrCode) => {
@@ -92,7 +84,7 @@ const QRCodeList = ({
             {/* Top Row: Checkbox + "vCard"/type + Scans */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                
+
                 {/* Example “type” label; adjust as needed */}
                 <span className="rounded-full bg-indigo-500/10 px-2 py-0.5 text-xs font-medium text-indigo-400">
                   vCard
@@ -144,28 +136,7 @@ const QRCodeList = ({
                 >
                   <i className="fas fa-pen-to-square" />
                 </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 rounded-md text-red-400/80 hover:bg-red-400/10 hover:text-red-400"
-                    onClick={async () => {
-                      setQrCodes(prev => prev.filter(code => code.id !== qrCode.id));
-
-                      const res = await fetch("/api/qrcodes/delete", {
-                        method: "DELETE",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ id: qrCode.id }),
-                      });
-
-                      if (!res.ok) {
-                        alert("Failed to delete QR code.");
-                      }
-                    }}
-                  >
-                    <i className="fas fa-trash-can" />
-                  </Button>
+                <DeleteBtn qrCode={qrCode} />
               </div>
             </div>
           </article>
@@ -190,12 +161,7 @@ const EmptyState = () => (
     <p className="mb-6 max-w-md text-sm text-gray-400/90">
       Create a new QR code to start tracking your scans and manage your links securely.
     </p>
-    <Link href={"/qrcodes/create"}>
-      <Button className="rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-3 text-sm font-semibold shadow-lg shadow-indigo-500/20 transition-all hover:scale-105 hover:shadow-indigo-500/30">
-        <i className="fas fa-bolt mr-2.5" />
-        Create Now
-      </Button>
-    </Link>
+   <CreateBtn alwaysDesktop />
   </div>
 );
 

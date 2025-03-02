@@ -30,7 +30,7 @@ export default async function VCardPage({
     if (!qrCode) return notFound();
 
     const contactPoints: ContactPoint[] = [
-        { icon: "fa-envelope", value: qrCode.email, type: "email" },
+        { icon: "fa-envelope", value: qrCode.email, type: "mailto" },
         { icon: "fa-phone", value: qrCode.phoneNumber, type: "tel" },
         { icon: "fa-map-marker-alt", value: qrCode.address },
         { icon: "fa-globe", value: qrCode.websiteUrl, type: "url" }
