@@ -30,7 +30,7 @@ export async function POST(req: Request) {
 
         // Creating the QR code based on the type
         switch (qrType as QRCodeTypes) {
-            case "vCard":
+            case "vCards":
                 const parsedValues = cardDetailsFormSchema.parse(values);
                 await createVCardQRCode({ 
                     userId: session.userId as number, 
