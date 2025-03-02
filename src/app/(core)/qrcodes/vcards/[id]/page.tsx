@@ -8,7 +8,7 @@ import { QRCodeTypes, VCardResponse } from "@/types/QRCodeType";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-const type: QRCodeTypes = "vCard";
+const type: QRCodeTypes = "vCards";
 
 export default async function VCardPage({
     params: paramsPromise,

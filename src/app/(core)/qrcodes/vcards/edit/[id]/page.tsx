@@ -3,7 +3,7 @@
 import { QRCodeTypes, VCardResponse } from "@/types/QRCodeType";
 import { notFound } from "next/navigation";
 
-const type: QRCodeTypes = "vCard";
+const type: QRCodeTypes = "vCards";
 
 export default async function EditVCardPage({
     params: paramsPromise,
