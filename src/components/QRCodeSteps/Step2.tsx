@@ -29,7 +29,7 @@ const Step2 = () => {
             </div>
 
             <div className="space-y-6">
-                {qrType === "vCard" && <VCardForm />}
+                {qrType === "vCards" && <VCardForm />}
             </div>
 
             <div className="flex justify-between">
