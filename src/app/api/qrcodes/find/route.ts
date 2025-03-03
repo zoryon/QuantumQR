@@ -30,7 +30,7 @@ export async function GET(req: Request) {
         // 2. Determine type and fetch specific data
         let specificData;
         switch (type) {
-            case "vCard":
+            case "vCards":
                 specificData = await prisma.vcardqrcodes.findUnique({
                     where: { qrCodeId: baseQr.id },
                 });
@@ -49,10 +49,11 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: "Detailed data not found" }, { status: 404 });
         }
 
+        // TODO: SHOULD BE AUTOMATIC AND NOT HARDCODED
         // 3. Build typed response
         const response: VCardResponse = {
             ...baseQr,
-            type: "vCard",
+            type: type,
             ...specificData,
         };
 

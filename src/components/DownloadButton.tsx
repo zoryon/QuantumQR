@@ -18,16 +18,17 @@ const DownloadButton = ({
 }) => {
     return (
         isShadBtn ? (
-            <Button variant={"outline"}>
-                <a
-                    href={url}
-                    download={`${firstName}_${lastName}_vCard.png`.trim() || "qrcode.png"}
-                    className={cn(className)}
-                >
-                    <i className={cn(icon)} />
-                    Download
-                </a>
-            </Button>
+            <a
+                href={url}
+                download={`${firstName}_${lastName}_vCard.png`.trim() || "qrcode.png"}
+            >
+                <Button variant={"outline"}>
+                    <div className={cn(className)}>
+                        <i className={cn(icon)} />
+                        Download
+                    </div>
+                </Button>
+            </a>
         ) : (
             <a
                 href={url}

@@ -1,12 +1,14 @@
+"use server";
+
 import DownloadButton from "@/components/DownloadButton";
-import ScanIncrementer from "@/components/ScanIncremente";
+import ScanIncrementer from "@/components/ScanIncrementer";
 import ShareButton from "@/components/ShareButton";
 import { ContactPoint } from "@/types/ContactPointsType";
 import { QRCodeTypes, VCardResponse } from "@/types/QRCodeType";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-const type: QRCodeTypes = "vCard";
+const type: QRCodeTypes = "vCards";
 
 export default async function VCardPage({
     params: paramsPromise,
@@ -30,7 +32,7 @@ export default async function VCardPage({
     if (!qrCode) return notFound();
 
     const contactPoints: ContactPoint[] = [
-        { icon: "fa-envelope", value: qrCode.email, type: "email" },
+        { icon: "fa-envelope", value: qrCode.email, type: "mailto" },
         { icon: "fa-phone", value: qrCode.phoneNumber, type: "tel" },
         { icon: "fa-map-marker-alt", value: qrCode.address },
         { icon: "fa-globe", value: qrCode.websiteUrl, type: "url" }

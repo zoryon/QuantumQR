@@ -49,7 +49,11 @@ export function QrCodeListProvider({ children }: { children: React.ReactNode }) 
 
   return (
     <QrCodeListContext.Provider value={{
-      qrCodes, setQrCodes, isLoading, error, refreshQrCodesList: fetchQrCodes
+      qrCodes, 
+      setQrCodes, 
+      isLoading, 
+      error, 
+      refreshQrCodesList: fetchQrCodes,
     }}>
       {children}
     </QrCodeListContext.Provider>

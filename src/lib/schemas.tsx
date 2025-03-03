@@ -14,3 +14,13 @@ export const cardDetailsFormSchema = z.object({
     address: z.string().min(5).max(50),
     websiteUrl: z.string().url()
 });
+
+export const editVCardFormSchema = z.object({
+    id: z.number(),
+    firstName: z.string().min(1, "First name is required"),
+    lastName: z.string().min(1, "Last name is required"),
+    phoneNumber: z.string().optional(),
+    email: z.string().email("Invalid email format").optional(),
+    websiteUrl: z.string().url("Invalid URL format").optional(),
+    address: z.string().optional(),
+});

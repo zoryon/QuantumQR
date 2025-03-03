@@ -1,28 +1,68 @@
-import getPrismaClient from "@/lib/db";
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server'
+import { editVCardFormSchema } from '@/lib/schemas'
+import getPrismaClient from '@/lib/db';
+import { cookies } from 'next/headers';
+import { verifySession } from '@/lib/session';
 
-export async function PUT(req: Request) {
+export async function PUT(request: Request) {
     try {
-        const { id } = await req.json();
+        // if not logged-in -> block access
+        const sessionToken = (await cookies()).get("session_token")?.value;
+        const session = await verifySession(sessionToken);
 
-        if (isNaN(id)) {
-            return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+        if (!session?.userId) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        // Increment the scan count for the QR code
+        const body = await request.json();
+
+        // Zod validation
+        const validatedData = editVCardFormSchema.parse(body);
+
         const prisma = getPrismaClient();
-        const updated = await prisma.qrcodes.update({
-            where: { id },
-            data: {
-                scans: {
-                    increment: 1
-                }
-            }
+
+        // Check if the vCard exists
+        const existingVCard = await prisma.vcardqrcodes.findUnique({
+            where: { qrCodeId: validatedData.id },
+            include: { qrcodes: true }
         });
 
-        return NextResponse.json({ scans: updated.scans }, { status: 200 });
+        if (!existingVCard) {
+            return NextResponse.json({ error: "vCard non trovata" }, { status: 404 });
+        }
+
+        // Transaction to update both tables
+        const result = await prisma.$transaction([
+            prisma.qrcodes.update({
+                where: {
+                    id: validatedData.id,
+                    userId: session.userId
+                },
+                data: {
+                    updatedAt: new Date(),
+                    name: `${validatedData.firstName} ${validatedData.lastName}`,
+                }
+            }),
+            prisma.vcardqrcodes.update({
+                where: { qrCodeId: validatedData.id },
+                data: {
+                    firstName: validatedData.firstName,
+                    lastName: validatedData.lastName,
+                    phoneNumber: validatedData.phoneNumber || null,
+                    email: validatedData.email || null,
+                    websiteUrl: validatedData.websiteUrl || null,
+                    address: validatedData.address || null
+                }
+            })
+        ]);
+
+        return NextResponse.json({
+            success: true,
+            message: "vCard aggiornata con successo",
+            data: result
+        }, { status: 200 });
     } catch (error) {
-        console.error("Error updating scan count: ", error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        console.error('Errore durante l\'aggiornamento:', error);
+        return NextResponse.json({ error: "Errore interno del server" }, { status: 500 });
     }
 }
