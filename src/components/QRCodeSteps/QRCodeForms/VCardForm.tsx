@@ -58,7 +58,7 @@ const VCardForm = () => {
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                id="vcard-form"
+                id={`${qrType.toLowerCase()}-form`}
                 className="space-y-6"
             >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
