@@ -16,10 +16,12 @@ export async function DELETE(req: Request) {
         // get the id of the QR code to delete
         const { id } = await req.json();
 
+        // delete the QR code
         const prisma = getPrismaClient();
         await prisma.qrcodes.delete({
             where: {
                 id,
+                userId: session.userId,
             },
         });
 

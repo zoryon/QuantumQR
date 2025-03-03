@@ -1,9 +1,22 @@
 "use server";
 
+import EditForm from "@/components/EditForm";
+import PreviewCard from "@/components/VCardEditPreview";
 import { QRCodeTypes, VCardResponse } from "@/types/QRCodeType";
 import { notFound } from "next/navigation";
 
 const type: QRCodeTypes = "vCards";
+
+// Helper function to transform null values to undefined
+const transformNullToUndefined = (data: VCardResponse) => ({
+    id: data.id,
+    firstName: data.firstName || "",
+    lastName: data.lastName || "",
+    phoneNumber: data.phoneNumber || undefined,
+    email: data.email || undefined,
+    websiteUrl: data.websiteUrl || undefined,
+    address: data.address || undefined,
+});
 
 export default async function EditVCardPage({
     params: paramsPromise,
@@ -18,17 +31,50 @@ export default async function EditVCardPage({
     if (isNaN(qrCodeId)) return notFound();
 
     const qrCode: VCardResponse = await fetch(
-        `${process.env.WEBSITE_URL}/api/qrcodes/find?id=${qrCodeId}&type=${type}`, { 
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-        }
+        `${process.env.WEBSITE_URL}/api/qrcodes/find?id=${qrCodeId}&type=${type}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+    }
     ).then((res) => res.json());
 
     if (!qrCode) return notFound();
 
+    // Transform null values to undefined
+    const transformedData = transformNullToUndefined(qrCode);
+
     return (
-        <div>
-            ciao
+        <div className="min-h-screen bg-gray-900 overflow-hidden relative">
+            {/* Dynamic Gradient Background */}
+            <div className="absolute inset-0 opacity-40">
+                <div className="absolute w-[1200px] h-[1200px] -top-96 -right-96 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-full animate-gradient-drift" />
+            </div>
+
+            <main className="relative mx-auto max-w-7xl px-4 py-12 sm:py-16">
+                <div className="group relative rounded-[2.5rem] border border-gray-800 bg-gray-850/80 backdrop-blur-2xl shadow-2xl shadow-indigo-500/10 overflow-hidden isolate">
+                    {/* Interactive Glass Effect */}
+                    <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-soft-light" />
+
+                    <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
+                        {/* Edit Form Section */}
+                        <div className="space-y-8 p-6">
+                            <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                                Edit vCard
+                            </h2>
+                            <EditForm initialData={transformedData} />
+                        </div>
+
+                        {/* Live Preview Section */}
+                        <div className="lg:col-span-1 p-6">
+                            <div className="sticky top-8">
+                                <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-6">
+                                    Live Preview
+                                </h3>
+                                <PreviewCard data={qrCode} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
     );
 }

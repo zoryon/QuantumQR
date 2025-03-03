@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 export default function ScanIncrementer({ qrCodeId }: { qrCodeId: number }) {
     useEffect(() => {
-        fetch(`/api/qrcodes/update`, { 
+        fetch(`/api/qrcodes/scan`, { 
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id: qrCodeId })
