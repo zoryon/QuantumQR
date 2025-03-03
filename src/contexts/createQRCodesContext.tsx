@@ -43,14 +43,14 @@ export const QrCreatorContext = createContext<QrCreatorContextType>(null!);
 
 export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
     const [step, setStep] = useState<number>(1);
-    const [qrType, setQrType] = useState<QRCodeTypes>("vCard");
+    const [qrType, setQrType] = useState<QRCodeTypes>("vCards");
     const [created, setCreated] = useState<boolean>(false);
     const [vCardData, setVCardData] = useState<VCardData>(initialVCardData);
     const [designOptions, setDesignOptions] = useState<DesignOptions>(initialDesignOptions);
 
     function reset() {
         setCreated(false);
-        setQrType("vCard");
+        setQrType("vCards");
         setVCardData(initialVCardData);
         setDesignOptions(initialDesignOptions);
     }
