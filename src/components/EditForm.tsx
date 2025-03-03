@@ -35,7 +35,7 @@ const EditForm = ({
             // Handle successful update
             if (await res.json()) {
                 window.location.href = "/";
-                window.location.reload
+                window.location.reload();
             }
         } catch (error: any) {
             console.error("Update error:", error.message);
