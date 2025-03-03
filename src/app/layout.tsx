@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "QuantumQR | Home Page",
+  title: "QuantumQR",
   description: "Generate & Manage QR codes",
 };
 

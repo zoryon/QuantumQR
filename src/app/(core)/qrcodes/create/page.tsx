@@ -9,13 +9,11 @@ import { useEffect } from "react";
 const CreatePage = () => {
   const { step, reset, setStep, created } = useQrCodeCreator();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     reset();
     setStep(1);
   }, []);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     return () => {
       if (step !== 2 || !created) {

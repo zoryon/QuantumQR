@@ -12,7 +12,6 @@ const Step2 = () => {
     const { refreshQrCodesList } = useQrCodeList();
     const router = useRouter();
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (created !== true) return;
 
@@ -30,7 +29,7 @@ const Step2 = () => {
             </div>
 
             <div className="space-y-6">
-                {qrType === "vCard" && <VCardForm />}
+                {qrType === "vCards" && <VCardForm />}
             </div>
 
             <div className="flex justify-between">

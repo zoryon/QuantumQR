@@ -1,24 +1,15 @@
-export type QRCodeTypes = "vCard";
+import { qrcodes, vcardqrcodes } from "@prisma/client";
 
-export type BaseQrCode = {
-    id: number;
-    name: string;
-    userId: number;
-    url: string;
-    createdAt: string;
-    updatedAt: string;
-    type: string;
+export type QRCodeTypes = "vCards";
+
+export type BaseQrCode = qrcodes & {
+    type: QRCodeTypes;
 };
 
-export type VCardQRCode = {
-    type: 'vCard';
-    firstName: string;
-    lastName: string;
-    phoneNumber?: string;
-    email?: string;
-    websiteUrl?: string;
-    address?: string;
-    qrCodeId?: number;
-};
+export type VCardQRCode = vcardqrcodes & {
+    type: "vCards";
+}
 
 export type QRCode = BaseQrCode & VCardQRCode;
+
+export type VCardResponse = BaseQrCode & VCardQRCode;

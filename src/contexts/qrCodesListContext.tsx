@@ -21,7 +21,7 @@ export function QrCodeListProvider({ children }: { children: React.ReactNode }) 
   const fetchQrCodes = async () => {
     try {
       setIsLoading(true);
-      const res = await fetch("/api/qrcodes/find", {
+      const res = await fetch("/api/qrcodes/findAll", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -49,7 +49,11 @@ export function QrCodeListProvider({ children }: { children: React.ReactNode }) 
 
   return (
     <QrCodeListContext.Provider value={{
-      qrCodes, setQrCodes, isLoading, error, refreshQrCodesList: fetchQrCodes
+      qrCodes, 
+      setQrCodes, 
+      isLoading, 
+      error, 
+      refreshQrCodesList: fetchQrCodes,
     }}>
       {children}
     </QrCodeListContext.Provider>

@@ -24,6 +24,16 @@ export async function middleware(req: NextRequest) {
             : NextResponse.next();
     }
 
+    // Handle qrcodes vcards' page api access
+    if (req.nextUrl.pathname.startsWith("/api/qrcodes/find")) {
+        return NextResponse.next();
+    }
+
+    // Handle qrcodes' scan api access
+    if (req.nextUrl.pathname.startsWith("/api/qrcodes/scan")) {
+        return NextResponse.next();
+    }
+
     // For all other API routes, return JSON error if not authenticated.
     if (req.nextUrl.pathname.startsWith("/api/") && !isAuthenticated) {
         return NextResponse.json({ error: "Not authorized" }, { status: 404 });

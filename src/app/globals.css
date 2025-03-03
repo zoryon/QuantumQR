@@ -79,6 +79,7 @@ body {
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -90,10 +91,74 @@ body {
 
 /* gradient rotate */
 @keyframes gradient-rotate {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .animate-gradient-rotate {
   animation: gradient-rotate 20s linear infinite;
+}
+
+/* others */
+@keyframes gradient-drift {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+
+  50% {
+    transform: rotate(180deg) scale(1.2);
+  }
+
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes hologram-glow {
+  0% {
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+
+  100% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes progress-glow {
+  0% {
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+  }
+
+  100% {
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0);
+  }
+}
+
+/* Edit form */
+@keyframes gradientDrift {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  50% {
+    transform: translate(20px, 20px);
+  }
+}
+
+.animate-gradient-drift {
+  animation: gradientDrift 10s ease infinite;
 }
