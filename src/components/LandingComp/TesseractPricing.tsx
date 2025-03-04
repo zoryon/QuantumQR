@@ -5,27 +5,30 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 import { PRICING_PLANS } from "@/constants/landing";
+import ParticleField from "./ParticleField";
 
 const TesseractPricing = () => {
     const [mounted, setMounted] = useState(false);
 
-    // Scroll Animation
-    const ref = useRef(null);
-    const { scrollYProgress } = useScroll({
-        target: ref,
-        offset: ["start end", "end start"]
-    });
-
-    const rotateX = useTransform(scrollYProgress, [0, 1], [15, -15]);
-    const rotateY = useTransform(scrollYProgress, [0, 1], [-25, 25]);
-
-    // Waiting for component to mount to prevent hydration issues
     useEffect(() => {
         setMounted(true);
     }, []);
 
     if (!mounted) return null;
-    
+
+    return <AnimatedPricing />;
+};
+
+const AnimatedPricing = () => {
+    const ref = useRef(null);
+    const { scrollYProgress } = useScroll({
+        target: ref,
+        offset: ["start end", "end start"],
+    });
+
+    const rotateX = useTransform(scrollYProgress, [0, 1], [15, -15]);
+    const rotateY = useTransform(scrollYProgress, [0, 1], [-25, 25]);
+
     return (
         <section ref={ref} className="py-44 relative overflow-hidden">
             <div className="mx-auto max-w-7xl px-4 sm:px-8">
@@ -34,7 +37,7 @@ const TesseractPricing = () => {
                     style={{
                         rotateX,
                         rotateY,
-                        transformPerspective: 1000
+                        transformPerspective: 1000,
                     }}
                 >
                     <h2 className="text-5xl font-bold text-center mb-20 bg-gradient-to-r from-cyan-300 to-purple-400 bg-clip-text text-transparent">
@@ -56,7 +59,8 @@ const TesseractPricing = () => {
                                     <div className="mb-6">
                                         <div className="text-2xl font-bold">{plan.tier}</div>
                                         <div className="text-4xl font-bold mt-2">
-                                            ${plan.price}<span className="text-gray-400 text-lg">/quantum</span>
+                                            ${plan.price}
+                                            <span className="text-gray-400 text-lg">/quantum</span>
                                         </div>
                                     </div>
 
@@ -79,28 +83,10 @@ const TesseractPricing = () => {
             </div>
 
             {/* Tesseract Particles */}
-            <div className="absolute inset-0 pointer-events-none">
-                {[...Array(25)].map((_, i) => (
-                    <motion.div
-                        key={i}
-                        className="absolute w-2 h-2 bg-cyan-400 rounded-full"
-                        style={{
-                            left: `${Math.random() * 100}%`,
-                            top: `${Math.random() * 100}%`,
-                        }}
-                        animate={{
-                            scale: [0.5, 1, 0.5],
-                            opacity: [0.3, 0.8, 0.3],
-                        }}
-                        transition={{
-                            duration: 2 + Math.random() * 3,
-                            repeat: Infinity,
-                        }}
-                    />
-                ))}
-            </div>
+            <ParticleField count={25} />
         </section>
     );
 };
+
 
 export default TesseractPricing;
