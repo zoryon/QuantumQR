@@ -6,8 +6,8 @@ export async function middleware(req: NextRequest) {
     const isAuthenticated = await verifySession(token);
     const { pathname } = req.nextUrl;
 
-    // Define public routes and API endpoints
-    const isPublicPage = ["/landing", "/register", "/login"].includes(pathname);
+    // Define public API endpoints
+    const isApiRoute = pathname.startsWith("/api");
     const isPublicApiRoute = [
         "/api/auth/login",
         "/api/auth/register",
@@ -15,37 +15,41 @@ export async function middleware(req: NextRequest) {
         "/api/qrcodes/scan"
     ].some(route => pathname.startsWith(route));
 
-    // Handle public pages
+    // Define public pages routes
+    const isPublicPage = ["/landing", "/register", "/login"].includes(pathname);
+
+    // 1. Handle API routes first
+    if (isApiRoute) {
+        // Allow public API routes regardless of auth
+        if (isPublicApiRoute) {
+            return NextResponse.next();
+        }
+
+        // Block unauthorized access to private API routes
+        if (!isAuthenticated) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        return NextResponse.next();
+    }
+
+    // 2. Handle public pages
     if (isPublicPage) {
         return isAuthenticated
             ? NextResponse.redirect(new URL("/", req.url))
             : NextResponse.next();
     }
 
-    // Handle QR codes page access (partial public access)
+    // 3. Handle QR code pages (partial public access)
     if (pathname.startsWith("/qrcodes/") && !pathname.startsWith("/qrcodes/create")) {
         return NextResponse.next();
     }
 
-    // Handle public API routes
-    if (isPublicApiRoute) {
-        return !isAuthenticated || pathname.endsWith("/logout")
-            ? NextResponse.next()
-            : NextResponse.redirect(new URL("/", req.url));
-    }
-
-    // Handle authenticated API routes
-    if (pathname.startsWith("/api/")) {
-        return isAuthenticated
-            ? NextResponse.next()
-            : NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Redirect unauthenticated users to landing page
+    // 4. Redirect unauthenticated users to landing page
     if (!isAuthenticated) {
         return NextResponse.redirect(new URL("/landing", req.url));
     }
-
+    
     return NextResponse.next();
 }
 
