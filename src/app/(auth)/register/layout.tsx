@@ -2,7 +2,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: "QuantumQR - Register Page",
-    description: "Generate & Manage QR codes",
+    description: "Register for a QuantumQR account to start generating QR codes.",
 };
 
 export default function RegisterLayout({

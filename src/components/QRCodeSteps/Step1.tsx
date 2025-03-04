@@ -1,4 +1,4 @@
-import { QR_CODE_CARDS } from "@/constants/qrcodeTypes";
+import { QR_CODE_CARDS } from "@/constants/qrCodes";
 import { useQrCodeCreator } from "@/contexts/createQRCodesContext";
 
 const Step1 = () => (

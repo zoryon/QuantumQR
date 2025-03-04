@@ -4,7 +4,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: "QuantumQR - Home Page",
-    description: "Generate & Manage QR codes",
+    description: "Generate & Manage QR codes.",
 };
 
 export default function RootLayout({

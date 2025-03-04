@@ -1,11 +1,11 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "QuantumQR - Login Page",
-    description: "Access your QuantumQR account to start generating QR codes.",
+    title: "QuantumQR - Landing Page",
+    description: "Discover the power of QuantumQR.",
 };
 
-export default function LoginLayout({
+export default function LandingLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
