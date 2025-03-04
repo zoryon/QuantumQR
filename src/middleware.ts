@@ -4,58 +4,53 @@ import { verifySession } from "./lib/session";
 export async function middleware(req: NextRequest) {
     const token = req.cookies.get("session_token")?.value;
     const isAuthenticated = await verifySession(token);
+    const { pathname } = req.nextUrl;
 
-    // Handle register & login page access
-    if (req.nextUrl.pathname === "/register" || req.nextUrl.pathname === "/login") {
+    // Define public routes and API endpoints
+    const isPublicPage = ["/landing", "/register", "/login"].includes(pathname);
+    const isPublicApiRoute = [
+        "/api/auth/login",
+        "/api/auth/register",
+        "/api/qrcodes/find",
+        "/api/qrcodes/scan"
+    ].some(route => pathname.startsWith(route));
+
+    // Handle public pages
+    if (isPublicPage) {
         return isAuthenticated
             ? NextResponse.redirect(new URL("/", req.url))
             : NextResponse.next();
     }
 
-    // Handle QR codes page access
-    if (req.nextUrl.pathname.startsWith("/qrcodes/") && !req.nextUrl.pathname.startsWith("/qrcodes/create")) {
+    // Handle QR codes page access (partial public access)
+    if (pathname.startsWith("/qrcodes/") && !pathname.startsWith("/qrcodes/create")) {
         return NextResponse.next();
     }
 
-    // Handle register & login (auth) api access
-    if (req.nextUrl.pathname.startsWith("/api/auth") && !req.nextUrl.pathname.endsWith("/logout")) {
+    // Handle public API routes
+    if (isPublicApiRoute) {
+        return !isAuthenticated || pathname.endsWith("/logout")
+            ? NextResponse.next()
+            : NextResponse.redirect(new URL("/", req.url));
+    }
+
+    // Handle authenticated API routes
+    if (pathname.startsWith("/api/")) {
         return isAuthenticated
-            ? NextResponse.redirect(new URL("/", req.url))
-            : NextResponse.next();
+            ? NextResponse.next()
+            : NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Handle qrcodes vcards' page api access
-    if (req.nextUrl.pathname.startsWith("/api/qrcodes/find")) {
-        return NextResponse.next();
-    }
-
-    // Handle qrcodes' scan api access
-    if (req.nextUrl.pathname.startsWith("/api/qrcodes/scan")) {
-        return NextResponse.next();
-    }
-
-    // For all other API routes, return JSON error if not authenticated.
-    if (req.nextUrl.pathname.startsWith("/api/") && !isAuthenticated) {
-        return NextResponse.json({ error: "Not authorized" }, { status: 404 });
-    }
-
-    // Protect all other routes
+    // Redirect unauthenticated users to landing page
     if (!isAuthenticated) {
-        return NextResponse.redirect(new URL("/login", req.url));
+        return NextResponse.redirect(new URL("/landing", req.url));
     }
 
-    return NextResponse.next()
+    return NextResponse.next();
 }
 
 export const config = {
     matcher: [
-        /*
-         * Match all request paths except for the ones starting with:
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         * Feel free to modify this pattern to include more paths.
-        */
         "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
     ],
-}   
+};
