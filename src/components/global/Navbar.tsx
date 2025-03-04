@@ -2,7 +2,6 @@
 
 import { PublicUser } from "@/types/UserType";
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import CreateBtn from "./CreateBtn";
 import LogoutBtn from "./LogoutBtn";
 import Logo from "./Logo";

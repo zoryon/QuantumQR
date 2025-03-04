@@ -38,7 +38,7 @@ const TesseractPricing = () => {
                     }}
                 >
                     <h2 className="text-5xl font-bold text-center mb-20 bg-gradient-to-r from-cyan-300 to-purple-400 bg-clip-text text-transparent">
-                        QuantumQR's Pricing
+                        QuantumQR&apos;s Pricing
                     </h2>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 perspective-1000">
