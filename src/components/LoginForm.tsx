@@ -36,6 +36,7 @@ const LoginForm = () => {
             // const data = await res.json()
             if (await res.json()) {
                 router.push("/");
+                router.refresh();
             }
         } catch (error: any) {
             console.error("Error during login:", error.message);
