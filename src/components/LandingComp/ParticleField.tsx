@@ -5,23 +5,21 @@ import { motion } from "framer-motion";
 const ParticleField = ({ count }: { count: number }) => {
     return (
         <div className="absolute inset-0 pointer-events-none">
-            {[...Array(count)].map((_, i) => (
+            {[...Array(25)].map((_, i) => (
                 <motion.div
                     key={i}
-                    className="absolute w-1 h-1 bg-white rounded-full"
-                    initial={{
-                        opacity: 0,
-                        x: Math.random() * 2000,
-                        y: Math.random() * 2000,
+                    className="absolute w-2 h-2 bg-cyan-400 rounded-full"
+                    style={{
+                        left: `${Math.random() * 100}%`,
+                        top: `${Math.random() * 100}%`,
                     }}
                     animate={{
-                        opacity: [0, 0.3, 0],
-                        scale: [1, 2, 1],
+                        scale: [0.5, 1, 0.5],
+                        opacity: [0.3, 0.8, 0.3],
                     }}
                     transition={{
-                        duration: 2 + Math.random() * 5,
+                        duration: 2 + Math.random() * 3,
                         repeat: Infinity,
-                        delay: Math.random() * 5,
                     }}
                 />
             ))}
