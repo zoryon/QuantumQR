@@ -14,14 +14,29 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { editVCardFormSchema } from "@/lib/schemas";
+import { useQrCodeList } from "@/contexts/qrCodesListContext";
+import { useRouter } from "next/navigation";
 
 const EditForm = ({ 
     initialData
 }: { 
     initialData: z.infer<typeof editVCardFormSchema> 
 }) => {
+    const { qrCodes, setQrCodes } = useQrCodeList();
+    const router = useRouter();
+
     async function onSubmit(values: z.infer<typeof editVCardFormSchema>) {
+        // optimistic update
+        const previousQrCodes = [...qrCodes];
         try {
+            const updatedQrCodes = qrCodes.map(qr => 
+                qr.id === values.id ? { ...qr, ...values } : qr
+            );
+            setQrCodes(updatedQrCodes);
+
+            router.push("/");
+
+            // API call to update
             const res = await fetch("/api/qrcodes/update", {
                 method: "PUT",
                 headers: {
@@ -33,12 +48,10 @@ const EditForm = ({
             if (!res.ok) throw new Error("Failed to update vCard");
 
             // Handle successful update
-            if (await res.json()) {
-                window.location.href = "/";
-                window.location.reload();
-            }
+            if (!(await res.json())) throw new Error("Failed to update vCard");
         } catch (error: any) {
             console.error("Update error:", error.message);
+            setQrCodes(previousQrCodes);
         }
     }
 

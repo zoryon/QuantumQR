@@ -1,6 +1,6 @@
 "use client";
 
-import { authFormSchema } from "@/lib/schemas";
+import { loginFormSchema } from "@/lib/schemas";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 const LoginForm = () => {
     const router = useRouter();
 
-    async function onSubmit(values: z.infer<typeof authFormSchema>) {
+    async function onSubmit(values: z.infer<typeof loginFormSchema>) {
         try {
             const res = await fetch("/api/auth/login", {
                 method: "POST",
@@ -43,10 +43,10 @@ const LoginForm = () => {
         }
     }
 
-    const form = useForm<z.infer<typeof authFormSchema>>({
-        resolver: zodResolver(authFormSchema),
+    const form = useForm<z.infer<typeof loginFormSchema>>({
+        resolver: zodResolver(loginFormSchema),
         defaultValues: {
-            username: "",
+            emailOrUsername: "",
             password: ""
         },
     })
@@ -57,14 +57,14 @@ const LoginForm = () => {
                 {/* Form fields */}
                 <FormField
                     control={form.control}
-                    name="username"
+                    name="emailOrUsername"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="text-gray-300">Username</FormLabel>
+                            <FormLabel className="text-gray-300">Email or Username</FormLabel>
                             <FormControl>
                                 <Input
                                     type="text"
-                                    placeholder="your username"
+                                    placeholder="your email or username"
                                     {...field}
                                     className="bg-gray-700/20 border-gray-600/50 focus:border-indigo-400/50 focus:ring-indigo-400/50 text-gray-100"
                                 />

@@ -7,6 +7,7 @@ const DownloadButton = ({
     lastName,
     icon,
     isShadBtn = false,
+    isDisabled = false,
     className
 }: {
     url: string,
@@ -14,15 +15,17 @@ const DownloadButton = ({
     lastName: string,
     icon: string,
     isShadBtn?: boolean,
+    isDisabled?: boolean,
     className: string
 }) => {
     return (
         isShadBtn ? (
             <a
                 href={url}
-                download={`${firstName}_${lastName}_vCard.png`.trim() || "qrcode.png"}
+                download={isDisabled ? "#" : `${firstName}_${lastName}_vCard.svg`.trim() || "qrcode.svg"}
+                onClick={(e) => isDisabled && e.preventDefault()}
             >
-                <Button variant={"outline"}>
+                <Button variant={"outline"} disabled={isDisabled}>
                     <div className={cn(className)}>
                         <i className={cn(icon)} />
                         Download
@@ -32,7 +35,8 @@ const DownloadButton = ({
         ) : (
             <a
                 href={url}
-                download={`${firstName}_${lastName}_vCard.png`.trim() || "qrcode.png"}
+                download={isDisabled ? "#" : `${firstName}_${lastName}_vCard.svg`.trim() || "qrcode.svg"}
+                onClick={(e) => isDisabled && e.preventDefault()}
                 className={cn(className)}
             >
                 <i className={cn(icon)} />

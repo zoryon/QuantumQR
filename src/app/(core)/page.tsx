@@ -69,6 +69,8 @@ const QRCodeList = ({
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {qrCodes.map((qrCode) => {
+        const isTemp = qrCode.id < 0;
+
         const createdDate = new Date(qrCode.createdAt!).toLocaleDateString("it-IT", {
           dateStyle: "medium",
         });
@@ -119,6 +121,7 @@ const QRCodeList = ({
             </div>
 
             {/* Bottom Row: Download + Edit/Delete */}
+            {/* If temporary QR code, disable the action buttons */}
             <div className="mt-4 flex items-center justify-between">
               <DownloadButton
                 url={qrCode.url}
@@ -126,11 +129,12 @@ const QRCodeList = ({
                 lastName={qrCode.lastName}
                 icon="fas fa-download mr-2"
                 isShadBtn={true}
+                isDisabled={isTemp}
                 className="rounded-md border-gray-700 text-xs font-medium text-gray-200 hover:border-indigo-500 hover:bg-gray-800 hover:text-indigo-400"
               />
               <div className="flex gap-2">
-                <EditBtn qrCode={qrCode} />
-                <DeleteBtn qrCode={qrCode} />
+                <EditBtn qrCode={qrCode} isDisabled={isTemp} />
+                <DeleteBtn qrCode={qrCode} isDisabled={isTemp} />
               </div>
             </div>
           </article>

@@ -29,10 +29,11 @@ export async function POST(req: Request) {
         }
 
         // Creating the QR code based on the type
+        let qrCode: any = null;
         switch (qrType as QRCodeTypes) {
             case "vCards":
                 const parsedValues = cardDetailsFormSchema.parse(values);
-                await createVCardQRCode({ 
+                qrCode = await createVCardQRCode({ 
                     userId: session.userId as number, 
                     values: parsedValues 
                 });
@@ -41,7 +42,7 @@ export async function POST(req: Request) {
                 return NextResponse.json({ error: "Invalid input" }, { status: 400 });
         }
 
-        return NextResponse.json({ success: true }, { status: 200 });
+        return NextResponse.json(qrCode, { status: 200 });
     } catch (error) {
         console.error(error);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
@@ -72,21 +73,31 @@ async function createVCardQRCode({
                         websiteUrl: values.websiteUrl,
                     }
                 }
-            }
+            },
+            include: { vcardqrcodes: true }
         });
 
         const dynamicURL = `${process.env.WEBSITE_URL!}/qrcodes/vcards/${qrCode.id}`;
 
         // Generate the QR code with the dynamic URL
-        const qrCodeURL = await QRCode.toDataURL(dynamicURL);
-
-        // Update the QR code entry with the generated QR code URL
-        await prisma.qrcodes.update({
-            where: { id: qrCode.id },
-            data: { url: qrCodeURL }
+        const svgString = await QRCode.toString(dynamicURL, {
+            type: "svg",
+            color: {
+                dark: "#000000",  
+                light: "#ffffff"
+            }
         });
 
-        console.log("QR Code created:", qrCode);
+        const qrCodeURL = `data:image/svg+xml;base64,${Buffer.from(svgString).toString("base64")}`;
+
+        // Update the QR code entry with the generated QR code URL
+        const updatedQrCode = await prisma.qrcodes.update({
+            where: { id: qrCode.id },
+            data: { url: qrCodeURL },
+            include: { vcardqrcodes: true }
+        });
+
+        return updatedQrCode;
     } catch (err) {
         console.error("Error generating or saving QR code:", err);
     }

@@ -1,7 +1,7 @@
 import getPrismaClient from "@/lib/db";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import { cookies } from 'next/headers';
+import { cookies } from "next/headers";
 import { createSignedSessionToken, verifySession } from "@/lib/session";
 
 export async function POST(req: Request) {
@@ -16,15 +16,20 @@ export async function POST(req: Request) {
 
         // If user not logged-in -> proceed with login
         const prisma = getPrismaClient();
-        const { username, password } = await req.json();
+        const { emailOrUsername, password } = await req.json();
 
-        if (typeof username !== "string" || typeof password !== "string" || !username.trim() || !password.trim()) {
+        if (typeof emailOrUsername !== "string" || typeof password !== "string" || !emailOrUsername.trim() || !password.trim()) {
             return NextResponse.json({ error: "Invalid input" }, { status: 400 });
         }
 
         // Find user using Prisma
-        const user = await prisma.users.findUnique({
-            where: { username: username.trim() }
+        const user = await prisma.users.findFirst({
+            where: {  
+                OR: [
+                    { email: emailOrUsername.trim() },
+                    { username: emailOrUsername.trim() }
+                ] 
+            }
         });
 
         if (!user) {
@@ -43,12 +48,12 @@ export async function POST(req: Request) {
         // Creating a one-week-session cookie
         const expires = new Date();
         expires.setDate(expires.getDate() + 7);
-        (await cookies()).set('session_token', newSessionToken, {
+        (await cookies()).set("session_token", newSessionToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
             expires,
-            path: '/',
+            path: "/",
         });
 
         return NextResponse.json({ success: true }, { status: 200 });

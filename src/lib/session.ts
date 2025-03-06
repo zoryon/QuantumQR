@@ -1,13 +1,16 @@
-import { JWTPayload, SignJWT, jwtVerify } from 'jose';
+"use server";
+
+import { JWTPayload, SignJWT, jwtVerify } from "jose";
+import { cookies } from "next/headers";
 
 const secretKey = new TextEncoder().encode(process.env.SESSION_SECRET!);
 
 export async function createSignedSessionToken(userId: number): Promise<string> {
-    const alg = 'HS256';
+    const alg = "HS256";
     return await new SignJWT({ userId })
         .setProtectedHeader({ alg })
         .setIssuedAt()
-        .setExpirationTime('7d')
+        .setExpirationTime("7d")
         .sign(secretKey);
 }
 
@@ -21,4 +24,13 @@ export async function verifySession(token: string | undefined) {
         console.error("Error verifying session token: ", error);
         return null;
     }
+}
+
+export async function isLoggedIn() {
+    const sessionToken = (await cookies()).get("session_token")?.value;
+    const session = await verifySession(sessionToken);
+
+    if (!session) return false;
+
+    return session.userId ? true : false;
 }

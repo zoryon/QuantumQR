@@ -16,7 +16,13 @@ export async function middleware(req: NextRequest) {
     ].some(route => pathname.startsWith(route));
 
     // Define public pages routes
-    const isPublicPage = ["/landing", "/register", "/login"].includes(pathname);
+    const isPublicPage = [
+        "/landing", 
+        "/register", 
+        "/login", 
+        "/policies/privacy-policy",
+        "/policies/term-of-services"
+    ].includes(pathname);
 
     // 1. Handle API routes first
     if (isApiRoute) {
@@ -33,19 +39,24 @@ export async function middleware(req: NextRequest) {
         return NextResponse.next();
     }
 
-    // 2. Handle public pages
+    // 2. Handle policies pages (complete public access)
+    if (isPublicPage && (pathname === "/policies/privacy-policy" || pathname === "/policies/term-of-services")) {
+        return NextResponse.next();
+    }
+
+    // 3. Handle public pages
     if (isPublicPage) {
         return isAuthenticated
             ? NextResponse.redirect(new URL("/", req.url))
             : NextResponse.next();
     }
 
-    // 3. Handle QR code pages (partial public access)
+    // 4. Handle QR code pages (partial public access)
     if (pathname.startsWith("/qrcodes/") && !pathname.startsWith("/qrcodes/create")) {
         return NextResponse.next();
     }
 
-    // 4. Redirect unauthenticated users to landing page
+    // 5. Redirect unauthenticated users to landing page
     if (!isAuthenticated) {
         return NextResponse.redirect(new URL("/landing", req.url));
     }

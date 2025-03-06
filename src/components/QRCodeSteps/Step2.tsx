@@ -3,20 +3,13 @@
 import { useQrCodeCreator } from "@/contexts/createQRCodesContext";
 import VCardForm from "./QRCodeForms/VCardForm";
 import { useEffect } from "react";
-import { useQrCodeList } from "@/contexts/qrCodesListContext";
-import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 
 const Step2 = () => {
     const { handlePrev, qrType, created, reset } = useQrCodeCreator();
-    const { refreshQrCodesList } = useQrCodeList();
-    const router = useRouter();
 
     useEffect(() => {
         if (created !== true) return;
-
-        refreshQrCodesList();
-        router.push("/");
 
         setTimeout(reset, 1000);
     }, [created])
