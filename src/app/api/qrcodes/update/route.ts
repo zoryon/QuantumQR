@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server'
-import { editVCardFormSchema } from '@/lib/schemas'
-import getPrismaClient from '@/lib/db';
-import { cookies } from 'next/headers';
-import { verifySession } from '@/lib/session';
+import { NextResponse } from "next/server"
+import { editVCardFormSchema } from "@/lib/schemas"
+import getPrismaClient from "@/lib/db";
+import { cookies } from "next/headers";
+import { verifySession } from "@/lib/session";
 
 export async function PUT(request: Request) {
     try {
@@ -28,7 +28,7 @@ export async function PUT(request: Request) {
         });
 
         if (!existingVCard) {
-            return NextResponse.json({ error: "vCard non trovata" }, { status: 404 });
+            return NextResponse.json({ error: "vCard not found" }, { status: 404 });
         }
 
         // Transaction to update both tables
@@ -40,7 +40,6 @@ export async function PUT(request: Request) {
                 },
                 data: {
                     updatedAt: new Date(),
-                    name: `${validatedData.firstName} ${validatedData.lastName}`,
                 }
             }),
             prisma.vcardqrcodes.update({
@@ -56,13 +55,9 @@ export async function PUT(request: Request) {
             })
         ]);
 
-        return NextResponse.json({
-            success: true,
-            message: "vCard aggiornata con successo",
-            data: result
-        }, { status: 200 });
+        return NextResponse.json(result, { status: 200 });
     } catch (error) {
-        console.error('Errore durante l\'aggiornamento:', error);
-        return NextResponse.json({ error: "Errore interno del server" }, { status: 500 });
+        console.error("Error updating: ", error);
+        return NextResponse.json({ error: "Internal server errror" }, { status: 500 });
     }
 }

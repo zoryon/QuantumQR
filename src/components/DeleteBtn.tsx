@@ -4,11 +4,18 @@ import { useQrCodeList } from "@/contexts/qrCodesListContext";
 import { Button } from "./ui/button";
 import { QRCode } from "@/types/QRCodeType";
 
-const DeleteBtn = ({ qrCode } : { qrCode: QRCode }) => {
+const DeleteBtn = ({ 
+    qrCode, 
+    isDisabled = false 
+} : { 
+    qrCode: QRCode,
+    isDisabled?: boolean,
+}) => {
     const { setQrCodes } = useQrCodeList();
 
     return (
         <Button
+            disabled={isDisabled}
             variant="ghost"
             size="icon"
             className="h-8 w-8 rounded-md text-red-400/80 hover:bg-red-400/10 hover:text-red-400"

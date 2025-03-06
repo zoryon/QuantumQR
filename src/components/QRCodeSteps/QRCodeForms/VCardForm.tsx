@@ -14,12 +14,46 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useQrCodeCreator } from "@/contexts/createQRCodesContext";
+import { useRouter } from "next/navigation";
+import { useQrCodeList } from "@/contexts/qrCodesListContext";
+import { QRCode, QRCodeTypes } from "@/types/QRCodeType";
 
 const VCardForm = () => {
     const { qrType, setCreated } = useQrCodeCreator();
+    const { qrCodes, setQrCodes } = useQrCodeList();
+    const router = useRouter();
 
     async function onSubmit(values: z.infer<typeof cardDetailsFormSchema>) {
+        // temporary ID for optimistic update
+        const tempId = -Date.now();
+        const previousQrCodes = [...qrCodes];
+
         try {
+            // creating a non-accessable temporary QR Code object
+            const tempQRCode: QRCode = {
+                id: tempId,
+                name: values.name,
+                userId: tempId, 
+                url: "/placeholder-qr.png", 
+                scans: 0,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                type: qrType as QRCodeTypes,
+                qrCodeId: tempId,
+                firstName: values.firstName,
+                lastName: values.lastName,
+                email: values.email,
+                phoneNumber: values.phoneNumber,
+                websiteUrl: values.websiteUrl || null,
+                address: values.address || null
+            };
+    
+            // optimistic update
+            setQrCodes([tempQRCode, ...qrCodes]);
+
+            router.push("/");
+
+            // API call to create QR Code
             const res = await fetch("/api/qrcodes/create", {
                 method: "POST",
                 headers: {
@@ -32,12 +66,22 @@ const VCardForm = () => {
                 throw new Error("Failed to create QR Code");
             }
 
-            // const data = await res.json()
-            if (await res.json()) {
+            const data = await res.json()
+            if (data) {
+                // sync temporary QR Code object with the newly created
+                setQrCodes(prev => [
+                    {
+                        ...data,
+                        type: qrType as QRCodeTypes,
+                    },
+                    ...prev.filter(qr => qr.id !== tempId)
+                ]);
+
                 setCreated(true);
             }
         } catch (error: any) {
             console.error("Error during QR code creation:", error.message);
+            setQrCodes(previousQrCodes);
         }
     }
 

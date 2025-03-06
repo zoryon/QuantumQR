@@ -1,7 +1,19 @@
 import { z } from "zod";
 
-export const authFormSchema = z.object({
+export const registerFormSchema = z.object({
+    email: z.string().email(),
     username: z.string().min(2).max(25),
+    password: z.string().min(5).max(60),
+    hasAllowedEmails: z.boolean(),  // News letters
+});
+
+const emailOrUsernameSchema = z.union([
+    z.string().email(),
+    z.string().min(2).max(25)
+]);
+
+export const loginFormSchema = z.object({
+    emailOrUsername: emailOrUsernameSchema,
     password: z.string().min(5).max(60)
 });
 

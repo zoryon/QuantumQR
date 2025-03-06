@@ -16,10 +16,20 @@ export async function POST(req: Request) {
 
         // If user is not logged-in -> create a new user
         const prisma = getPrismaClient();
-        const { username, password } = await req.json();
+        const { email, username, password, hasAllowedEmails } = await req.json();
 
         // Validating params
-        if (typeof username !== "string" || typeof password !== "string" || !username.trim() || !password.trim()) {
+        if (
+            typeof email !== "string" || 
+            typeof username !== "string" || 
+            typeof password !== "string" || 
+            typeof hasAllowedEmails !== "boolean" ||
+            !email.trim() || 
+            !username.trim() || 
+            !password.trim() ||
+            hasAllowedEmails === undefined ||
+            hasAllowedEmails === null
+        ) {
             return NextResponse.json({ error: "Invalid input" }, { status: 400 });
         }
 
@@ -28,18 +38,18 @@ export async function POST(req: Request) {
         }
 
         // Executing sql's select statement (avoiding SQL injection)
-        // Looking for the same exesisting username
-        let user = await prisma.users.findUnique({
+        // Looking for the same exisisting email or username
+        let user = await prisma.users.findFirst({
             where: {
-                username,
-            },
+                OR: [
+                    { email: email.trim() },
+                    { username: username.trim() }
+                ]
+            }
         });
 
         if (user) {
-            return NextResponse.json(
-                { error: "Username already exists" },
-                { status: 409 }
-            );
+            return NextResponse.json({ error: "Username already exists" }, { status: 409 } );
         }
 
         // Hashing the password to be stored in the DB
@@ -48,8 +58,10 @@ export async function POST(req: Request) {
         // Executing sql"s insert statement (avoiding SQL injection)
         user = await prisma.users.create({
             data: {
+                email,
                 username,
                 password: hashedPasswd,
+                hasAllowedEmails: hasAllowedEmails || false,
             },
         });
 

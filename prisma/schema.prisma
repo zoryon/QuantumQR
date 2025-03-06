@@ -27,11 +27,13 @@ model qrcodes {
 }
 
 model users {
-  id       Int       @id @default(autoincrement())
-  username String    @unique(map: "username") @db.VarChar(255)
-  password String    @db.VarChar(255)
-  admins   admins?
-  qrcodes  qrcodes[]
+  id               Int       @id @default(autoincrement())
+  email            String    @unique(map: "email") @db.VarChar(255)
+  username         String    @unique(map: "username") @db.VarChar(255)
+  password         String    @db.VarChar(255)
+  hasAllowedEmails Boolean?  @default(false)
+  admins           admins?
+  qrcodes          qrcodes[]
 }
 
 model vcardqrcodes {
