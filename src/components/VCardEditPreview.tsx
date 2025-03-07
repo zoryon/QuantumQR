@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { VCardResponse } from "@/types/QRCodeType";
+import { z } from "zod";
+import { editVCardFormSchema } from "@/lib/schemas";
 
-export default function PreviewCard({ data }: { data: VCardResponse }) {
+export default function PreviewCard({ data }: { data: z.infer<typeof editVCardFormSchema> }) {
     const contactPoints = [
         { icon: "fa-envelope", value: data.email, type: "mailto" },
         { icon: "fa-phone", value: data.phoneNumber, type: "tel" },

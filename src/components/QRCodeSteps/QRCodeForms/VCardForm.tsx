@@ -34,7 +34,7 @@ const VCardForm = () => {
                 id: tempId,
                 name: values.name,
                 userId: tempId, 
-                url: "/placeholder-qr.png", 
+                url: "/gif/loading.gif", 
                 scans: 0,
                 createdAt: new Date(),
                 updatedAt: new Date(),

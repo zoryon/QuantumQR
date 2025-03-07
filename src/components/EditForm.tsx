@@ -17,11 +17,7 @@ import { editVCardFormSchema } from "@/lib/schemas";
 import { useQrCodeList } from "@/contexts/qrCodesListContext";
 import { useRouter } from "next/navigation";
 
-const EditForm = ({ 
-    initialData
-}: { 
-    initialData: z.infer<typeof editVCardFormSchema> 
-}) => {
+const EditForm = ({ form } : { form: any }) => {
     const { qrCodes, setQrCodes } = useQrCodeList();
     const router = useRouter();
 
@@ -54,19 +50,6 @@ const EditForm = ({
             setQrCodes(previousQrCodes);
         }
     }
-
-    const form = useForm<z.infer<typeof editVCardFormSchema>>({
-        resolver: zodResolver(editVCardFormSchema),
-        defaultValues: initialData || {
-            id: 0,
-            firstName: "",
-            lastName: "",
-            phoneNumber: "",
-            email: "",
-            websiteUrl: "",
-            address: ""
-        },
-    });
 
     return (
         <Form {...form}>

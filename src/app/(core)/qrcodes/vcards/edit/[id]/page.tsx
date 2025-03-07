@@ -1,6 +1,7 @@
 "use server";
 
 import EditForm from "@/components/EditForm";
+import VCardEditor from "@/components/VCardEditor";
 import PreviewCard from "@/components/VCardEditPreview";
 import { QRCodeTypes, VCardResponse } from "@/types/QRCodeType";
 import { notFound } from "next/navigation";
@@ -55,23 +56,7 @@ export default async function EditVCardPage({
                     <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-soft-light" />
 
                     <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
-                        {/* Edit Form Section */}
-                        <div className="space-y-8 p-6">
-                            <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-                                Edit vCard
-                            </h2>
-                            <EditForm initialData={transformedData} />
-                        </div>
-
-                        {/* Live Preview Section */}
-                        <div className="lg:col-span-1 p-6">
-                            <div className="sticky top-8">
-                                <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-6">
-                                    Live Preview
-                                </h3>
-                                <PreviewCard data={qrCode} />
-                            </div>
-                        </div>
+                        <VCardEditor initialData={transformedData} />
                     </div>
                 </div>
             </main>
