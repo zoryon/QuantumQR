@@ -31,6 +31,6 @@ export async function GET(req: Request) {
             }
         });
     } catch (error) {
-        return NextResponse.json({ error: "Policy not found" }, { status: 404 });
+        return NextResponse.json({ error: error }, { status: 404 });
     }
 }
