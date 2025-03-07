@@ -1,0 +1,1 @@
+export type PolicyTypes = "privacy-policy" | "terms-of-service";
