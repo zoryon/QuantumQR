@@ -27,7 +27,7 @@ const CreatePage = () => {
       {/* Colored background */}
       <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/20 via-purple-900/20 to-transparent animate-gradient-pulse" />
       
-      <div className="w-full max-w-4xl bg-gray-800/40 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-gray-700/50 relative">
+      <div className="w-full max-w-7xl bg-gray-800/40 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-gray-700/50 relative">
         <Stepper currentStep={step} totalSteps={2} />
         
         <div className="mt-12">

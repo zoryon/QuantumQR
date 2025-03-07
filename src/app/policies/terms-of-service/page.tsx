@@ -1,8 +1,9 @@
 import BackBtn from "@/components/BackBtn";
 import PaintMarkdown from "@/components/PaintMarkdown";
 
-const PrivacyPolicyPage = () => {
-    const apiPath = "/api/policies?type=privacy-policy";
+const TermOfServicesPage = () => {
+    const apiPath = "/api/policies?type=terms-of-service";
+
     return (
         <div className="mx-auto max-w-2xl p-4">
             <BackBtn />
@@ -11,4 +12,4 @@ const PrivacyPolicyPage = () => {
     );
 }
 
-export default PrivacyPolicyPage;
+export default TermOfServicesPage;

@@ -12,7 +12,8 @@ export async function middleware(req: NextRequest) {
         "/api/auth/login",
         "/api/auth/register",
         "/api/qrcodes/find",
-        "/api/qrcodes/scan"
+        "/api/qrcodes/scan",
+        "/api/policies"
     ].some(route => pathname.startsWith(route));
 
     // Define public pages routes
@@ -21,7 +22,7 @@ export async function middleware(req: NextRequest) {
         "/register", 
         "/login", 
         "/policies/privacy-policy",
-        "/policies/term-of-services"
+        "/policies/terms-of-service"
     ].includes(pathname);
 
     // 1. Handle API routes first

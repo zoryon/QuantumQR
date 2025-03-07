@@ -1,8 +1,7 @@
 "use client";
 
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
     Form,
@@ -13,15 +12,11 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { editVCardFormSchema } from "@/lib/schemas";
+import { editVCardFormSchema, EditVCardFormValues } from "@/lib/schemas";
 import { useQrCodeList } from "@/contexts/qrCodesListContext";
 import { useRouter } from "next/navigation";
 
-const EditForm = ({ 
-    initialData
-}: { 
-    initialData: z.infer<typeof editVCardFormSchema> 
-}) => {
+const EditForm = ({ form } : { form: UseFormReturn<EditVCardFormValues> }) => {
     const { qrCodes, setQrCodes } = useQrCodeList();
     const router = useRouter();
 
@@ -54,19 +49,6 @@ const EditForm = ({
             setQrCodes(previousQrCodes);
         }
     }
-
-    const form = useForm<z.infer<typeof editVCardFormSchema>>({
-        resolver: zodResolver(editVCardFormSchema),
-        defaultValues: initialData || {
-            id: 0,
-            firstName: "",
-            lastName: "",
-            phoneNumber: "",
-            email: "",
-            websiteUrl: "",
-            address: ""
-        },
-    });
 
     return (
         <Form {...form}>
@@ -129,8 +111,9 @@ const EditForm = ({
                                 <FormLabel className="text-gray-300">Phone</FormLabel>
                                 <FormControl>
                                     <Input
-                                        placeholder="+1 234 567 890"
+                                        placeholder="+1 555 000 0000"
                                         {...field}
+                                        value={field.value || ""}
                                         className="bg-gray-700/20 border-gray-600/50 focus:border-indigo-400/50 focus:ring-indigo-400/50 text-gray-100"
                                     />
                                 </FormControl>
@@ -148,6 +131,7 @@ const EditForm = ({
                                     <Input
                                         placeholder="john@example.com"
                                         {...field}
+                                        value={field.value || ""}
                                         className="bg-gray-700/20 border-gray-600/50 focus:border-indigo-400/50 focus:ring-indigo-400/50 text-gray-100"
                                     />
                                 </FormControl>
@@ -165,8 +149,9 @@ const EditForm = ({
                             <FormLabel className="text-gray-300">Website</FormLabel>
                             <FormControl>
                                 <Input
-                                    placeholder="https://example.com"
+                                    placeholder="https://company.com"
                                     {...field}
+                                    value={field.value || ""}
                                     className="bg-gray-700/20 border-gray-600/50 focus:border-indigo-400/50 focus:ring-indigo-400/50 text-gray-100"
                                 />
                             </FormControl>
@@ -185,6 +170,7 @@ const EditForm = ({
                                 <Input
                                     placeholder="123 Main St, City"
                                     {...field}
+                                    value={field.value || ""}
                                     className="bg-gray-700/20 border-gray-600/50 focus:border-indigo-400/50 focus:ring-indigo-400/50 text-gray-100"
                                 />
                             </FormControl>
