@@ -1,9 +1,8 @@
 "use client";
 
 import { z } from "zod";
-import { cardDetailsFormSchema } from "@/lib/schemas";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { cardDetailsFormSchema, CardDetailsFormValues } from "@/lib/schemas";
+import { UseFormReturn } from "react-hook-form";
 import {
     Form,
     FormControl,
@@ -18,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { useQrCodeList } from "@/contexts/qrCodesListContext";
 import { QRCode, QRCodeTypes } from "@/types/QRCodeType";
 
-const VCardForm = () => {
+const VCardForm = ({ form } : { form: UseFormReturn<CardDetailsFormValues> }) => {
     const { qrType, setCreated } = useQrCodeCreator();
     const { qrCodes, setQrCodes } = useQrCodeList();
     const router = useRouter();
@@ -84,19 +83,6 @@ const VCardForm = () => {
             setQrCodes(previousQrCodes);
         }
     }
-
-    const form = useForm<z.infer<typeof cardDetailsFormSchema>>({
-        resolver: zodResolver(cardDetailsFormSchema),
-        defaultValues: {
-            name: "",
-            firstName: "",
-            lastName: "",
-            email: "",
-            phoneNumber: "",
-            address: "",
-            websiteUrl: "",
-        },
-    });
 
     return (
         <Form {...form}>
@@ -186,6 +172,7 @@ const VCardForm = () => {
                                                 type="email"
                                                 placeholder="john@company.com"
                                                 {...field}
+                                                value={field.value || ""}
                                                 className="bg-gray-700/20 border-gray-600/50 focus:border-indigo-400/50 focus:ring-indigo-400/50 text-gray-100"
                                             />
                                         </FormControl>
@@ -204,6 +191,7 @@ const VCardForm = () => {
                                                 type="tel"
                                                 placeholder="+1 555 000 0000"
                                                 {...field}
+                                                value={field.value || ""}
                                                 className="bg-gray-700/20 border-gray-600/50 focus:border-indigo-400/50 focus:ring-indigo-400/50 text-gray-100"
                                             />
                                         </FormControl>
@@ -220,8 +208,9 @@ const VCardForm = () => {
                                         <FormControl>
                                             <Input
                                                 type="text"
-                                                placeholder="123 Business Street"
+                                                placeholder="123 Main St, City"
                                                 {...field}
+                                                value={field.value || ""}
                                                 className="bg-gray-700/20 border-gray-600/50 focus:border-indigo-400/50 focus:ring-indigo-400/50 text-gray-100"
                                             />
                                         </FormControl>
@@ -240,6 +229,7 @@ const VCardForm = () => {
                                                 type="url"
                                                 placeholder="https://company.com"
                                                 {...field}
+                                                value={field.value || ""}
                                                 className="bg-gray-700/20 border-gray-600/50 focus:border-indigo-400/50 focus:ring-indigo-400/50 text-gray-100"
                                             />
                                         </FormControl>

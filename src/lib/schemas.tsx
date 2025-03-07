@@ -36,3 +36,6 @@ export const editVCardFormSchema = z.object({
     websiteUrl: z.string().url("Invalid URL format").optional(),
     address: z.string().optional(),
 });
+
+export type CardDetailsFormValues = z.infer<typeof cardDetailsFormSchema>;
+export type EditVCardFormValues = z.infer<typeof editVCardFormSchema>;

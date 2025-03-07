@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { VCardResponse } from "@/types/QRCodeType";
 import { z } from "zod";
 import { editVCardFormSchema } from "@/lib/schemas";
 

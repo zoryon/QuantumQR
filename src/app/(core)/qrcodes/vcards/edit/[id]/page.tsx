@@ -1,8 +1,6 @@
 "use server";
 
-import EditForm from "@/components/EditForm";
 import VCardEditor from "@/components/VCardEditor";
-import PreviewCard from "@/components/VCardEditPreview";
 import { QRCodeTypes, VCardResponse } from "@/types/QRCodeType";
 import { notFound } from "next/navigation";
 
@@ -11,8 +9,8 @@ const type: QRCodeTypes = "vCards";
 // Helper function to transform null values to undefined
 const transformNullToUndefined = (data: VCardResponse) => ({
     id: data.id,
-    firstName: data.firstName || "",
-    lastName: data.lastName || "",
+    firstName: data.firstName,
+    lastName: data.lastName,
     phoneNumber: data.phoneNumber || undefined,
     email: data.email || undefined,
     websiteUrl: data.websiteUrl || undefined,

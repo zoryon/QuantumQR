@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import EditForm from "@/components/EditForm";
-import PreviewCard from "@/components/VCardEditPreview";
+import PreviewCard from "@/components/PreviewCard";
 import { editVCardFormSchema } from "@/lib/schemas";
 
 export default function VCardEditor({
