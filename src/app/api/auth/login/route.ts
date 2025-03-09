@@ -28,7 +28,8 @@ export async function POST(req: Request) {
                 OR: [
                     { email: emailOrUsername.trim() },
                     { username: emailOrUsername.trim() }
-                ] 
+                ],
+                isEmailConfirmed: true
             }
         });
 

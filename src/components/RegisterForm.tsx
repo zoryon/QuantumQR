@@ -14,13 +14,10 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
 import { Checkbox } from "./ui/checkbox";
 import Link from "next/link";
 
 const RegisterForm = () => {
-    const router = useRouter();
-
     async function onSubmit(values: z.infer<typeof registerFormSchema>) {
         try {
             const res = await fetch("/api/auth/register", {
@@ -36,9 +33,6 @@ const RegisterForm = () => {
             }
 
             // const data = await res.json()
-            if (await res.json()) {
-                router.push("/login");
-            }
         } catch (error: any) {
             console.error("Error during registration:", error.message);
         }

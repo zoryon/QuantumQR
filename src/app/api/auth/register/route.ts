@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import getPrismaClient from "@/lib/db";
 import { cookies } from "next/headers";
 import { verifySession } from "@/lib/session";
+import transporter, { createSignedConfirmationToken } from "@/lib/mailer";
 
 export async function POST(req: Request) {
     try {
@@ -20,12 +21,12 @@ export async function POST(req: Request) {
 
         // Validating params
         if (
-            typeof email !== "string" || 
-            typeof username !== "string" || 
-            typeof password !== "string" || 
+            typeof email !== "string" ||
+            typeof username !== "string" ||
+            typeof password !== "string" ||
             typeof hasAllowedEmails !== "boolean" ||
-            !email.trim() || 
-            !username.trim() || 
+            !email.trim() ||
+            !username.trim() ||
             !password.trim() ||
             hasAllowedEmails === undefined ||
             hasAllowedEmails === null
@@ -49,7 +50,7 @@ export async function POST(req: Request) {
         });
 
         if (user) {
-            return NextResponse.json({ error: "Username already exists" }, { status: 409 } );
+            return NextResponse.json({ error: "Username already exists" }, { status: 409 });
         }
 
         // Hashing the password to be stored in the DB
@@ -62,6 +63,7 @@ export async function POST(req: Request) {
                 username,
                 password: hashedPasswd,
                 hasAllowedEmails: hasAllowedEmails || false,
+                isEmailConfirmed: false
             },
         });
 
@@ -69,9 +71,21 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
         }
 
-        return NextResponse.json({ success: true }, { status: 201 });
-    } catch (error: any) {
+        // Preparing confirmation email
+        const validationToken = await createSignedConfirmationToken(user.id, "10m")
+        const link = `${process.env.WEBSITE_URL}/register/confirm?token=${validationToken}`;
+
+        // Sending confirmation email
+        await transporter.sendMail({
+            from: process.env.SMTP_FROM,
+            to: user.email,
+            subject: "Confirm Your Email",
+            html: `<p>Confirm: <a href="${link}">Click here</a></p>`,
+        });
+
+        return NextResponse.json({ success: true }, { status: 200 });
+    } catch (error) {
         console.error(error);
-        return NextResponse.json({ error: error.message },{ status: 500 });
+        return NextResponse.json({ error: error }, { status: 500 });
     }
 }

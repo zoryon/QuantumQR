@@ -6,62 +6,78 @@ export async function middleware(req: NextRequest) {
     const isAuthenticated = await verifySession(token);
     const { pathname } = req.nextUrl;
 
-    // Define public API endpoints
-    const isApiRoute = pathname.startsWith("/api");
-    const isPublicApiRoute = [
-        "/api/auth/login",
-        "/api/auth/register",
-        "/api/qrcodes/find",
-        "/api/qrcodes/scan",
-        "/api/policies"
-    ].some(route => pathname.startsWith(route));
+    // API route handling
+    if (pathname.startsWith("/api")) {
+        const unauthenticatedOnlyApi = [
+            "/api/auth/login",
+            "/api/auth/register",
+            "/api/auth/register/confirm",
+        ];
 
-    // Define public pages routes
-    const isPublicPage = [
-        "/landing", 
-        "/register", 
-        "/login", 
+        const alwaysPublicApi = [
+            "/api/qrcodes/find",
+            "/api/qrcodes/scan",
+            "/api/policies",
+        ];
+
+        // check for logged-in users on unauthenticated API routes
+        const isUnauthenticatedApi = unauthenticatedOnlyApi.some(route => 
+            pathname.startsWith(route)
+        );
+
+        if (isUnauthenticatedApi) {
+            return isAuthenticated 
+                ? NextResponse.json({ error: "Already authenticated" }, { status: 403 })
+                : NextResponse.next();
+        }
+
+        // always allow public API routes
+        const isPublicApi = alwaysPublicApi.some(route => 
+            pathname.startsWith(route)
+        );
+
+        if (isPublicApi) return NextResponse.next();
+
+        // Check for authentication on private API routes
+        if (!isAuthenticated) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        return NextResponse.next();
+    }
+
+    // Public page configuration
+    const alwaysPublicPages = [
         "/policies/privacy-policy",
-        "/policies/terms-of-service"
-    ].includes(pathname);
+        "/policies/terms-of-service",
+    ];
 
-    // 1. Handle API routes first
-    if (isApiRoute) {
-        // Allow public API routes regardless of auth
-        if (isPublicApiRoute) {
-            return NextResponse.next();
-        }
+    const unauthenticatedOnlyPages = [
+        "/landing",
+        "/login",
+        "/register",
+        "/register/confirm"
+    ];
 
-        // Block unauthorized access to private API routes
-        if (!isAuthenticated) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
+    // Always Accessible pages
+    if (alwaysPublicPages.includes(pathname)) {
         return NextResponse.next();
     }
 
-    // 2. Handle policies pages (complete public access)
-    if (isPublicPage && (pathname === "/policies/privacy-policy" || pathname === "/policies/term-of-services")) {
-        return NextResponse.next();
-    }
-
-    // 3. Handle public pages
-    if (isPublicPage) {
-        return isAuthenticated
+    // Redirect logged-in users from auth related pages
+    if (unauthenticatedOnlyPages.includes(pathname)) {
+        return isAuthenticated 
             ? NextResponse.redirect(new URL("/", req.url))
             : NextResponse.next();
     }
 
-    // 4. Handle QR code pages (partial public access)
+    // Public QR Code pages (except create)
     if (pathname.startsWith("/qrcodes/") && !pathname.startsWith("/qrcodes/create")) {
         return NextResponse.next();
     }
 
-    // 5. Redirect unauthenticated users to landing page
+    // Authentication check for private pages
     if (!isAuthenticated) {
         return NextResponse.redirect(new URL("/landing", req.url));
     }
-    
+
     return NextResponse.next();
 }
 
