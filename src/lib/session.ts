@@ -5,15 +5,17 @@ import { cookies } from "next/headers";
 
 const secretKey = new TextEncoder().encode(process.env.SESSION_SECRET!);
 
-export async function createSignedSessionToken(userId: number): Promise<string> {
+// Used for creating a session
+export async function createSignedSessionToken(userId: number, expr?: string): Promise<string> {
     const alg = "HS256";
     return await new SignJWT({ userId })
         .setProtectedHeader({ alg })
         .setIssuedAt()
-        .setExpirationTime("7d")
+        .setExpirationTime(expr ? expr : "7d")
         .sign(secretKey);
 }
 
+// Validate a session
 export async function verifySession(token: string | undefined) {
     try {
         if (!token) throw new Error("No session token provided");

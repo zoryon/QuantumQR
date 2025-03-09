@@ -32,6 +32,7 @@ model users {
   username         String    @unique(map: "username") @db.VarChar(255)
   password         String    @db.VarChar(255)
   hasAllowedEmails Boolean?  @default(false)
+  isEmailConfirmed Boolean?  @default(false)
   admins           admins?
   qrcodes          qrcodes[]
 }
