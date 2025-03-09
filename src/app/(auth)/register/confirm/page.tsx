@@ -2,13 +2,14 @@ import { notFound } from "next/navigation";
 import ConfirmRegistrationClient from "@/components/ConfirmRegistrationClient";
 
 interface PageProps {
-    searchParams: { token?: string };
+    searchParams: Promise<{ token?: string }>
 }
 
-const ConfirmRegistrationPage = ({ searchParams }: PageProps) => {
-    if (!searchParams.token) return notFound();
+const ConfirmRegistrationPage = async ({ searchParams }: PageProps) => {
+    const params = await searchParams;
+    if (!params.token) return notFound();
 
-    return <ConfirmRegistrationClient token={searchParams.token} />;
+    return <ConfirmRegistrationClient token={params.token} />;
 };
 
-export default ConfirmRegistrationPage;
+export default ConfirmRegistrationPage; 
