@@ -31,7 +31,7 @@ export default function VCardEditor({
             </div>
 
             {/* Live Preview Section */}
-            <div className="lg:col-span-1 p-6">
+            <div className="lg:col-span-1 p-0 lg:p-6">
                 <div className="sticky top-8">
                     <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-6">
                         Live Preview

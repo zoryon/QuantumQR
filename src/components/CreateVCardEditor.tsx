@@ -43,7 +43,7 @@ export default function CreateVCardEditor() {
             </div>
 
             {/* Preview Section */}
-            <div className="lg:col-span-1 p-6">
+            <div className="lg:col-span-1 p-0 lg:p-6">
                 <div className="sticky top-8">
                     <PreviewCard data={previewData} />
                 </div>
