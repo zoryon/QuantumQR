@@ -1,5 +1,3 @@
-"use server";
-
 import { notFound } from "next/navigation";
 import ConfirmRegistrationClient from "@/components/ConfirmRegistrationClient";
 
