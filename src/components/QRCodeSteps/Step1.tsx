@@ -19,18 +19,18 @@ const QRCodesCard = () => {
             {QR_CODE_CARDS.map((type, index) => (
                 <div
                     key={index}
-                    className="group relative bg-gray-700/20 rounded-xl p-6 cursor-pointer border-2 border-transparent hover:border-indigo-400/30 transition-all"
+                    className="group relative bg-gray-700/20 rounded-xl p-5 sm:p-6 cursor-pointer border-2 border-transparent hover:border-indigo-400/30 transition-all"
                     onClick={() => {
                         setQrType(type.title);
                         handleNext();
                     }}
                 >
                     <div className="flex flex-col items-center text-center">
-                        <div className="w-16 h-16 bg-indigo-500/10 rounded-lg flex items-center justify-center mb-4 transition-all group-hover:bg-indigo-500/20">
+                        <div className="size-16 bg-indigo-500/10 rounded-lg flex items-center justify-center mb-4 transition-all group-hover:bg-indigo-500/20">
                             <i className={`${type.icon} text-2xl text-indigo-400/80`} />
                         </div>
                         <h3 className="text-lg font-semibold text-gray-100 mb-2">{type.title}</h3>
-                        <p className="text-sm text-gray-400/80">{type.description}</p>
+                        <p className="text-xs sm:text-sm text-gray-400/80">{type.description}</p>
                     </div>
                 </div>
             ))}

@@ -36,7 +36,7 @@ export default function CreateVCardEditor() {
     };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-0 xl:p-4">
             {/* Form Section */}
             <div className="space-y-6">
                 <VCardForm form={form} />
