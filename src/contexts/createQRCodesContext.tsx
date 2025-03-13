@@ -22,7 +22,9 @@ type QrCreatorContextType = {
     setCreated: React.Dispatch<React.SetStateAction<boolean>>,
     reset: () => void,
     handlePrev: () => void,
-    handleNext: () => void
+    handleNext: () => void,
+    isPending: boolean,
+    setIsPending: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const initialVCardData: VCardData = {
@@ -47,6 +49,7 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
     const [created, setCreated] = useState<boolean>(false);
     const [vCardData, setVCardData] = useState<VCardData>(initialVCardData);
     const [designOptions, setDesignOptions] = useState<DesignOptions>(initialDesignOptions);
+    const [isPending, setIsPending] = useState<boolean>(false);
 
     function reset() {
         setCreated(false);
@@ -70,7 +73,8 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
             designOptions, setDesignOptions,
             created, setCreated,
             reset,
-            handlePrev, handleNext
+            handlePrev, handleNext,
+            isPending, setIsPending
         }}>
             {children}
         </QrCreatorContext.Provider>

@@ -8,7 +8,8 @@ CREATE TABLE users (
     username VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     hasAllowedEmails BOOLEAN DEFAULT FALSE,
-    isEmailConfirmed BOOLEAN DEFAULT FALSE
+    isEmailConfirmed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 );
 
 CREATE TABLE admins (
@@ -38,4 +39,22 @@ CREATE TABLE vcardqrcodes (
     FOREIGN KEY (qrCodeId) REFERENCES qrcodes(id) ON DELETE CASCADE
 );
 
--- FUNCTIONS AND TRIGGERS
+-- FUNCTIONS AND PROCEDURES
+-- Clean up unconfirmed users procedure
+DELIMITER //
+CREATE PROCEDURE DeleteUnconfirmedUsers()
+BEGIN
+    DELETE FROM users
+    WHERE isEmailConfirmed = FALSE
+    AND created_at < NOW() - INTERVAL 10 MINUTE;
+END //
+DELIMITER ;
+
+-- Scheduler to clean up unconfirmed users
+CREATE EVENT IF NOT EXISTS DeleteUnconfirmedUsersEvent
+ON SCHEDULE EVERY 1 MINUTE
+DO
+    CALL DeleteUnconfirmedUsers();
+
+-- Activate the event scheduler
+SET GLOBAL event_scheduler = ON;

@@ -1,15 +1,10 @@
 import getPrismaClient from "@/lib/db";
 import { validateConfirmationToken } from "@/lib/mailer";
-import { verifySession } from "@/lib/session";
-import { cookies } from "next/headers";
+import { isLoggedIn } from "@/lib/session";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
-    // If user is logged-in -> block access
-    const sessionToken = (await cookies()).get("session_token")?.value;
-    const session = await verifySession(sessionToken);
-
-    if (session?.userId) {
+    if (await isLoggedIn()) {
         return NextResponse.json({ error: "Not authorized" }, { status: 401 });
     }
 

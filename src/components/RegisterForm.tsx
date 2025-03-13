@@ -1,7 +1,7 @@
 "use client";
 
 import { registerFormSchema } from "@/lib/schemas";
-import { z } from "zod";
+import { set, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -16,10 +16,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "./ui/checkbox";
 import Link from "next/link";
+import { useState } from "react";
+import ResultMessage from "./ResultMessage";
+import { ResultType } from "@/types/ResultType";
 
 const RegisterForm = () => {
+    const [isPending, setIsPending] = useState(false);
+    const [result, setResult] = useState<ResultType>({ success: false, message: null });
+
     async function onSubmit(values: z.infer<typeof registerFormSchema>) {
         try {
+            setIsPending(true);
             const res = await fetch("/api/auth/register", {
                 method: "POST",
                 headers: {
@@ -27,14 +34,20 @@ const RegisterForm = () => {
                 },
                 body: JSON.stringify(values),
             });
-
-            if (!res.ok) {
-                throw new Error("Failed to register");
-            }
-
-            // const data = await res.json()
+            
+            const data = await res.json();
+            setResult({
+                success: data.success,
+                message: data.message,
+            });
         } catch (error: any) {
-            console.error("Error during registration:", error.message);
+            console.error("Error during registration: ", error.message);
+            setResult({
+                success: error.success,
+                message: error.message,
+            });
+        } finally {
+            setIsPending(false);
         }
     }
 
@@ -121,9 +134,11 @@ const RegisterForm = () => {
                 <Button
                     type="submit"
                     className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600"
+                    disabled={isPending}
                 >
                     Submit
                 </Button>
+                <ResultMessage success={result.success} message={result.message} />
             </form>
         </Form>
     );

@@ -6,6 +6,7 @@ import QRCode from "qrcode";
 import getPrismaClient from "@/lib/db";
 import { verifySession } from "@/lib/session";
 import { cookies } from "next/headers";
+import { ResultType } from "@/types/ResultType";
 
 const prisma = getPrismaClient();
 
@@ -15,7 +16,10 @@ export async function POST(req: Request) {
         const sessionToken = (await cookies()).get("session_token")?.value;
         const session = await verifySession(sessionToken);
         if (!session?.userId) {
-            return NextResponse.json({ error: "Not authorized" }, { status: 401 });
+            return NextResponse.json<ResultType>({
+                success: false,
+                message: "You are not logged in"
+            }, { status: 401 });
         }
 
         // Fetching the request body (dividing the QR type from the rest of the values, which are the qr code's data)
@@ -25,7 +29,10 @@ export async function POST(req: Request) {
         } = await req.json();
 
         if (!qrType.trim()) {
-            return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+            return NextResponse.json<ResultType>({ 
+                success: false, 
+                message: "Invalid input"
+            }, { status: 400 });
         }
 
         // Creating the QR code based on the type
@@ -33,19 +40,25 @@ export async function POST(req: Request) {
         switch (qrType as QRCodeTypes) {
             case "vCards":
                 const parsedValues = cardDetailsFormSchema.parse(values);
-                qrCode = await createVCardQRCode({ 
-                    userId: session.userId as number, 
-                    values: parsedValues 
+                qrCode = await createVCardQRCode({
+                    userId: session.userId as number,
+                    values: parsedValues
                 });
                 break;
             default:
-                return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+                return NextResponse.json<ResultType>({ 
+                    success: false, 
+                    message: "Invalid QR code type"
+                }, { status: 400 });
         }
 
         return NextResponse.json(qrCode, { status: 200 });
     } catch (error) {
         console.error(error);
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return NextResponse.json<ResultType>({
+            success: false,
+            message: "An error occurred on our end. Please try again later."
+        }, { status: 500 });
     }
 }
 
@@ -83,7 +96,7 @@ async function createVCardQRCode({
         const svgString = await QRCode.toString(dynamicURL, {
             type: "svg",
             color: {
-                dark: "#000000",  
+                dark: "#000000",
                 light: "#ffffff"
             }
         });

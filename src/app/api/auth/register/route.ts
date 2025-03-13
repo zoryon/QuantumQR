@@ -1,18 +1,17 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import getPrismaClient from "@/lib/db";
-import { cookies } from "next/headers";
-import { verifySession } from "@/lib/session";
+import { isLoggedIn } from "@/lib/session";
 import transporter, { createSignedConfirmationToken } from "@/lib/mailer";
+import { ResultType } from "@/types/ResultType";
 
 export async function POST(req: Request) {
     try {
-        // If user is logged-in -> block access
-        const sessionToken = (await cookies()).get("session_token")?.value;
-        const session = await verifySession(sessionToken);
-
-        if (session?.userId) {
-            return NextResponse.json({ error: "Not authorized" }, { status: 401 });
+        if (await isLoggedIn()) {
+            return NextResponse.json<ResultType>({ 
+                success: false,
+                message: "You are already logged in."
+            }, { status: 401 });
         }
 
         // If user is not logged-in -> create a new user
@@ -31,11 +30,24 @@ export async function POST(req: Request) {
             hasAllowedEmails === undefined ||
             hasAllowedEmails === null
         ) {
-            return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+            return NextResponse.json<ResultType>({ 
+                success: false,
+                message: "Invalid parameters."
+            }, { status: 400 });
+        }
+
+        if (username.length < 2) {
+            return NextResponse.json<ResultType>({ 
+                success: false,
+                message: "Username must be at least 2 characters long."
+            }, { status: 400 });
         }
 
         if (password.length < 5) {
-            return NextResponse.json({ error: "Password must be at least 5 characters" }, { status: 400 });
+            return NextResponse.json<ResultType>({ 
+                success: false,
+                message: "Password must be at least 5 characters long."
+            }, { status: 400 });
         }
 
         // Executing sql's select statement (avoiding SQL injection)
@@ -50,7 +62,10 @@ export async function POST(req: Request) {
         });
 
         if (user) {
-            return NextResponse.json({ error: "Username already exists" }, { status: 409 });
+            return NextResponse.json<ResultType>({ 
+                success: false,
+                message: "User already exists. Please login instead."
+            }, { status: 409 });
         }
 
         // Hashing the password to be stored in the DB
@@ -68,7 +83,10 @@ export async function POST(req: Request) {
         });
 
         if (!user) {
-            return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
+            return NextResponse.json<ResultType>({ 
+                success: false,
+                message: "An error occurred on our end. Please try again later."
+            }, { status: 500 });
         }
 
         // Preparing confirmation email
@@ -83,9 +101,15 @@ export async function POST(req: Request) {
             html: `<p>Confirm: <a href="${link}">Click here</a></p>`,
         });
 
-        return NextResponse.json({ success: true }, { status: 200 });
-    } catch (error) {
+        return NextResponse.json<ResultType>({ 
+            success: true,
+            message: "Registration successful. Please check your email to confirm your account."
+        }, { status: 200 });
+    } catch (error: any) {
         console.error(error);
-        return NextResponse.json({ error: error }, { status: 500 });
+        return NextResponse.json<ResultType>({ 
+            success: false,
+            message: error
+        }, { status: 500 });
     }
 }

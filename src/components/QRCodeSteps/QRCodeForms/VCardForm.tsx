@@ -18,11 +18,13 @@ import { useQrCodeList } from "@/contexts/qrCodesListContext";
 import { QRCode, QRCodeTypes } from "@/types/QRCodeType";
 
 const VCardForm = ({ form } : { form: UseFormReturn<CardDetailsFormValues> }) => {
-    const { qrType, setCreated } = useQrCodeCreator();
+    const { qrType, setCreated, setIsPending } = useQrCodeCreator();
     const { qrCodes, setQrCodes } = useQrCodeList();
     const router = useRouter();
 
     async function onSubmit(values: z.infer<typeof cardDetailsFormSchema>) {
+        setIsPending(true);
+
         // temporary ID for optimistic update
         const tempId = -Date.now();
         const previousQrCodes = [...qrCodes];
@@ -61,10 +63,6 @@ const VCardForm = ({ form } : { form: UseFormReturn<CardDetailsFormValues> }) =>
                 body: JSON.stringify({ ...values, qrType }),
             });
 
-            if (!res.ok) {
-                throw new Error("Failed to create QR Code");
-            }
-
             const data = await res.json()
             if (data) {
                 // sync temporary QR Code object with the newly created
@@ -77,10 +75,14 @@ const VCardForm = ({ form } : { form: UseFormReturn<CardDetailsFormValues> }) =>
                 ]);
 
                 setCreated(true);
+                setIsPending(false);
+            } else {
+                setQrCodes(previousQrCodes);
             }
         } catch (error: any) {
             console.error("Error during QR code creation:", error.message);
             setQrCodes(previousQrCodes);
+            setIsPending(false);
         }
     }
 
