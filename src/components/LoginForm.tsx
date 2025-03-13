@@ -15,12 +15,18 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ResultType } from "@/types/ResultType";
+import ResultMessage from "./ResultMessage";
 
 const LoginForm = () => {
+    const [isPending, setIsPending] = useState(false);
+    const [result, setResult] = useState<ResultType>({ success: false, message: null });
     const router = useRouter();
 
     async function onSubmit(values: z.infer<typeof loginFormSchema>) {
         try {
+            setIsPending(true);
             const res = await fetch("/api/auth/login", {
                 method: "POST",
                 headers: {
@@ -29,17 +35,25 @@ const LoginForm = () => {
                 body: JSON.stringify(values)
             });
 
-            if (!res.ok) {
-                throw new Error("Failed to login");
-            }
-
-            // const data = await res.json()
-            if (await res.json()) {
+            const data = await res.json();
+            if (res.ok && data.success) {
                 router.push("/");
                 router.refresh();
+            } else {
+                setIsPending(false);            
             }
+            
+            setResult({
+                success: data.success,
+                message: data.message,
+            });
         } catch (error: any) {
-            console.error("Error during login:", error.message);
+            console.error("Error during login: ", error.message);
+            setResult({
+                success: error.success,
+                message: error.message,
+            });
+            setIsPending(false);
         }
     }
 
@@ -94,10 +108,13 @@ const LoginForm = () => {
 
                 <Button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg shadow-indigo-500/20"
+                    className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 
+                    transition-all shadow-lg shadow-indigo-500/20"
+                    disabled={isPending}
                 >
                     Sign In
                 </Button>
+                <ResultMessage success={result.success} message={result.message} />
             </form>
         </Form>
     );

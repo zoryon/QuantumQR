@@ -3,6 +3,7 @@ import { editVCardFormSchema } from "@/lib/schemas"
 import getPrismaClient from "@/lib/db";
 import { cookies } from "next/headers";
 import { verifySession } from "@/lib/session";
+import { ResultType } from "@/types/ResultType";
 
 export async function PUT(request: Request) {
     try {
@@ -11,7 +12,10 @@ export async function PUT(request: Request) {
         const session = await verifySession(sessionToken);
 
         if (!session?.userId) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            return NextResponse.json<ResultType>({ 
+                success: false,
+                message: "Unauthorized"
+            }, { status: 401 });
         }
 
         const body = await request.json();
@@ -28,7 +32,10 @@ export async function PUT(request: Request) {
         });
 
         if (!existingVCard) {
-            return NextResponse.json({ error: "vCard not found" }, { status: 404 });
+            return NextResponse.json<ResultType>({
+                success: false,
+                message: "vCard not found"
+            }, { status: 404 });
         }
 
         // Transaction to update both tables
@@ -58,6 +65,9 @@ export async function PUT(request: Request) {
         return NextResponse.json(result, { status: 200 });
     } catch (error) {
         console.error("Error updating: ", error);
-        return NextResponse.json({ error: "Internal server errror" }, { status: 500 });
+        return NextResponse.json<ResultType>({ 
+            success: false,
+            message: "Internal server error"
+        }, { status: 500 });
     }
 }

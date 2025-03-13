@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 import CreateVCardEditor from "../CreateVCardEditor";
 
 const Step2 = () => {
-    const { handlePrev, qrType, created, reset } = useQrCodeCreator();
+    const { handlePrev, qrType, created, reset, isPending } = useQrCodeCreator();
 
     useEffect(() => {
         if (created !== true) return;
@@ -38,6 +38,7 @@ const Step2 = () => {
                     type="submit"
                     form={qrType?.toLowerCase() + "-form"}
                     className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+                    disabled={isPending}
                 >
                     Create Code
                     <i className="fas fa-bolt ml-2" />

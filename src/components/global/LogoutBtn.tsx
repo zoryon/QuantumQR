@@ -1,13 +1,18 @@
 "use client";
 
 import { logout } from "@/actions/authActions";
+import { useState } from "react";
 
 const LogoutBtn = () => {
+    const [isPending, setIsPending] = useState(false);
+
     const handleLogout = async () => {
         try {
+            setIsPending(true);
             await logout();
         } catch (error) {
             console.error("Logout failed: ", error);
+            setIsPending(false);
         }
     };
 
@@ -17,6 +22,7 @@ const LogoutBtn = () => {
                 onClick={handleLogout}
                 className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm text-gray-300 transition-all
                 hover:bg-red-500/20 hover:text-red-400"
+                disabled={isPending}
             >
                 <i className="fas fa-rocket text-xs" />
                 Log Out
