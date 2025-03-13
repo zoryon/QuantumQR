@@ -35,6 +35,13 @@ export async function POST(req: Request) {
             }, { status: 400 });
         }
 
+        if (values.name.trim().length > 20) {
+            return NextResponse.json<ResultType>({ 
+                success: false, 
+                message: "Name must be less than 20 characters"
+            }, { status: 400 });
+        }
+
         // Creating the QR code based on the type
         let qrCode: any = null;
         switch (qrType as QRCodeTypes) {
