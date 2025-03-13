@@ -16,9 +16,14 @@ import { editVCardFormSchema, EditVCardFormValues } from "@/lib/schemas";
 import { useQrCodeList } from "@/contexts/qrCodesListContext";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { ResultType } from "@/types/ResultType";
 
+// This component is used to update the vCards data
+// It contains the form to update the vCard data
+// The form data is passed to the PreviewCard component to display the live preview
 const EditForm = ({ form } : { form: UseFormReturn<EditVCardFormValues> }) => {
     const [isPending, setIsPending] = useState(false);
+    const [result, setResult] = useState<ResultType>({ success: false, message: null });
     const { qrCodes, setQrCodes } = useQrCodeList();
     const router = useRouter();
 
@@ -44,14 +49,22 @@ const EditForm = ({ form } : { form: UseFormReturn<EditVCardFormValues> }) => {
             });
 
             // Handle successful update
-            if (!(await res.json())) {
+            const data = await res.json();
+            if (!data.success) {
                 setIsPending(false);
-                throw new Error("Failed to update vCard")
+                setResult({
+                    success: false,
+                    message: data.message
+                });
             };
         } catch (error: any) {
             console.error("Update error:", error.message);
             setQrCodes(previousQrCodes);
             setIsPending(false);
+            setResult({
+                success: error.success,
+                message: error.message
+            });
         }
     }
 

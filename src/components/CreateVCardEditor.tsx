@@ -7,6 +7,12 @@ import PreviewCard from "@/components/PreviewCard";
 import { zodResolver } from "@hookform/resolvers/zod";
 import VCardForm from "./QRCodeSteps/QRCodeForms/VCardForm";
 
+// This component is used to create the vCards data
+// It contains two sections:
+// 1. Form Section: This section contains the form to create the vCard data
+// 2. Preview Section: This section contains the live preview of the vCard data
+// The form data is passed to the PreviewCard component to display the live preview
+// The form data is validated using the cardDetailsFormSchema schema
 export default function CreateVCardEditor() {
     const form = useForm<z.infer<typeof cardDetailsFormSchema>>({
         resolver: zodResolver(cardDetailsFormSchema),

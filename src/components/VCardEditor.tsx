@@ -1,4 +1,3 @@
-// components/VCardEditor.tsx
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -8,6 +7,12 @@ import EditForm from "@/components/EditForm";
 import PreviewCard from "@/components/PreviewCard";
 import { editVCardFormSchema } from "@/lib/schemas";
 
+// This component is used to update the vCards data
+// It contains two sections:
+// 1. Edit Form Section: This section contains the form to update the vCard data
+// 2. Live Preview Section: This section contains the live preview of the vCard data
+// The form data is passed to the PreviewCard component to display the live preview
+// The form data is validated using the editVCardFormSchema schema
 export default function VCardEditor({
     initialData,
 }: {

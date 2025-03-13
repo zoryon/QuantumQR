@@ -3,7 +3,7 @@ import { editVCardFormSchema } from "@/lib/schemas"
 import getPrismaClient from "@/lib/db";
 import { cookies } from "next/headers";
 import { verifySession } from "@/lib/session";
-import { ResultType } from "@/types/ResultType";
+import { ResultType, ResultTypeBody } from "@/types/ResultType";
 
 export async function PUT(request: Request) {
     try {
@@ -62,7 +62,11 @@ export async function PUT(request: Request) {
             })
         ]);
 
-        return NextResponse.json(result, { status: 200 });
+        return NextResponse.json<ResultTypeBody>({
+            success: true,
+            message: "vCard updated successfully",
+            data: result
+        }, { status: 200 });
     } catch (error) {
         console.error("Error updating: ", error);
         return NextResponse.json<ResultType>({ 
