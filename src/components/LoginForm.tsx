@@ -21,7 +21,7 @@ import ResultMessage from "./ResultMessage";
 
 const LoginForm = () => {
     const [isPending, setIsPending] = useState(false);
-    const [result, setResult] = useState<ResultType>({ success: false, message: null });
+    const [result, setResult] = useState<ResultType>({ success: false, message: null, body: null });
     const router = useRouter();
 
     async function onSubmit(values: z.infer<typeof loginFormSchema>) {
@@ -46,12 +46,14 @@ const LoginForm = () => {
             setResult({
                 success: data.success,
                 message: data.message,
+                body: data.body
             });
         } catch (error: any) {
             console.error("Error during login: ", error.message);
             setResult({
                 success: error.success,
                 message: error.message,
+                body: null
             });
             setIsPending(false);
         }

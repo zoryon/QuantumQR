@@ -1,5 +1,6 @@
 import getPrismaClient from "@/lib/db";
 import { verifySession } from "@/lib/session";
+import { ResultType } from "@/types/ResultType";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -10,7 +11,11 @@ export async function DELETE(req: Request) {
         const session = await verifySession(sessionToken);
 
         if (!session?.userId) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            return NextResponse.json<ResultType>({
+                success: false,
+                message: "You are not logged in",
+                body: null
+            }, { status: 401 });
         }
 
         // get the id of the QR code to delete
@@ -18,17 +23,25 @@ export async function DELETE(req: Request) {
 
         // delete the QR code
         const prisma = getPrismaClient();
-        await prisma.qrcodes.delete({
+        const deleted = await prisma.qrcodes.delete({
             where: {
                 id,
                 userId: session.userId,
             },
         });
 
-        return NextResponse.json({ success: true }, { status: 200 });
+        return NextResponse.json<ResultType>({
+            success: true,
+            message: "QR code deleted",
+            body: deleted
+        }, { status: 200 });
     } catch (error) {
         console.error(error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        return NextResponse.json<ResultType>({ 
+            success: false, 
+            message: "Internal server error",
+            body: null
+        }, { status: 500 });
     }
 
 }

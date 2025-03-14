@@ -1,12 +1,12 @@
 import { cardDetailsFormSchema } from "@/lib/schemas";
-import { QRCodeTypes } from "@/types/QRCodeType";
+import { QRCodeTypes, VCardQRCode } from "@/types/QRCodeType";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import QRCode from "qrcode";
 import getPrismaClient from "@/lib/db";
 import { verifySession } from "@/lib/session";
 import { cookies } from "next/headers";
-import { ResultType, ResultTypeBody } from "@/types/ResultType";
+import { ResultType } from "@/types/ResultType";
 
 const prisma = getPrismaClient();
 
@@ -18,7 +18,8 @@ export async function POST(req: Request) {
         if (!session?.userId) {
             return NextResponse.json<ResultType>({
                 success: false,
-                message: "You are not logged in"
+                message: "You are not logged in",
+                body: null
             }, { status: 401 });
         }
 
@@ -31,14 +32,16 @@ export async function POST(req: Request) {
         if (!qrType.trim()) {
             return NextResponse.json<ResultType>({ 
                 success: false, 
-                message: "Invalid input"
+                message: "Invalid input",
+                body: null
             }, { status: 400 });
         }
 
         if (values.name.trim().length > 20) {
             return NextResponse.json<ResultType>({ 
                 success: false, 
-                message: "Name must be less than 20 characters"
+                message: "Name must be less than 20 characters",
+                body: null
             }, { status: 400 });
         }
 
@@ -46,29 +49,39 @@ export async function POST(req: Request) {
         let qrCode: any = null;
         switch (qrType as QRCodeTypes) {
             case "vCards":
-                const parsedValues = cardDetailsFormSchema.parse(values);
+                const parsedValues = cardDetailsFormSchema.safeParse(values);
+
+                if (!parsedValues.success) {
+                    return NextResponse.json<ResultType>({ 
+                        success: false, 
+                        message: parsedValues.error.message,
+                        body: null
+                    }, { status: 400 });
+                }
                 qrCode = await createVCardQRCode({
                     userId: session.userId as number,
-                    values: parsedValues
+                    values: parsedValues.data
                 });
                 break;
             default:
                 return NextResponse.json<ResultType>({ 
                     success: false, 
-                    message: "Invalid QR code type"
+                    message: "Invalid QR code type",
+                    body: null
                 }, { status: 400 });
         }
 
-        return NextResponse.json<ResultTypeBody>({
+        return NextResponse.json<ResultType>({
             success: true,
             message: "QR code created successfully",
             body: qrCode
         }, { status: 200 });
-    } catch (error) {
-        console.error(error);
+    } catch (error: any) {
+        console.error(error.message);
         return NextResponse.json<ResultType>({
-            success: false,
-            message: "An error occurred on our end. Please try again later."
+            success: error.success,
+            message: error.message,
+            body: null
         }, { status: 500 });
     }
 }
@@ -81,6 +94,14 @@ async function createVCardQRCode({
     values: z.infer<typeof cardDetailsFormSchema>
 }) {
     try {
+        const existingQrCode = await prisma.qrcodes.findFirst({
+            where: { userId, name: values.name }
+        });
+        
+        if (existingQrCode) {
+            throw new Error("A QR Code with the same name already exists");
+        }
+
         // Create the QR code entry in the database
         const qrCode = await prisma.qrcodes.create({
             data: {
@@ -122,7 +143,8 @@ async function createVCardQRCode({
         });
 
         return updatedQrCode;
-    } catch (err) {
-        console.error("Error generating or saving QR code:", err);
+    } catch (error: any) {
+        console.error("Error generating or saving QR code: ", error);
+        throw error;
     }
 }

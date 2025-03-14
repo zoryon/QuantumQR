@@ -17,15 +17,13 @@ import { useQrCodeList } from "@/contexts/qrCodesListContext";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ResultType } from "@/types/ResultType";
-import ResultMessage from "./ResultMessage";
 
 // This component is used to update the vCards data
 // It contains the form to update the vCard data
 // The form data is passed to the PreviewCard component to display the live preview
 const EditForm = ({ form } : { form: UseFormReturn<EditVCardFormValues> }) => {
     const [isPending, setIsPending] = useState(false);
-    const [result, setResult] = useState<ResultType>({ success: false, message: null });
-    const { qrCodes, setQrCodes } = useQrCodeList();
+    const { qrCodes, setQrCodes, setResult } = useQrCodeList();
     const router = useRouter();
 
     async function onSubmit(values: z.infer<typeof editVCardFormSchema>) {
@@ -50,21 +48,24 @@ const EditForm = ({ form } : { form: UseFormReturn<EditVCardFormValues> }) => {
             });
 
             // Handle successful update
-            const data = await res.json();
+            const data: ResultType = await res.json();
             if (!data.success) {
                 setIsPending(false);
-                setResult({
-                    success: false,
-                    message: data.message
-                });
             };
+
+            setResult({
+                success: data.success,
+                message: data.message,
+                body: data.body
+            });
         } catch (error: any) {
-            console.error("Update error:", error.message);
+            console.error("Update error: ", error.message);
             setQrCodes(previousQrCodes);
             setIsPending(false);
             setResult({
                 success: error.success,
-                message: error.message
+                message: error.message,
+                body: null
             });
         }
     }
@@ -206,7 +207,6 @@ const EditForm = ({ form } : { form: UseFormReturn<EditVCardFormValues> }) => {
                 >
                     Update vCard
                 </Button>
-                <ResultMessage success={result.success} message={result.message} />
             </form>
         </Form>
     );

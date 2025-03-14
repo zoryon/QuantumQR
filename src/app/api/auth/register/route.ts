@@ -10,7 +10,8 @@ export async function POST(req: Request) {
         if (await isLoggedIn()) {
             return NextResponse.json<ResultType>({ 
                 success: false,
-                message: "You are already logged in."
+                message: "You are already logged in.",
+                body: null
             }, { status: 401 });
         }
 
@@ -32,21 +33,24 @@ export async function POST(req: Request) {
         ) {
             return NextResponse.json<ResultType>({ 
                 success: false,
-                message: "Invalid parameters."
+                message: "Invalid parameters.",
+                body: null
             }, { status: 400 });
         }
 
         if (username.length < 2) {
             return NextResponse.json<ResultType>({ 
                 success: false,
-                message: "Username must be at least 2 characters long."
+                message: "Username must be at least 2 characters long.",
+                body: null
             }, { status: 400 });
         }
 
         if (password.length < 5) {
             return NextResponse.json<ResultType>({ 
                 success: false,
-                message: "Password must be at least 5 characters long."
+                message: "Password must be at least 5 characters long.",
+                body: null
             }, { status: 400 });
         }
 
@@ -64,7 +68,8 @@ export async function POST(req: Request) {
         if (user) {
             return NextResponse.json<ResultType>({ 
                 success: false,
-                message: "User already exists. Please login instead."
+                message: "User already exists. Please login instead.",
+                body: null
             }, { status: 409 });
         }
 
@@ -85,7 +90,8 @@ export async function POST(req: Request) {
         if (!user) {
             return NextResponse.json<ResultType>({ 
                 success: false,
-                message: "An error occurred on our end. Please try again later."
+                message: "An error occurred on our end. Please try again later.",
+                body: null
             }, { status: 500 });
         }
 
@@ -103,13 +109,15 @@ export async function POST(req: Request) {
 
         return NextResponse.json<ResultType>({ 
             success: true,
-            message: "Registration successful. Please check your email to confirm your account."
+            message: "Registration successful. Please check your email to confirm your account.",
+            body: true
         }, { status: 200 });
     } catch (error: any) {
         console.error(error);
         return NextResponse.json<ResultType>({ 
             success: false,
-            message: error
+            message: error,
+            body: null
         }, { status: 500 });
     }
 }
