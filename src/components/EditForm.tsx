@@ -17,6 +17,7 @@ import { useQrCodeList } from "@/contexts/qrCodesListContext";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ResultType } from "@/types/ResultType";
+import ResultMessage from "./ResultMessage";
 
 // This component is used to update the vCards data
 // It contains the form to update the vCard data
@@ -205,6 +206,7 @@ const EditForm = ({ form } : { form: UseFormReturn<EditVCardFormValues> }) => {
                 >
                     Update vCard
                 </Button>
+                <ResultMessage success={result.success} message={result.message} />
             </form>
         </Form>
     );

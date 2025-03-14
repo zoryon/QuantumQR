@@ -65,7 +65,7 @@ export async function PUT(request: Request) {
         return NextResponse.json<ResultTypeBody>({
             success: true,
             message: "vCard updated successfully",
-            data: result
+            body: result
         }, { status: 200 });
     } catch (error) {
         console.error("Error updating: ", error);

@@ -6,5 +6,5 @@ export type ResultType = {
 export type ResultTypeBody = {
     success: boolean;
     message: string | null;
-    data: any;
+    body: any;
 };

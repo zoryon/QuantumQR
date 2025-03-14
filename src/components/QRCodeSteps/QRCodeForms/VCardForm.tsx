@@ -16,8 +16,9 @@ import { useQrCodeCreator } from "@/contexts/createQRCodesContext";
 import { useRouter } from "next/navigation";
 import { useQrCodeList } from "@/contexts/qrCodesListContext";
 import { QRCode, QRCodeTypes } from "@/types/QRCodeType";
-import { ResultType } from "@/types/ResultType";
+import { ResultType, ResultTypeBody } from "@/types/ResultType";
 import { useState } from "react";
+import ResultMessage from "@/components/ResultMessage";
 
 // This component is used to create the vCards data
 // It contains the form to create the vCard data
@@ -70,12 +71,12 @@ const VCardForm = ({ form }: { form: UseFormReturn<CardDetailsFormValues> }) => 
                 body: JSON.stringify({ ...values, qrType }),
             });
 
-            const data = await res.json()
+            const data: ResultTypeBody = await res.json()
             if (data.success) {
                 // sync temporary QR Code object with the newly created
                 setQrCodes(prev => [
                     {
-                        ...data,
+                        ...data.body,
                         type: qrType as QRCodeTypes,
                     },
                     ...prev.filter(qr => qr.id !== tempId)
@@ -250,6 +251,7 @@ const VCardForm = ({ form }: { form: UseFormReturn<CardDetailsFormValues> }) => 
                     </div>
                 </div>
             </form>
+            <ResultMessage success={result.success} message={result.message} />
         </Form>
     );
 };

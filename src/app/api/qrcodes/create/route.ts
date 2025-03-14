@@ -6,7 +6,7 @@ import QRCode from "qrcode";
 import getPrismaClient from "@/lib/db";
 import { verifySession } from "@/lib/session";
 import { cookies } from "next/headers";
-import { ResultType } from "@/types/ResultType";
+import { ResultType, ResultTypeBody } from "@/types/ResultType";
 
 const prisma = getPrismaClient();
 
@@ -59,7 +59,11 @@ export async function POST(req: Request) {
                 }, { status: 400 });
         }
 
-        return NextResponse.json(qrCode, { status: 200 });
+        return NextResponse.json<ResultTypeBody>({
+            success: true,
+            message: "QR code created successfully",
+            body: qrCode
+        }, { status: 200 });
     } catch (error) {
         console.error(error);
         return NextResponse.json<ResultType>({
