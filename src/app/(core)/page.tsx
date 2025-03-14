@@ -3,15 +3,17 @@
 import { useQrCodeList } from "@/contexts/qrCodesListContext";
 import { QRCode } from "@/types/QRCodeType";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DownloadButton from "@/components/DownloadButton";
 import DeleteBtn from "@/components/DeleteBtn";
 import CreateBtn from "@/components/global/CreateBtn";
 import EditBtn from "@/components/EditBtn";
+import { cn } from "@/lib/utils";
+import useSafeToast from "@/lib/useSafeToast";
 
 const HomePage = () => {
-  const { qrCodes, isLoading } = useQrCodeList();
-
+  const toast = useSafeToast();
+  const { qrCodes, isLoading, result } = useQrCodeList();
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Filter or transform the qrCodes if needed
@@ -20,6 +22,18 @@ const HomePage = () => {
       code.name.toLowerCase().includes(searchQuery.toLowerCase())
     )
     : qrCodes;
+
+  useEffect(() => {
+    if (result) {
+      toast({
+        isSuccess: result.success,
+        options: {
+          description: result.message,
+          className: cn(result.success ? "bg-green-500" : "bg-red-500", "text-white"),
+        }
+      });
+    }
+  }, [result, toast]);
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">

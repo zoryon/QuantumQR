@@ -16,18 +16,15 @@ import { useQrCodeCreator } from "@/contexts/createQRCodesContext";
 import { useRouter } from "next/navigation";
 import { useQrCodeList } from "@/contexts/qrCodesListContext";
 import { QRCode, QRCodeTypes } from "@/types/QRCodeType";
-import { ResultType, ResultTypeBody } from "@/types/ResultType";
-import { useState } from "react";
-import ResultMessage from "@/components/ResultMessage";
+import { ResultType } from "@/types/ResultType";
 
 // This component is used to create the vCards data
 // It contains the form to create the vCard data
 // The form data is passed to the PreviewCard component to display the live preview
 // The form data is validated using the cardDetailsFormSchema schema
 const VCardForm = ({ form }: { form: UseFormReturn<CardDetailsFormValues> }) => {
-    const [result, setResult] = useState<ResultType>({ success: false, message: null });
     const { qrType, setCreated, setIsPending } = useQrCodeCreator();
-    const { qrCodes, setQrCodes } = useQrCodeList();
+    const { qrCodes, setQrCodes, setResult } = useQrCodeList();
     const router = useRouter();
 
     async function onSubmit(values: z.infer<typeof cardDetailsFormSchema>) {
@@ -71,7 +68,7 @@ const VCardForm = ({ form }: { form: UseFormReturn<CardDetailsFormValues> }) => 
                 body: JSON.stringify({ ...values, qrType }),
             });
 
-            const data: ResultTypeBody = await res.json()
+            const data: ResultType = await res.json()
             if (data.success) {
                 // sync temporary QR Code object with the newly created
                 setQrCodes(prev => [
@@ -84,12 +81,23 @@ const VCardForm = ({ form }: { form: UseFormReturn<CardDetailsFormValues> }) => 
                     setCreated(true);
             } else {
                 setQrCodes(previousQrCodes);
-                setResult({ success: false, message: data.message });
             }
+
+            setResult({ 
+                success: data.success, 
+                message: data.message,
+                body: data.body
+            });
             setIsPending(false);
         } catch (error: any) {
-            console.error("Error during QR code creation:", error.message);
+            console.error("Error during QR code creation: ", error.message);
             setQrCodes(previousQrCodes);
+            
+            setResult({ 
+                success: error.success, 
+                message: error.message,
+                body: error.body
+            });
             setIsPending(false);
         }
     }
@@ -251,7 +259,6 @@ const VCardForm = ({ form }: { form: UseFormReturn<CardDetailsFormValues> }) => 
                     </div>
                 </div>
             </form>
-            <ResultMessage success={result.success} message={result.message} />
         </Form>
     );
 };

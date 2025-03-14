@@ -10,7 +10,8 @@ export async function POST(req: Request) {
         if (await isLoggedIn()) {
             return NextResponse.json<ResultType>({ 
                 success: false, 
-                message: "You are already logged in"
+                message: "You are already logged in",
+                body: null
             }, { status: 401 });
         }
 
@@ -21,7 +22,8 @@ export async function POST(req: Request) {
         if (typeof emailOrUsername !== "string" || typeof password !== "string" || !emailOrUsername.trim() || !password.trim()) {
             return NextResponse.json<ResultType>({ 
                 success: false, 
-                message: "Invalid credentials"
+                message: "Invalid credentials",
+                body: null
             }, { status: 400 });
         }
 
@@ -39,7 +41,8 @@ export async function POST(req: Request) {
         if (!user) {
             return NextResponse.json<ResultType>({ 
                 success: false, 
-                message: "Invalid email or username"
+                message: "Invalid email or username",
+                body: null
             }, { status: 401 });
         }
 
@@ -48,7 +51,8 @@ export async function POST(req: Request) {
         if (!isMatching) {
             return NextResponse.json<ResultType>({ 
                 success: false, 
-                message: "Invalid password"
+                message: "Invalid password",
+                body: null
             }, { status: 401 });
         }
 
@@ -68,13 +72,15 @@ export async function POST(req: Request) {
 
         return NextResponse.json<ResultType>({ 
             success: true, 
-            message: "Logged in successfully"
+            message: "Logged in successfully",
+            body: true
         }, { status: 200 });
     } catch (error: any) {
         console.error(error);
         return NextResponse.json<ResultType>({ 
             success: false, 
-            message: error.message
+            message: error.message,
+            body: null
         }, { status: 500 });
     }
 }
