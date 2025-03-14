@@ -21,6 +21,18 @@ export const loginFormSchema = z.object({
     password: z.string().min(5).max(60)
 });
 
+export const sendResetEmailFormSchema = z.object({
+    emailOrUsername: emailOrUsernameSchema,
+});
+
+export const resetPasswordFormSchema = z.object({
+    password: z.string().min(5).max(60),
+    passwordConfirmation: z.string().min(5).max(60),
+}).refine(data => data.password === data.passwordConfirmation, {
+    message: "Passwords do not match",
+    path: ["passwordConfirmation"]
+});
+
 export const cardDetailsFormSchema = z.object({
     name: z.string().min(2).max(25),
     firstName: z.string().min(2).max(25),

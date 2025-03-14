@@ -1,8 +1,14 @@
+import { DEFAULT_EXPIRATION, JWT_ALGORITHM } from "@/constants/mailerConstants";
 import { JWTPayload, jwtVerify, SignJWT } from "jose";
 import nodemailer from "nodemailer";
 
+interface TokenPayload extends JWTPayload {
+    userId: number;
+}
+
 // Load secret key from environment variable
-const secretKey = new TextEncoder().encode(process.env.MAILER_SECRET!);
+const mailerSecretKey = new TextEncoder().encode(process.env.MAILER_SECRET!);
+const resetSecretKey = new TextEncoder().encode(process.env.RESET_SECRET!);
 
 // Configure transporter (gmail)
 const transporter = nodemailer.createTransport({
@@ -24,27 +30,45 @@ transporter.verify((error) => {
     }
 });
 
-export default transporter;
-
-
-// Create a signed confirmation token
-export async function createSignedConfirmationToken(userId: number, expr?: string): Promise<string> {
-    const alg = "HS256";
+// Token generation and validation utilities
+const createToken = async (
+    secret: Uint8Array,
+    userId: number,
+    expiration: string = DEFAULT_EXPIRATION
+): Promise<string> => {
     return await new SignJWT({ userId })
-        .setProtectedHeader({ alg })
+        .setProtectedHeader({ alg: JWT_ALGORITHM })
         .setIssuedAt()
-        .setExpirationTime(expr ? expr : "10m")
-        .sign(secretKey);
-}
+        .setExpirationTime(expiration)
+        .sign(secret);
+};
 
-export async function validateConfirmationToken(token: string | undefined) {
+const validateToken = async (
+    secret: Uint8Array,
+    token?: string
+): Promise<TokenPayload | null> => {
     try {
-        if (!token) throw new Error("No confirmation token provided");
+        if (!token) throw new Error("No token provided");
 
-        const { payload }: { payload: JWTPayload } = await jwtVerify(token, secretKey);
-        return payload; // The decoded payload (e.g., { userId, iat, exp })
+        const { payload } = await jwtVerify(token, secret);
+        return payload as TokenPayload;
     } catch (error) {
-        console.error("Error confirming token: ", error);
+        console.error(`Token validation error: ${error instanceof Error ? error.message : 'Unknown error'}`);
         return null;
     }
-}
+};
+
+// Specific token functions
+export const createSignedConfirmationToken = (userId: number, expiration?: string) => 
+    createToken(mailerSecretKey, userId, expiration);
+
+export const validateConfirmationToken = (token?: string) => 
+    validateToken(mailerSecretKey, token);
+
+export const createSignedResetToken = (userId: number, expiration?: string) => 
+    createToken(resetSecretKey, userId, expiration);
+
+export const validateResetToken = (token?: string) => 
+    validateToken(resetSecretKey, token);
+
+export default transporter;

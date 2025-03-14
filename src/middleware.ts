@@ -12,6 +12,8 @@ export async function middleware(req: NextRequest) {
             "/api/auth/login",
             "/api/auth/register",
             "/api/auth/register/confirm",
+            "/api/auth/forgotPassword/sendEmail",
+            "/api/auth/forgotPassword/reset",
         ];
 
         const alwaysPublicApi = [
@@ -53,7 +55,8 @@ export async function middleware(req: NextRequest) {
         "/landing",
         "/login",
         "/register",
-        "/register/confirm"
+        "/register/confirm",
+        "/forgot-password",
     ];
 
     // Always Accessible pages
