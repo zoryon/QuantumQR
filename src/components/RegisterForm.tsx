@@ -19,6 +19,7 @@ import Link from "next/link";
 import { useState } from "react";
 import ResultMessage from "./ResultMessage";
 import { ResultType } from "@/types/ResultType";
+import PasswordField from "./PasswordField";
 
 const RegisterForm = () => {
     const [isPending, setIsPending] = useState(false);
@@ -59,6 +60,7 @@ const RegisterForm = () => {
             email: "",
             username: "",
             password: "",
+            passwordConfirmation: "",
             hasAllowedEmails: false,
         },
     })
@@ -92,25 +94,19 @@ const RegisterForm = () => {
                         <FormItem>
                             <FormLabel>Username</FormLabel>
                             <FormControl>
-                                <Input type="text" placeholder="your username" {...field} />
+                                <Input 
+                                    type="text" 
+                                    placeholder="your username" 
+                                    {...field} 
+                                    className="bg-gray-700/20 border-gray-600/50 focus:border-indigo-400/50 focus:ring-indigo-400/50 text-gray-100"
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Password</FormLabel>
-                            <FormControl>
-                                <Input type="password" placeholder="your password" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                <PasswordField control={form.control} />
+                <PasswordField control={form.control} isConfirmation />
 
                 {/* important policies */}
                 <FormField
