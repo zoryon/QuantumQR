@@ -17,17 +17,19 @@ export async function POST(req: Request) {
 
         // If user is not logged-in -> create a new user
         const prisma = getPrismaClient();
-        const { email, username, password, hasAllowedEmails } = await req.json();
+        const { email, username, password, passwordConfirmation, hasAllowedEmails } = await req.json();
 
         // Validating params
         if (
             typeof email !== "string" ||
             typeof username !== "string" ||
             typeof password !== "string" ||
+            typeof passwordConfirmation !== "string" ||
             typeof hasAllowedEmails !== "boolean" ||
             !email.trim() ||
             !username.trim() ||
             !password.trim() ||
+            !passwordConfirmation.trim() ||
             hasAllowedEmails === undefined ||
             hasAllowedEmails === null
         ) {
@@ -50,6 +52,14 @@ export async function POST(req: Request) {
             return NextResponse.json<ResultType>({ 
                 success: false,
                 message: "Password must be at least 5 characters long.",
+                body: null
+            }, { status: 400 });
+        }
+
+        if (password !== passwordConfirmation) {
+            return NextResponse.json<ResultType>({ 
+                success: false,
+                message: "Passwords do not match.",
                 body: null
             }, { status: 400 });
         }

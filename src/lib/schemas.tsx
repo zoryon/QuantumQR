@@ -4,7 +4,11 @@ export const registerFormSchema = z.object({
     email: z.string().email(),
     username: z.string().min(2).max(25),
     password: z.string().min(5).max(60),
+    passwordConfirmation: z.string().min(5).max(60),
     hasAllowedEmails: z.boolean(),  // News letters
+}).refine(data => data.password === data.passwordConfirmation, {
+    message: "Passwords do not match",
+    path: ["passwordConfirmation"]
 });
 
 const emailOrUsernameSchema = z.union([

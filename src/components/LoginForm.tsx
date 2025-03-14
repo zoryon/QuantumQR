@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ResultType } from "@/types/ResultType";
 import ResultMessage from "./ResultMessage";
+import PasswordField from "./PasswordField";
 
 const LoginForm = () => {
     const [isPending, setIsPending] = useState(false);
@@ -89,24 +90,7 @@ const LoginForm = () => {
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="text-gray-300">Password</FormLabel>
-                            <FormControl>
-                                <Input
-                                    type="password"
-                                    placeholder="your password"
-                                    {...field}
-                                    className="bg-gray-700/20 border-gray-600/50 focus:border-indigo-400/50 focus:ring-indigo-400/50 text-gray-100"
-                                />
-                            </FormControl>
-                            <FormMessage className="text-red-400/80" />
-                        </FormItem>
-                    )}
-                />
+                <PasswordField control={form.control} isLogin />
 
                 <Button
                     type="submit"
