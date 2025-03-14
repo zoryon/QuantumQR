@@ -2,7 +2,7 @@
 
 import { QRCode } from "@/types/QRCodeType";
 import { ResultType } from "@/types/ResultType";
-import { createContext, useCallback, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 
 type QrCodeListContextType = {
   qrCodes: QRCode[],

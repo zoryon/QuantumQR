@@ -1,5 +1,5 @@
 import { cardDetailsFormSchema } from "@/lib/schemas";
-import { QRCodeTypes, VCardQRCode } from "@/types/QRCodeType";
+import { QRCodeTypes } from "@/types/QRCodeType";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import QRCode from "qrcode";
