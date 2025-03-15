@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+// Auth schemas
 export const registerFormSchema = z.object({
     email: z.string().email(),
     username: z.string().min(2).max(25),
@@ -33,6 +34,12 @@ export const resetPasswordFormSchema = z.object({
     path: ["passwordConfirmation"]
 });
 
+// QR Codes schemas
+export const classicDetailsFormSchema = z.object({
+    name: z.string().min(2).max(25),
+    websiteUrl: z.string().url()
+});
+
 export const cardDetailsFormSchema = z.object({
     name: z.string().min(2).max(25),
     firstName: z.string().min(2).max(25),
@@ -55,3 +62,4 @@ export const editVCardFormSchema = z.object({
 
 export type CardDetailsFormValues = z.infer<typeof cardDetailsFormSchema>;
 export type EditVCardFormValues = z.infer<typeof editVCardFormSchema>;
+export type ClassicDetailsFormValues = z.infer<typeof classicDetailsFormSchema>;

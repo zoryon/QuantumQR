@@ -37,6 +37,7 @@ export function QrCodeListProvider({ children }: { children: React.ReactNode }) 
       }
 
       const data = await res.json();
+      console.log(data)
 
       setQrCodes(data);
     } catch (err) {

@@ -1,106 +1,22 @@
 "use client";
 
-import { z } from "zod";
-import { cardDetailsFormSchema, CardDetailsFormValues } from "@/lib/schemas";
-import { UseFormReturn } from "react-hook-form";
 import {
     Form,
     FormControl,
     FormField,
     FormItem,
     FormLabel,
-    FormMessage,
+    FormMessage
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useQrCodeCreator } from "@/contexts/createQRCodesContext";
-import { useRouter } from "next/navigation";
-import { useQrCodeList } from "@/contexts/qrCodesListContext";
-import { QRCode, QRCodeTypes } from "@/types/QRCodeType";
-import { ResultType } from "@/types/ResultType";
 
-// This component is used to create the vCards data
-// It contains the form to create the vCard data
-// The form data is passed to the PreviewCard component to display the live preview
-// The form data is validated using the cardDetailsFormSchema schema
-const VCardForm = ({ form }: { form: UseFormReturn<CardDetailsFormValues> }) => {
-    const { qrType, setCreated, setIsPending } = useQrCodeCreator();
-    const { qrCodes, setQrCodes, setResult } = useQrCodeList();
-    const router = useRouter();
-
-    async function onSubmit(values: z.infer<typeof cardDetailsFormSchema>) {
-        setIsPending(true);
-
-        // temporary ID for optimistic update
-        const tempId = -Date.now();
-        const previousQrCodes = [...qrCodes];
-
-        try {
-            // creating a non-accessable temporary QR Code object
-            const tempQRCode: QRCode = {
-                id: tempId,
-                name: values.name,
-                userId: tempId,
-                url: "/gif/loading.gif",
-                scans: 0,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-                type: qrType as QRCodeTypes,
-                qrCodeId: tempId,
-                firstName: values.firstName,
-                lastName: values.lastName,
-                email: values.email,
-                phoneNumber: values.phoneNumber,
-                websiteUrl: values.websiteUrl || null,
-                address: values.address || null
-            };
-
-            // optimistic update
-            setQrCodes([tempQRCode, ...qrCodes]);
-
-            router.push("/");
-
-            // API call to create QR Code
-            const res = await fetch("/api/qrcodes/create", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ ...values, qrType }),
-            });
-
-            const data: ResultType = await res.json()
-            if (data.success) {
-                // sync temporary QR Code object with the newly created
-                setQrCodes(prev => [
-                    {
-                        ...data.body,
-                        type: qrType as QRCodeTypes,
-                    },
-                    ...prev.filter(qr => qr.id !== tempId)
-                ]);
-                    setCreated(true);
-            } else {
-                setQrCodes(previousQrCodes);
-            }
-
-            setResult({ 
-                success: data.success, 
-                message: data.message,
-                body: data.body
-            });
-            setIsPending(false);
-        } catch (error: any) {
-            console.error("Error during QR code creation: ", error.message);
-            setQrCodes(previousQrCodes);
-            
-            setResult({ 
-                success: error.success, 
-                message: error.message,
-                body: error.body
-            });
-            setIsPending(false);
-        }
-    }
+const VCardForm = ({
+    onSubmit
+}: {
+    onSubmit: any
+}) => {
+    const { qrType, form } = useQrCodeCreator();
 
     return (
         <Form {...form}>
@@ -261,6 +177,6 @@ const VCardForm = ({ form }: { form: UseFormReturn<CardDetailsFormValues> }) => 
             </form>
         </Form>
     );
-};
+}
 
 export default VCardForm;

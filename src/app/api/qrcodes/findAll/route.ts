@@ -6,6 +6,7 @@ import { NextResponse } from "next/server";
 
 const typeMappings = [
     { relation: "vcardqrcodes", type: "vCards" as const },
+    { relation: "classicqrcodes", type: "classic" as const },
 ];
 
 export async function GET() {

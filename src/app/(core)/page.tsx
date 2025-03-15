@@ -1,7 +1,7 @@
 "use client";
 
 import { useQrCodeList } from "@/contexts/qrCodesListContext";
-import { QRCode } from "@/types/QRCodeType";
+import { QRCode, VCardQRCode } from "@/types/QRCodeType";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import DownloadButton from "@/components/DownloadButton";
@@ -139,8 +139,9 @@ const QRCodeList = ({
             <div className="mt-4 flex items-center justify-between">
               <DownloadButton
                 url={qrCode.url}
-                firstName={qrCode.firstName}
-                lastName={qrCode.lastName}
+                type={qrCode.type}
+                firstName={(qrCode as VCardQRCode).firstName || undefined}
+                lastName={(qrCode as VCardQRCode).lastName || undefined}
                 icon="fas fa-download mr-2"
                 isShadBtn={true}
                 isDisabled={isTemp}

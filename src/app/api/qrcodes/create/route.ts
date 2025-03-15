@@ -1,4 +1,4 @@
-import { cardDetailsFormSchema } from "@/lib/schemas";
+import { cardDetailsFormSchema, CardDetailsFormValues, classicDetailsFormSchema, ClassicDetailsFormValues } from "@/lib/schemas";
 import { QRCodeTypes } from "@/types/QRCodeType";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -47,9 +47,10 @@ export async function POST(req: Request) {
 
         // Creating the QR code based on the type
         let qrCode: any = null;
+        let parsedValues: any = null;
         switch (qrType as QRCodeTypes) {
             case "vCards":
-                const parsedValues = cardDetailsFormSchema.safeParse(values);
+                parsedValues = cardDetailsFormSchema.safeParse(values);
 
                 if (!parsedValues.success) {
                     return NextResponse.json<ResultType>({ 
@@ -59,6 +60,21 @@ export async function POST(req: Request) {
                     }, { status: 400 });
                 }
                 qrCode = await createVCardQRCode({
+                    userId: session.userId as number,
+                    values: parsedValues.data
+                });
+                break;
+            case "classic":
+                parsedValues = classicDetailsFormSchema.safeParse(values);
+
+                if (!parsedValues.success) {
+                    return NextResponse.json<ResultType>({ 
+                        success: false, 
+                        message: parsedValues.error.message,
+                        body: null
+                    }, { status: 400 });
+                }
+                qrCode = await createClassicQRCode({
                     userId: session.userId as number,
                     values: parsedValues.data
                 });
@@ -91,7 +107,7 @@ async function createVCardQRCode({
     values
 }: {
     userId: number,
-    values: z.infer<typeof cardDetailsFormSchema>
+    values: CardDetailsFormValues
 }) {
     try {
         const existingQrCode = await prisma.qrcodes.findFirst({
@@ -143,6 +159,55 @@ async function createVCardQRCode({
         });
 
         return updatedQrCode;
+    } catch (error: any) {
+        console.error("Error generating or saving QR code: ", error);
+        throw error;
+    }
+}
+
+async function createClassicQRCode({
+    userId,
+    values
+}: {
+    userId: number,
+    values: ClassicDetailsFormValues
+}) {
+    try {
+        const existingQrCode = await prisma.qrcodes.findFirst({
+            where: { userId, name: values.name }
+        });
+        
+        if (existingQrCode) {
+            throw new Error("A QR Code with the same name already exists");
+        }
+
+        // Generate the QR code with the dynamic URL
+        const svgString = await QRCode.toString(values.websiteUrl, {
+            type: "svg",
+            color: {
+                dark: "#000000",
+                light: "#ffffff"
+            }
+        });
+
+        const qrCodeURL = `data:image/svg+xml;base64,${Buffer.from(svgString).toString("base64")}`;
+
+        // Create the QR code entry in the database
+        const qrCode = await prisma.qrcodes.create({
+            data: {
+                name: values.name,
+                userId: userId,
+                url: qrCodeURL,
+                classicqrcodes: {
+                    create: {
+                        websiteUrl: values.websiteUrl,
+                    }
+                }
+            },
+            include: { vcardqrcodes: true }
+        });
+
+        return qrCode;
     } catch (error: any) {
         console.error("Error generating or saving QR code: ", error);
         throw error;

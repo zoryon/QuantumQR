@@ -1,11 +1,10 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { cardDetailsFormSchema } from "@/lib/schemas";
 import PreviewCard from "@/components/PreviewCard";
-import { zodResolver } from "@hookform/resolvers/zod";
-import VCardForm from "./QRCodeSteps/QRCodeForms/VCardForm";
+import QRCodeForm from "./QRCodeSteps/QRCodeForms/QRCodeForm";
+import { useQrCodeCreator } from "@/contexts/createQRCodesContext";
+import { useEffect } from "react";
+import { CardDetailsFormValues, ClassicDetailsFormValues } from "@/lib/schemas";
 
 // This component is used to create the vCards data
 // It contains two sections:
@@ -14,25 +13,14 @@ import VCardForm from "./QRCodeSteps/QRCodeForms/VCardForm";
 // The form data is passed to the PreviewCard component to display the live preview
 // The form data is validated using the cardDetailsFormSchema schema
 export default function CreateVCardEditor() {
-    const form = useForm<z.infer<typeof cardDetailsFormSchema>>({
-        resolver: zodResolver(cardDetailsFormSchema),
-        defaultValues: {
-            name: "My Professional Card",
-            firstName: "John",
-            lastName: "Doe",
-            email: "john@company.com",
-            phoneNumber: "+1 555 000 0000",
-            address: "123 Main St, City",
-            websiteUrl: "https://company.com",
-        },
-    });
+    const { form } = useQrCodeCreator();
 
-    const currentData = form.watch();
+    const currentData = form.watch() as CardDetailsFormValues;
 
     // Preview Data
     const previewData = {
         id: -1,
-        name: currentData.name || "My Professional Card",
+        name: currentData.name || "My vCard",
         firstName: currentData.firstName || "John",
         lastName: currentData.lastName || "Doe",
         email: currentData.email || "john@company.com",
@@ -45,7 +33,7 @@ export default function CreateVCardEditor() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-0 xl:p-4">
             {/* Form Section */}
             <div className="space-y-6">
-                <VCardForm form={form} />
+                <QRCodeForm />
             </div>
 
             {/* Preview Section */}
