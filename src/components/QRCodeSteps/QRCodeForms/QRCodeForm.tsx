@@ -1,7 +1,6 @@
 "use client";
 
-import { z } from "zod";
-import { cardDetailsFormSchema, CardDetailsFormValues, classicDetailsFormSchema, ClassicDetailsFormValues } from "@/lib/schemas";
+import { CardDetailsFormValues, ClassicDetailsFormValues } from "@/lib/schemas";
 import { FormValues, useQrCodeCreator } from "@/contexts/createQRCodesContext";
 import { useRouter } from "next/navigation";
 import { useQrCodeList } from "@/contexts/qrCodesListContext";
@@ -16,7 +15,7 @@ import ClassicForm from "./ClassicForm";
 // It also handles the error and success messages and updates the result state accordingly.
 // It also handles the loading state of the form.
 const QRCodeForm = () => {
-    const { qrType, setCreated, setIsPending, form } = useQrCodeCreator();
+    const { qrType, setCreated, setIsPending } = useQrCodeCreator();
     const { qrCodes, setQrCodes, setResult } = useQrCodeList();
     const router = useRouter();
 

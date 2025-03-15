@@ -3,8 +3,7 @@
 import PreviewCard from "@/components/PreviewCard";
 import QRCodeForm from "./QRCodeSteps/QRCodeForms/QRCodeForm";
 import { useQrCodeCreator } from "@/contexts/createQRCodesContext";
-import { useEffect } from "react";
-import { CardDetailsFormValues, ClassicDetailsFormValues } from "@/lib/schemas";
+import { CardDetailsFormValues } from "@/lib/schemas";
 
 // This component is used to create the vCards data
 // It contains two sections:
