@@ -2,9 +2,11 @@
 
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
+import { QRCodeTypes } from "@/types/QRCodeType";
 
 const DownloadButton = ({
     url,
+    type,
     firstName,
     lastName,
     icon,
@@ -13,18 +15,23 @@ const DownloadButton = ({
     className
 }: {
     url: string,
-    firstName: string,
-    lastName: string,
+    type: QRCodeTypes,
+    firstName: string | undefined,
+    lastName: string | undefined,
     icon: string,
     isShadBtn?: boolean,
     isDisabled?: boolean,
     className: string
 }) => {
+    const fileName = (!firstName || !lastName) 
+        ? `${type}.svg`.trim()
+        : `${firstName}_${lastName}_vCard.svg`.trim();
+
     return (
         isShadBtn ? (
             <a
                 href={url}
-                download={isDisabled ? "#" : `${firstName}_${lastName}_vCard.svg`.trim() || "qrcode.svg"}
+                download={isDisabled ? "#" : fileName}
                 onClick={(e) => isDisabled && e.preventDefault()}
             >
                 <Button variant={"outline"} disabled={isDisabled}>

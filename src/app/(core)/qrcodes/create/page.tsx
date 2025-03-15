@@ -7,20 +7,12 @@ import { useQrCodeCreator } from "@/contexts/createQRCodesContext";
 import { useEffect } from "react";
 
 const CreatePage = () => {
-  const { step, reset, setStep, created } = useQrCodeCreator();
+  const { step, reset, setStep } = useQrCodeCreator();
 
   useEffect(() => {
     reset();
     setStep(1);
   }, []);
-
-  useEffect(() => {
-    return () => {
-      if (step !== 2 || !created) {
-        reset();
-      }
-    };
-  }, [step, created]);
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4 relative overflow-hidden">

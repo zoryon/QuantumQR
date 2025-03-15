@@ -4,6 +4,7 @@ import { useQrCodeCreator } from "@/contexts/createQRCodesContext";
 import { useEffect } from "react";
 import { Button } from "../ui/button";
 import CreateVCardEditor from "../CreateVCardEditor";
+import QRCodeForm from "./QRCodeForms/QRCodeForm";
 
 const Step2 = () => {
     const { handlePrev, qrType, created, reset, isPending } = useQrCodeCreator();
@@ -23,6 +24,7 @@ const Step2 = () => {
 
             <div className="space-y-6">
                 {qrType === "vCards" && <CreateVCardEditor />}
+                {qrType === "classic" && <QRCodeForm />}
             </div>
 
             <div className="flex justify-between">

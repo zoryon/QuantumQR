@@ -90,6 +90,7 @@ export default async function VCardPage({
                                     {/* Download Button */}
                                     <DownloadButton
                                         url={qrCode.url}
+                                        type={qrCode.type}
                                         firstName={qrCode.firstName}
                                         lastName={qrCode.lastName}
                                         icon="fas fa-cloud-arrow-down mr-3"
