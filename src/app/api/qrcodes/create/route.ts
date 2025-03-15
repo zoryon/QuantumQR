@@ -1,7 +1,6 @@
 import { cardDetailsFormSchema, CardDetailsFormValues, classicDetailsFormSchema, ClassicDetailsFormValues } from "@/lib/schemas";
 import { QRCodeTypes } from "@/types/QRCodeType";
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import QRCode from "qrcode";
 import getPrismaClient from "@/lib/db";
 import { verifySession } from "@/lib/session";
