@@ -56,11 +56,14 @@ export async function PUT(request: Request): Promise<NextResponse<ResultType>> {
         // Extract name separately for uniqueness check
         const { name, ...data} = validatedData;
 
-        // Check if a QR code with the same name already exists for the user
+        // Check if a QR code with the same name already exists for the user, BUT not the same one being updated
         const existingQRCode = await prisma.qrcodes.findFirst({
             where: {
                 userId: Number(session.userId),
                 name: name,
+                NOT: {
+                    id: Number(id)
+                }
             }
         });
 
