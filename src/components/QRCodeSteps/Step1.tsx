@@ -1,5 +1,5 @@
 import { QR_CODE_CARDS } from "@/constants/qrCodes";
-import { useQrCodeCreator } from "@/contexts/createQRCodesContext";
+import { useQrCodeCreator } from "@/hooks/useQrCodeCreator";
 
 const Step1 = () => (
     <div className="space-y-8">

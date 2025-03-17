@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "npx prisma db pull && npx prisma generate && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "docs": "typedoc --entryPoints ./src/**/*.ts --out docs"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.0",
@@ -57,6 +58,7 @@
     "eslint-config-next": "15.1.7",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
+    "typedoc": "^0.28.0",
     "typescript": "^5"
   }
 }

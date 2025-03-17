@@ -1,9 +1,9 @@
 "use client";
 
-import { useQrCodeList } from "@/contexts/qrCodesListContext";
+import { useQrCodeList } from "@/hooks/useQrCodeList";
 import { notFound, useRouter } from "next/navigation";
 import { ResultType } from "@/types/ResultType";
-import { FormValues } from "@/contexts/createQRCodesContext";
+import { FormValues } from "@/hooks/useQrCodeCreator";
 import { QRCodeTypes } from "@/types/QRCodeType";
 import EditVCardForm from "./EditVCardForm";
 import EditClassicForm from "./EditClassicForm";

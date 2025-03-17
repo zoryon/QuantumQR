@@ -6,15 +6,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createContext, useCallback, useContext, useEffect, useState } from "react"
 import { useForm } from "react-hook-form";
 
+// Define types for VCard data and design options for the QR code
 type VCardData = Omit<VCardQRCode, 'type' | 'qrCodeId'>;
 type DesignOptions = {
     color: string;
     logo: File | null;
 };
+
+// Union type for form values, which can be either for a classic or vCard QR code
 export type FormValues =
     ClassicDetailsFormValues |
     CardDetailsFormValues;
 
+// Context type for managing QR code creation state
 type QrCreatorContextType = {
     step: number,
     setStep: React.Dispatch<React.SetStateAction<number>>,
@@ -34,6 +38,7 @@ type QrCreatorContextType = {
     form: ReturnType<typeof useForm<FormValues>>
 }
 
+// Initial values for vCard data and design options
 const initialVCardData: VCardData = {
     firstName: "",
     lastName: "",
@@ -48,8 +53,10 @@ const initialDesignOptions: DesignOptions = {
     logo: null
 };
 
+// Create a context to share QR code creation state across components
 export const QrCreatorContext = createContext<QrCreatorContextType>(null!);
 
+// Provider component to manage and provide QR code creation state
 export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
     const [step, setStep] = useState<number>(1);
     const [qrType, setQrType] = useState<QRCodeTypes>("classics");
@@ -58,6 +65,7 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
     const [designOptions, setDesignOptions] = useState<DesignOptions>(initialDesignOptions);
     const [isPending, setIsPending] = useState<boolean>(false);
 
+    // Function to get the appropriate schema and default values based on the QR code type
     const getSchemaAndDefaultValues = useCallback(() => {
         switch (qrType) {
             case "classics":
@@ -85,20 +93,22 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
             default:
                 throw new Error(`Unsupported qrType: ${qrType}`);
         }
-    }, [qrType]);
+    }, [qrType]); // Recalculate schema and default values when qrType changes
 
     const { schema, defaultValues } = getSchemaAndDefaultValues();
 
+    // Initialize the form using the schema and default values
     const form = useForm<FormValues>({
-        resolver: zodResolver(schema) as any,
-        defaultValues: defaultValues as FormValues
+        resolver: zodResolver(schema) as any, // Use Zod for form validation
+        defaultValues: defaultValues as FormValues // Set the default form values
     });
 
+    // Reset the form whenever qrType changes
     useEffect(() => {
         form.reset(defaultValues);
     }, [qrType]);
 
-
+    // Function to reset the QR code creation state
     function reset() {
         setCreated(false);
         setQrType("classics");
@@ -106,8 +116,10 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
         setDesignOptions(initialDesignOptions);
     }
 
+    // Function to move to the previous step, ensuring the step does not go below 1
     const handlePrev = () => setStep(prev => Math.max(prev - 1, 1));
 
+    // Function to move to the next step, ensuring the step does not exceed 2
     const handleNext = () => {
         if (step === 1 && !qrType) return null;
         setStep(prev => Math.min(prev + 1, 2));
@@ -130,6 +142,7 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
     );
 }
 
+// Custom hook to access QR code creation context
 export function useQrCodeCreator() {
     return useContext(QrCreatorContext);
 }
