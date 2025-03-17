@@ -19,7 +19,7 @@ export async function GET() {
 
         // Dynamically build include object
         const include = TYPE_MAPPING.reduce((acc, mapping) => {
-            acc[mapping.relation] = true;
+            acc[String(mapping.relation)] = true;
             return acc;
         }, {} as Record<string, boolean>);
 
@@ -38,7 +38,7 @@ export async function GET() {
         // Transform results into typed response
         const typedQRCodes = qrCodes.map((qr): QRCode => {
             for (const mapping of TYPE_MAPPING) {
-                const relationData = qr[mapping.relation];
+                const relationData = qr[String(mapping.relation)];
                 if (relationData) {
                     return {
                         ...qr,
