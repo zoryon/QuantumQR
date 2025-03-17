@@ -62,6 +62,7 @@ const EditClassicForm = ({
                                         type="url"
                                         placeholder="https://company.com"
                                         {...field}
+                                        value={field.value ?? ""}
                                         className="bg-gray-700/20 border-gray-600/50 focus:border-indigo-400/50 focus:ring-indigo-400/50 text-gray-100"
                                     />
                                 </FormControl>
