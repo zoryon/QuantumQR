@@ -1,4 +1,4 @@
-import BackBtn from "@/components/BackBtn";
+import BackBtn from "@/components/Buttons/BackBtn";
 import PaintMarkdown from "@/components/PaintMarkdown";
 
 const PrivacyPolicyPage = () => {

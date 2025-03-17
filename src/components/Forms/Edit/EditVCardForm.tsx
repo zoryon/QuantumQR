@@ -1,83 +1,32 @@
 "use client";
 
-import { z } from "zod";
+import { Button } from "../../ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../ui/form";
+import { Input } from "../../ui/input";
+import { CardDetailsFormValues } from "@/lib/schemas";
 import { UseFormReturn } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { editVCardFormSchema, EditVCardFormValues } from "@/lib/schemas";
-import { useQrCodeList } from "@/contexts/qrCodesListContext";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { ResultType } from "@/types/ResultType";
 
-// This component is used to update the vCards data
-// It contains the form to update the vCard data
-// The form data is passed to the PreviewCard component to display the live preview
-const EditForm = ({ form } : { form: UseFormReturn<EditVCardFormValues> }) => {
-    const [isPending, setIsPending] = useState(false);
-    const { qrCodes, setQrCodes, setResult } = useQrCodeList();
-    const router = useRouter();
-
-    async function onSubmit(values: z.infer<typeof editVCardFormSchema>) {
-        setIsPending(true);
-        // optimistic update
-        const previousQrCodes = [...qrCodes];
-        try {
-            const updatedQrCodes = qrCodes.map(qr => 
-                qr.id === values.id ? { ...qr, ...values } : qr
-            );
-            setQrCodes(updatedQrCodes);
-
-            router.push("/");
-
-            // API call to update
-            const res = await fetch("/api/qrcodes/update", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(values)
-            });
-
-            // Handle successful update
-            const data: ResultType = await res.json();
-            if (!data.success) {
-                setIsPending(false);
-            };
-
-            setResult({
-                success: data.success,
-                message: data.message,
-                body: data.body
-            });
-        } catch (error: any) {
-            console.error("Update error: ", error.message);
-            setQrCodes(previousQrCodes);
-            setIsPending(false);
-            setResult({
-                success: error.success,
-                message: error.message,
-                body: null
-            });
-        }
+const EditVCardForm = ({ 
+    form, 
+    onSubmit, 
+    isPending 
+} : { 
+    form?: UseFormReturn<CardDetailsFormValues>, 
+    onSubmit: any,
+    isPending: boolean
+}) => {
+    if (!form) {
+        return null;
     }
 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-gray-800/40 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-700/50">
                 <div className="grid grid-cols-2 gap-4">
-                    {/* Hidden ID field */}
+                    {/* Hidden Name field */}
                     <FormField
                         control={form.control}
-                        name="id"
+                        name="name"
                         render={({ field }) => (
                             <FormControl>
                                 <Input type="hidden" {...field} />
@@ -212,4 +161,4 @@ const EditForm = ({ form } : { form: UseFormReturn<EditVCardFormValues> }) => {
     );
 }
 
-export default EditForm;
+export default EditVCardForm;

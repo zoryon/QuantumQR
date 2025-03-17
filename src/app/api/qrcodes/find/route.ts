@@ -1,5 +1,5 @@
 import { getPrismaClient } from "@/lib/db";
-import { QRCodeTypes, VCardResponse } from "@/types/QRCodeType";
+import { QRCodeTypes } from "@/types/QRCodeType";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -35,7 +35,11 @@ export async function GET(req: Request) {
                     where: { qrCodeId: baseQr.id },
                 });
                 break;
-
+            case "classics":
+                specificData = await prisma.classicqrcodes.findUnique({
+                    where: { qrCodeId: baseQr.id },
+                });
+                break;
             // Add other cases here
             // case 'url':
             //     specificData = await prisma.urlqrcodes.findUnique(...);
@@ -51,7 +55,7 @@ export async function GET(req: Request) {
 
         // TODO: SHOULD BE AUTOMATIC AND NOT HARDCODED
         // 3. Build typed response
-        const response: VCardResponse = {
+        const response = {
             ...baseQr,
             type: type,
             ...specificData,

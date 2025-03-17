@@ -17,8 +17,8 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ResultType } from "@/types/ResultType";
-import ResultMessage from "./ResultMessage";
-import PasswordField from "./PasswordField";
+import ResultMessage from "../ResultMessage";
+import PasswordField from "../PasswordField";
 
 const LoginForm = () => {
     const [isPending, setIsPending] = useState(false);

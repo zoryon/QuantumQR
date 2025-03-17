@@ -1,7 +1,7 @@
 "use client";
 
-import PreviewCard from "@/components/PreviewCard";
-import QRCodeForm from "./QRCodeSteps/QRCodeForms/QRCodeForm";
+import PreviewCard from "@/components/Editors/VCard/PreviewCard";
+import QRCodeForm from "../../Forms/Create/QRCodeFormRouter";
 import { useQrCodeCreator } from "@/contexts/createQRCodesContext";
 import { CardDetailsFormValues } from "@/lib/schemas";
 

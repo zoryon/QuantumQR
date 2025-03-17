@@ -1,7 +1,8 @@
 import { classicqrcodes, qrcodes, vcardqrcodes } from "@prisma/client";
 
 // string types
-export type QRCodeTypes = "vCards" | "classic";
+export const QRCodeTypesArray = ["vCards", "classics"] as const;
+export type QRCodeTypes = typeof QRCodeTypesArray[number];
 
 // base object types
 export type BaseQrCode = qrcodes & {
@@ -9,7 +10,7 @@ export type BaseQrCode = qrcodes & {
 };
 
 export type ClassicQRCode = classicqrcodes & {
-    type: "classic";
+    type: "classics";
 }
 
 export type VCardQRCode = vcardqrcodes & {
@@ -24,10 +25,16 @@ export type VCardResponse = BaseQrCode & VCardQRCode;
 export type ClassicResponse = BaseQrCode & ClassicQRCode;
 
 // Type guards for discrimination
+export function isQRCodeType(type: string): type is QRCodeTypes {
+    return QRCodeTypesArray
+        .map(t => t.toLowerCase())
+        .includes(type.toLowerCase())
+}
+
 export function isVCardQR(code: QRCode): code is VCardResponse {
     return code.type === "vCards";
 }
 
 export function isClassicQR(code: QRCode): code is ClassicResponse {
-    return code.type === "classic";
+    return code.type === "classics";
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Logo from "../global/Logo";
-import LoginBtn from "../LoginBtn";
+import LoginBtn from "../Buttons/LoginBtn";
 
 const LandingNavbar = () => {
     return (

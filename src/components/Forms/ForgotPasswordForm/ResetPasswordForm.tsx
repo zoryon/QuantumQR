@@ -7,10 +7,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import PasswordField from "../PasswordField";
-import { Button } from "../ui/button";
-import ResultMessage from "../ResultMessage";
-import { Form } from "../ui/form";
+import PasswordField from "../../PasswordField";
+import { Button } from "../../ui/button";
+import ResultMessage from "../../ResultMessage";
+import { Form } from "../../ui/form";
 
 const ResetPasswordForm = ({ token }: { token: string }) => {
     const [isPending, setIsPending] = useState(false);
