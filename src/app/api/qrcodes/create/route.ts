@@ -172,6 +172,10 @@ async function createClassicQRCode({
     values: ClassicDetailsFormValues
 }) {
     try {
+        if (!values.websiteUrl) {
+            throw new Error("Website URL is required");
+        }
+
         const existingQrCode = await prisma.qrcodes.findFirst({
             where: { userId, name: values.name }
         });
