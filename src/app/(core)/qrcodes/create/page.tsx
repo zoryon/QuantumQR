@@ -3,7 +3,7 @@
 import Step1 from "@/components/QRCodeSteps/Step1";
 import Step2 from "@/components/QRCodeSteps/Step2";
 import Stepper from "@/components/Stepper";
-import { useQrCodeCreator } from "@/contexts/createQRCodesContext";
+import { useQrCodeCreator } from "@/hooks/useQrCodeCreator";
 import { useEffect } from "react";
 
 const CreatePage = () => {

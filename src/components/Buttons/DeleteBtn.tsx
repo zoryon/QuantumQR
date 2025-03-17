@@ -1,6 +1,6 @@
 "use client";
 
-import { useQrCodeList } from "@/contexts/qrCodesListContext";
+import { useQrCodeList } from "@/hooks/useQrCodeList";
 import { Button } from "../ui/button";
 import { QRCode } from "@/types/QRCodeType";
 import { useState } from "react";

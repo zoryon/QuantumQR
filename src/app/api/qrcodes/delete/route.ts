@@ -4,9 +4,20 @@ import { ResultType } from "@/types/ResultType";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function DELETE(req: Request) {
+/**
+ * Deletes a QR code belonging to the authenticated user.
+ *
+ * - Ensures the user is logged in before proceeding.
+ * - Validates the provided QR code ID.
+ * - Deletes the QR code only if it belongs to the authenticated user.
+ * - Returns an appropriate response based on the result.
+ *
+ * @param {Request} req - The incoming request object.
+ * @returns {Promise<NextResponse>} A JSON response indicating success or failure.
+ */
+export async function DELETE(req: Request): Promise<NextResponse> {
     try {
-        // if not logged-in -> block access
+        // Verify user session
         const sessionToken = (await cookies()).get("session_token")?.value;
         const session = await verifySession(sessionToken);
 
@@ -18,10 +29,17 @@ export async function DELETE(req: Request) {
             }, { status: 401 });
         }
 
-        // get the id of the QR code to delete
+        // Parse and validate request body
         const { id } = await req.json();
+        if (isNaN(Number(id))) {
+            return NextResponse.json<ResultType>({
+                success: false,
+                message: "Invalid QR code ID",
+                body: null
+            }, { status: 400 });
+        }
 
-        // delete the QR code
+        // Delete the QR code
         const prisma = getPrismaClient();
         const deleted = await prisma.qrcodes.delete({
             where: {

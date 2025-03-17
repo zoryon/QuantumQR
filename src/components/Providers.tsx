@@ -1,5 +1,5 @@
-import { QrCreatorProvider } from "@/contexts/createQRCodesContext";
-import { QrCodeListProvider } from "@/contexts/qrCodesListContext";
+import { QrCreatorProvider } from "@/hooks/useQrCodeCreator";
+import { QrCodeListProvider } from "@/hooks/useQrCodeList";
 
 const Providers = ({
     children
