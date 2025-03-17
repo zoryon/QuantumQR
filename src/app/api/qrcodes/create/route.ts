@@ -6,6 +6,7 @@ import getPrismaClient from "@/lib/db";
 import { verifySession } from "@/lib/session";
 import { cookies } from "next/headers";
 import { ResultType } from "@/types/ResultType";
+import { generateQRCode } from "@/lib/qrcode";
 
 const prisma = getPrismaClient();
 
@@ -165,17 +166,8 @@ async function createVCardQRCode({
         // Generate a dynamic URL for the QR code
         const dynamicURL = `${process.env.WEBSITE_URL!}/qrcodes/vcards/${qrCode.id}`;
 
-        // Generate the QR code as an SVG string from the dynamic URL
-        const svgString = await QRCode.toString(dynamicURL, {
-            type: "svg",
-            color: {
-                dark: "#000000", // Dark color for the QR code
-                light: "#ffffff" // Light color for the background
-            }
-        });
-
-        // Convert the SVG string to a base64 encoded data URL
-        const qrCodeURL = `data:image/svg+xml;base64,${Buffer.from(svgString).toString("base64")}`;
+        // Generate the QR Code URL
+        const qrCodeURL = await generateQRCode(dynamicURL);
 
         // Update the QR code entry with the generated URL
         const updatedQrCode = await prisma.qrcodes.update({
@@ -221,17 +213,8 @@ async function createClassicQRCode({
             throw new Error("A QR Code with the same name already exists");
         }
 
-        // Generate the QR code as an SVG string from the website URL
-        const svgString = await QRCode.toString(values.websiteUrl, {
-            type: "svg",
-            color: {
-                dark: "#000000",
-                light: "#ffffff"
-            }
-        });
-
-        // Convert the SVG string to a base64 encoded data URL
-        const qrCodeURL = `data:image/svg+xml;base64,${Buffer.from(svgString).toString("base64")}`;
+        // Generate the QR Code URL
+        const qrCodeURL = await generateQRCode(values.websiteUrl);
 
         // Create the QR code entry in the database for a classic QR code
         const qrCode = await prisma.qrcodes.create({
