@@ -34,7 +34,7 @@ export default function VCardEditor({
                 <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
                     Edit vCard
                 </h2>
-                <EditForm type="vCards" id={id} form={form} />
+                <EditForm type="vCards" id={id} form={form} initialData={initialData} />
             </div>
 
             {/* Live Preview Section */}
