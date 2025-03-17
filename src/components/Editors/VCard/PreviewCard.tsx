@@ -1,8 +1,8 @@
+import { cardDetailsFormSchema } from "@/lib/schemas";
 import Link from "next/link";
 import { z } from "zod";
-import { editVCardFormSchema } from "@/lib/schemas";
 
-export default function PreviewCard({ data }: { data: z.infer<typeof editVCardFormSchema> }) {
+export default function PreviewCard({ data }: { data: z.infer<typeof cardDetailsFormSchema> }) {
     const contactPoints = [
         { icon: "fa-envelope", value: data.email, type: "mailto" },
         { icon: "fa-phone", value: data.phoneNumber, type: "tel" },

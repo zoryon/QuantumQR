@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server"
-import { editVCardFormSchema } from "@/lib/schemas"
 import getPrismaClient from "@/lib/db";
 import { cookies } from "next/headers";
 import { verifySession } from "@/lib/session";
 import { ResultType } from "@/types/ResultType";
+import { TYPE_MAPPING } from "@/constants/qrCodes";
+import { PrismaModel } from "@/types/prisma";
 
 export async function PUT(request: Request) {
     try {
@@ -12,7 +13,7 @@ export async function PUT(request: Request) {
         const session = await verifySession(sessionToken);
 
         if (!session?.userId) {
-            return NextResponse.json<ResultType>({ 
+            return NextResponse.json<ResultType>({
                 success: false,
                 message: "Unauthorized",
                 body: null
@@ -20,58 +21,78 @@ export async function PUT(request: Request) {
         }
 
         const body = await request.json();
-
-        // Zod validation
-        const validatedData = editVCardFormSchema.parse(body);
+        const { id, type, ...values } = body;
 
         const prisma = getPrismaClient();
 
-        // Check if the vCard exists
-        const existingVCard = await prisma.vcardqrcodes.findUnique({
-            where: { qrCodeId: validatedData.id },
-            include: { qrcodes: true }
-        });
-
-        if (!existingVCard) {
+        // Find the correct type mapping
+        const mapping = TYPE_MAPPING.find(m => m.type === type)
+        if (!mapping) {
             return NextResponse.json<ResultType>({
                 success: false,
-                message: "vCard not found",
+                message: "Invalid QR code type",
                 body: null
-            }, { status: 404 });
+            }, { status: 400 });
         }
 
-        // Transaction to update both tables
-        const result = await prisma.$transaction([
+        // Validate with correct schema
+        const validatedData = mapping.schema.parse(values);
+
+        const { name, ...data} = validatedData;
+
+        const existingQRCode = await prisma.qrcodes.findFirst({
+            where: {
+                userId: Number(session.userId),
+                name: name,
+            }
+        });
+
+        if (existingQRCode && existingQRCode.name === name) {
+            return NextResponse.json<ResultType>({
+                success: false,
+                message: "A QR Code with the same name already exists",
+                body: null
+            }, { status: 400 });
+        }
+
+        // Transaction for atomic update
+        const transaction = [
+            // Update main QR code record
             prisma.qrcodes.update({
                 where: {
-                    id: validatedData.id,
-                    userId: session.userId
+                    id: Number(id),
+                    userId: Number(session.userId)
                 },
-                data: {
-                    updatedAt: new Date(),
+                data: { 
+                    name: name,
+                    updatedAt: new Date()
                 }
             }),
-            prisma.vcardqrcodes.update({
-                where: { qrCodeId: validatedData.id },
-                data: {
-                    firstName: validatedData.firstName,
-                    lastName: validatedData.lastName,
-                    phoneNumber: validatedData.phoneNumber || null,
-                    email: validatedData.email || null,
-                    websiteUrl: validatedData.websiteUrl || null,
-                    address: validatedData.address || null
-                }
-            })
-        ]);
+
+            // Update type-specific table
+            (prisma[mapping.model as PrismaModel] as any).update({
+                where: { qrCodeId: Number(id) },
+                data: data,
+            }),
+        ];
+
+        if (!transaction) {
+            return NextResponse.json<ResultType>({
+                success: false,
+                message: "Malformed request",
+                body: null
+            }, { status: 400 });
+        }
+        const result = await prisma.$transaction(transaction);
 
         return NextResponse.json<ResultType>({
             success: true,
-            message: "vCard updated successfully",
+            message: "QR Code updated successfully",
             body: result
         }, { status: 200 });
     } catch (error) {
         console.error("Error updating: ", error);
-        return NextResponse.json<ResultType>({ 
+        return NextResponse.json<ResultType>({
             success: false,
             message: "Internal server error",
             body: null

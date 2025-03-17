@@ -1,13 +1,9 @@
+import { TYPE_MAPPING } from "@/constants/qrCodes";
 import getPrismaClient from "@/lib/db";
 import { verifySession } from "@/lib/session";
 import { QRCode } from "@/types/QRCodeType";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-
-const typeMappings = [
-    { relation: "vcardqrcodes", type: "vCards" as const },
-    { relation: "classicqrcodes", type: "classic" as const },
-];
 
 export async function GET() {
     try {
@@ -22,7 +18,7 @@ export async function GET() {
         const prisma = getPrismaClient();
 
         // Dynamically build include object
-        const include = typeMappings.reduce((acc, mapping) => {
+        const include = TYPE_MAPPING.reduce((acc, mapping) => {
             acc[mapping.relation] = true;
             return acc;
         }, {} as Record<string, boolean>);
@@ -41,7 +37,7 @@ export async function GET() {
 
         // Transform results into typed response
         const typedQRCodes = qrCodes.map((qr): QRCode => {
-            for (const mapping of typeMappings) {
+            for (const mapping of TYPE_MAPPING) {
                 const relationData = qr[mapping.relation];
                 if (relationData) {
                     return {

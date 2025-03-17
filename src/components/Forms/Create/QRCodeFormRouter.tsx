@@ -95,7 +95,7 @@ const QRCodeForm = () => {
     }
 
     switch (qrType) {
-        case "classic":
+        case "classics":
             return (<ClassicForm onSubmit={onSubmit} />);
         case "vCards": 
             return (<VCardForm onSubmit={onSubmit} />);

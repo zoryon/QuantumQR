@@ -63,7 +63,7 @@ export async function POST(req: Request) {
                     values: parsedValues.data
                 });
                 break;
-            case "classic":
+            case "classics":
                 parsedValues = classicDetailsFormSchema.safeParse(values);
 
                 if (!parsedValues.success) {

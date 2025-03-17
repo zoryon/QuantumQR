@@ -1,8 +1,8 @@
 "use server";
 
-import DownloadButton from "@/components/DownloadButton";
+import DownloadButton from "@/components/Buttons/DownloadButton";
 import ScanIncrementer from "@/components/ScanIncrementer";
-import ShareButton from "@/components/ShareButton";
+import ShareButton from "@/components/Buttons/ShareButton";
 import { ContactPoint } from "@/types/ContactPointsType";
 import { QRCodeTypes, VCardResponse } from "@/types/QRCodeType";
 import Link from "next/link";

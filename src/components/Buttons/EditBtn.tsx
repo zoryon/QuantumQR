@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { QRCode } from "@/types/QRCodeType";
 
 const EditBtn = ({ 

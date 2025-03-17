@@ -14,12 +14,12 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "./ui/checkbox";
+import { Checkbox } from "../ui/checkbox";
 import Link from "next/link";
 import { useState } from "react";
-import ResultMessage from "./ResultMessage";
+import ResultMessage from "../ResultMessage";
 import { ResultType } from "@/types/ResultType";
-import PasswordField from "./PasswordField";
+import PasswordField from "../PasswordField";
 
 const RegisterForm = () => {
     const [isPending, setIsPending] = useState(false);

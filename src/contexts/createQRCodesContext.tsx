@@ -1,6 +1,6 @@
 "use client";
 
-import { cardDetailsFormSchema, CardDetailsFormValues, classicDetailsFormSchema, ClassicDetailsFormValues, EditVCardFormValues } from "@/lib/schemas";
+import { cardDetailsFormSchema, CardDetailsFormValues, classicDetailsFormSchema, ClassicDetailsFormValues } from "@/lib/schemas";
 import { QRCodeTypes, VCardQRCode } from "@/types/QRCodeType";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createContext, useCallback, useContext, useEffect, useState } from "react"
@@ -13,8 +13,7 @@ type DesignOptions = {
 };
 export type FormValues =
     ClassicDetailsFormValues |
-    CardDetailsFormValues |
-    EditVCardFormValues;
+    CardDetailsFormValues;
 
 type QrCreatorContextType = {
     step: number,
@@ -53,7 +52,7 @@ export const QrCreatorContext = createContext<QrCreatorContextType>(null!);
 
 export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
     const [step, setStep] = useState<number>(1);
-    const [qrType, setQrType] = useState<QRCodeTypes>("classic");
+    const [qrType, setQrType] = useState<QRCodeTypes>("classics");
     const [created, setCreated] = useState<boolean>(false);
     const [vCardData, setVCardData] = useState<VCardData>(initialVCardData);
     const [designOptions, setDesignOptions] = useState<DesignOptions>(initialDesignOptions);
@@ -61,7 +60,7 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
 
     const getSchemaAndDefaultValues = useCallback(() => {
         switch (qrType) {
-            case "classic":
+            case "classics":
                 return {
                     schema: classicDetailsFormSchema,
                     defaultValues: {
@@ -102,7 +101,7 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
 
     function reset() {
         setCreated(false);
-        setQrType("classic");
+        setQrType("classics");
         setVCardData(initialVCardData);
         setDesignOptions(initialDesignOptions);
     }

@@ -1,4 +1,4 @@
-import ForgotPasswordForm from "@/components/ForgotPasswordForm/ForgotPasswordForm";
+import ForgotPasswordForm from "@/components/Forms/ForgotPasswordForm/ForgotPasswordForm";
 import Link from "next/link";
 
 interface PageProps {

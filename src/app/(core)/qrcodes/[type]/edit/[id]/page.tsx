@@ -1,45 +1,32 @@
-"use server";
-
-import VCardEditor from "@/components/VCardEditor";
-import { QRCodeTypes, VCardResponse } from "@/types/QRCodeType";
+import EditForm from "@/components/Forms/Edit/EditFormRouter";
+import VCardEditor from "@/components/Editors/VCard/VCardEditor";
+import { ClassicResponse, isQRCodeType, QRCodeTypes, QRCodeTypesArray, VCardResponse } from "@/types/QRCodeType";
 import { notFound } from "next/navigation";
-
-const type: QRCodeTypes = "vCards";
-
-// Helper function to transform null values to undefined
-const transformNullToUndefined = (data: VCardResponse) => ({
-    id: data.id,
-    firstName: data.firstName,
-    lastName: data.lastName,
-    phoneNumber: data.phoneNumber || undefined,
-    email: data.email || undefined,
-    websiteUrl: data.websiteUrl || undefined,
-    address: data.address || undefined,
-});
 
 export default async function EditVCardPage({
     params: paramsPromise,
 }: {
-    params: Promise<{ id: string }>;
+    params: Promise<{ type: string, id: string }>;
 }) {
     const params = await paramsPromise;
-    const { id } = params;
-    if (!id) return notFound();
+    const { type, id } = params;
+    if (!type || !id) return notFound();
+
+    // Normalize the type before the checks
+    const normalizedType = QRCodeTypesArray.find(t => t.toLowerCase() === type.toLowerCase());
+    if (!normalizedType || !isQRCodeType(normalizedType)) return notFound();
 
     const qrCodeId = Number(id);
     if (isNaN(qrCodeId)) return notFound();
-
-    const qrCode: VCardResponse = await fetch(
-        `${process.env.WEBSITE_URL}/api/qrcodes/find?id=${qrCodeId}&type=${type}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-    }
+    
+    const qrCode = await fetch(
+        `${process.env.WEBSITE_URL}/api/qrcodes/find?id=${qrCodeId}&type=${normalizedType}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        }
     ).then((res) => res.json());
-
+    
     if (!qrCode) return notFound();
-
-    // Transform null values to undefined
-    const transformedData = transformNullToUndefined(qrCode);
 
     return (
         <div className="min-h-screen bg-gray-900 overflow-hidden relative">
@@ -54,10 +41,21 @@ export default async function EditVCardPage({
                     <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-soft-light" />
 
                     <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
-                        <VCardEditor initialData={transformedData} />
+                        {RenderEditor({ type: normalizedType, qrCode })}
                     </div>
                 </div>
             </main>
         </div>
     );
+}
+
+const RenderEditor = ({ type, qrCode }: { type: QRCodeTypes, qrCode: any }) => {
+    switch (type) {
+        case "vCards":
+            return <VCardEditor id={qrCode.id} initialData={qrCode as VCardResponse} />;
+        case "classics":
+            return <EditForm type={type} id={qrCode.id} initialData={qrCode as ClassicResponse} />;
+        default:
+            return notFound();
+    }
 }

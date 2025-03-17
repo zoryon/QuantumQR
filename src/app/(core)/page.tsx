@@ -4,10 +4,10 @@ import { useQrCodeList } from "@/contexts/qrCodesListContext";
 import { QRCode, VCardQRCode } from "@/types/QRCodeType";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import DownloadButton from "@/components/DownloadButton";
-import DeleteBtn from "@/components/DeleteBtn";
+import DownloadButton from "@/components/Buttons/DownloadButton";
+import DeleteBtn from "@/components/Buttons/DeleteBtn";
 import CreateBtn from "@/components/global/CreateBtn";
-import EditBtn from "@/components/EditBtn";
+import EditBtn from "@/components/Buttons/EditBtn";
 import { cn } from "@/lib/utils";
 import useSafeToast from "@/lib/useSafeToast";
 

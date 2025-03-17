@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { QRCodeTypes } from "@/types/QRCodeType";
 
 const DownloadButton = ({
