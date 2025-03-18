@@ -1,5 +1,6 @@
 "use server";
 
+import { api } from "@/lib/endpointBuilder";
 import { VCardResponse } from "@/types/QRCodeType";
 
 /**
@@ -28,7 +29,7 @@ export async function updateVCard(prevState: any, formData: FormData): Promise<{
         };
 
         // Send a PUT request to the API endpoint for updating the vCard
-        const response = await fetch(`${process.env.WEBSITE_URL}/api/qrcodes/update`, {
+        const response = await fetch(`${process.env.WEBSITE_URL}${api.qrcodes.update.toString()}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),

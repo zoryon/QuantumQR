@@ -11,6 +11,7 @@ import PasswordField from "../../PasswordField";
 import { Button } from "../../ui/button";
 import ResultMessage from "../../ResultMessage";
 import { Form } from "../../ui/form";
+import { api } from "@/lib/endpointBuilder";
 
 const ResetPasswordForm = ({ token }: { token: string }) => {
     const [isPending, setIsPending] = useState(false);
@@ -20,7 +21,7 @@ const ResetPasswordForm = ({ token }: { token: string }) => {
     async function onSubmit(values: z.infer<typeof resetPasswordFormSchema>) {
         try {
             setIsPending(true);
-            const res = await fetch("/api/auth/forgotPassword/reset", {
+            const res = await fetch(api.auth.forgotPassword.reset.toString(), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

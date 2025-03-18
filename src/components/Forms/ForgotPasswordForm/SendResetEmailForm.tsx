@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "../../ui/input";
 import { Button } from "../../ui/button";
 import ResultMessage from "../../ResultMessage";
+import { api } from "@/lib/endpointBuilder";
 
 
 const SendResetEmailForm = () => {
@@ -19,7 +20,7 @@ const SendResetEmailForm = () => {
     async function onSubmit(values: z.infer<typeof sendResetEmailFormSchema>) {
         try {
             setIsPending(true);
-            const res = await fetch("/api/auth/forgotPassword/sendEmail", {
+            const res = await fetch(api.auth.forgotPassword.sendEmail.toString(), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

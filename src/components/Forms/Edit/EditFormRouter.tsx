@@ -7,6 +7,7 @@ import { FormValues } from "@/hooks/useQrCodeCreator";
 import EditVCardForm from "./EditVCardForm";
 import EditClassicForm from "./EditClassicForm";
 import { useState } from "react";
+import { api } from "@/lib/endpointBuilder";
 
 // This component is used to update the vCards data
 // It contains the form to update the vCard data
@@ -40,7 +41,7 @@ const EditForm = ({
             router.push("/");
 
             // API call to update
-            const res = await fetch("/api/qrcodes/update", {
+            const res = await fetch(api.qrcodes.update.toString(), {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"

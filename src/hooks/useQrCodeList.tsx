@@ -1,5 +1,6 @@
 "use client";
 
+import { api } from "@/lib/endpointBuilder";
 import { QRCode, ResultType } from "@/types";
 import { createContext, useContext, useEffect, useState } from "react"
 
@@ -24,7 +25,7 @@ export function QrCodeListProvider({ children }: { children: React.ReactNode }) 
   async function fetchQrCodes() {
     try {
       setIsLoading(true);
-      const res = await fetch("/api/qrcodes/findAll", {
+      const res = await fetch(api.qrcodes.findAll.toString(), {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

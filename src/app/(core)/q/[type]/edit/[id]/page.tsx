@@ -2,6 +2,7 @@ import EditForm from "@/components/Forms/Edit/EditFormRouter";
 import VCardEditor from "@/components/Editors/VCard/VCardEditor";
 import { ClassicResponse, isQRCodeType, QRCodeTypes, QRCodeTypesArray, VCardResponse } from "@/types";
 import { notFound } from "next/navigation";
+import { api } from "@/lib/endpointBuilder";
 
 export default async function EditVCardPage({
     params: paramsPromise,
@@ -20,7 +21,7 @@ export default async function EditVCardPage({
     if (isNaN(qrCodeId)) return notFound();
     
     const qrCode = await fetch(
-        `${process.env.WEBSITE_URL}/api/qrcodes/find?id=${qrCodeId}&type=${normalizedType}`, {
+        `${process.env.WEBSITE_URL}${api.qrcodes.find.query({ id: qrCodeId, type: normalizedType})}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
         }

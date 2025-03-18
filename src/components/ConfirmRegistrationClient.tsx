@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import { api } from "@/lib/endpointBuilder";
 
 const ConfirmRegistrationClient = ({
     token
@@ -19,7 +20,7 @@ const ConfirmRegistrationClient = ({
 
         async function confirmRegistration() {
             try {
-                const res = await fetch(`/api/auth/register/confirm?token=${token}`, {
+                const res = await fetch(api.auth.register.confirm.query({ token }), {
                     method: "GET",
                     headers: {
                         "Accept": "application/json",
