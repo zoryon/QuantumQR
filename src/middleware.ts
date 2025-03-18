@@ -101,6 +101,15 @@ export async function middleware(req: NextRequest) {
         return NextResponse.next();
     }
 
+    /**
+     * Allow access to public pages under /r
+     * Regex pattern: /r/:type/:id
+     * Example: /r/classics/123
+     */ 
+    if (pathname.match(/^\/r\/[^/]+\/[^/]+\/?$/)) {
+        return NextResponse.next();
+    }
+
     // Redirect unauthenticated users trying to access private pages to the landing page
     if (!isAuthenticated) {
         return NextResponse.redirect(new URL("/landing", req.url));
