@@ -12,7 +12,7 @@ const Step1 = () => (
 );
 
 const QRCodesCard = () => {
-    const { setQrType, handleNext } = useQrCodeCreator();
+    const { setQrType, handleNext, form } = useQrCodeCreator();
 
     return (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cons-4 gap-4">
@@ -21,6 +21,7 @@ const QRCodesCard = () => {
                     key={index}
                     className="group relative bg-gray-700/20 rounded-xl p-5 sm:p-6 cursor-pointer border-2 border-transparent hover:border-indigo-400/30 transition-all"
                     onClick={() => {
+                        form.reset();
                         setQrType(type.title);
                         handleNext();
                     }}

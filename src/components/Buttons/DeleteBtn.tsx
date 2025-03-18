@@ -25,7 +25,7 @@ const DeleteBtn = ({
                 setIsPending(true);
                 setQrCodes(prev => prev.filter(code => code.id !== qrCode.id));
 
-                const res = await fetch("/api/q/delete", {
+                const res = await fetch("/api/qrcodes/delete", {
                     method: "DELETE",
                     headers: {
                         "Content-Type": "application/json",

@@ -13,7 +13,7 @@ const Step2 = () => {
         if (created !== true) return;
 
         setTimeout(reset, 1000);
-    }, [created])
+    }, [created]);
 
     return (
         <div className="space-y-8">
