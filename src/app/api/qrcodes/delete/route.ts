@@ -1,6 +1,6 @@
 import getPrismaClient from "@/lib/db";
 import { verifySession } from "@/lib/session";
-import { ResultType } from "@/types/ResultType";
+import { ResultType } from "@/types";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 

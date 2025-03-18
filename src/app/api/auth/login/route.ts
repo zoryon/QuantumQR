@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { cookies } from "next/headers";
 import { createSignedSessionToken, isLoggedIn } from "@/lib/session";
-import { ResultType } from "@/types/ResultType";
+import { ResultType } from "@/types";
 
 /**
  * Handles the POST request for logging in a user.

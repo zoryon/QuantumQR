@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { ResultType } from "@/types/ResultType";
+import { ResultType } from "@/types";
 
 const ResultMessage = ({ success, message}: Omit<ResultType, "body">) => {
     return message && (

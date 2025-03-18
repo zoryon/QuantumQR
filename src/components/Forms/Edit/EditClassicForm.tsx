@@ -17,6 +17,7 @@ const EditClassicForm = ({
     isPending: boolean,
     initialData: any
 }) => {
+    console.log(initialData);
     const form = useForm<z.infer<typeof classicDetailsFormSchema>>({
         resolver: zodResolver(classicDetailsFormSchema),
         defaultValues: initialData,
@@ -25,7 +26,7 @@ const EditClassicForm = ({
     return (
         <div className="space-y-8 p-0 xl:p-4 col-span-2">
             <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-                Edit vCard
+                Edit QR Code
             </h2>
 
             <Form {...form}>

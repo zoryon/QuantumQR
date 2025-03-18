@@ -1,7 +1,6 @@
 "use client";
 
-import { QRCode } from "@/types/QRCodeType";
-import { ResultType } from "@/types/ResultType";
+import { QRCode, ResultType } from "@/types";
 import { createContext, useContext, useEffect, useState } from "react"
 
 type QrCodeListContextType = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { DEMO_STATS } from "@/constants/landing";
+import { DEMO_STATS } from "@/constants";
 import { Button } from "../ui/button";
 import { motion } from "framer-motion";
 

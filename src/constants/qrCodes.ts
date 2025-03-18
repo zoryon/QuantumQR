@@ -1,5 +1,5 @@
 import { cardDetailsFormSchema, classicDetailsFormSchema } from "@/lib/schemas";
-import { QRCodeTypes } from "@/types/QRCodeType";
+import { QRCodeTypes } from "@/types";
 import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 

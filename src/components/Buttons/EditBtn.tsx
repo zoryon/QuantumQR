@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { QRCode } from "@/types/QRCodeType";
+import { QRCode } from "@/types";
 
 const EditBtn = ({ 
     qrCode,
@@ -11,7 +11,7 @@ const EditBtn = ({
 }) => {
     return (
         <Link 
-            href={isDisabled ? "#" : `/qrcodes/${qrCode.type.toLowerCase()}/edit/${qrCode.id}`}
+            href={isDisabled ? "#" : `/q/${qrCode.type.toLowerCase()}/edit/${qrCode.id}`}
             onClick={(e) => isDisabled && e.preventDefault()}
         >
             <Button

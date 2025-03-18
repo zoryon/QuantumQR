@@ -1,11 +1,11 @@
 import { cardDetailsFormSchema, CardDetailsFormValues, classicDetailsFormSchema, ClassicDetailsFormValues } from "@/lib/schemas";
-import { QRCodeTypes } from "@/types/QRCodeType";
+import { QRCodeTypes, ResultType } from "@/types";
 import { NextResponse } from "next/server";
 import getPrismaClient from "@/lib/db";
 import { verifySession } from "@/lib/session";
 import { cookies } from "next/headers";
-import { ResultType } from "@/types/ResultType";
 import { generateQRCode } from "@/lib/qrcode";
+import { ROUTER_URL } from "@/constants";
 
 const prisma = getPrismaClient();
 
@@ -89,6 +89,7 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
                         body: null
                     }, { status: 400 });
                 }
+
                 qrCode = await createClassicQRCode({
                     userId: session.userId as number,
                     values: parsedValues.data
@@ -211,27 +212,36 @@ async function createClassicQRCode({
         if (existingQrCode) {
             throw new Error("A QR Code with the same name already exists");
         }
-
-        // Generate the QR Code URL
-        const qrCodeURL = await generateQRCode(values.websiteUrl);
-
+        
         // Create the QR code entry in the database for a classic QR code
         const qrCode = await prisma.qrcodes.create({
             data: {
                 name: values.name,
                 userId: userId,
-                url: qrCodeURL, // Store the generated URL for the QR code
+                url: "", // URL will be populated later
                 classicqrcodes: {
                     create: {
                         websiteUrl: values.websiteUrl, // Store the website URL in the database
                     }
                 }
             },
-            include: { vcardqrcodes: true }
+            include: { classicqrcodes: true }
+        });
+
+        // Generate the QR Code URL
+        const url = `${ROUTER_URL}/classics/${qrCode.id}`; 
+        
+        const qrCodeBase64 = await generateQRCode(url);
+
+        // Update the QR code entry with the generated URL
+        const updatedQrCode = await prisma.qrcodes.update({
+            where: { id: qrCode.id },
+            data: { url: qrCodeBase64 },
+            include: { classicqrcodes: true }
         });
 
         // Return the created QR code entry
-        return qrCode;
+        return updatedQrCode;
     } catch (error: any) {
         console.error("Error generating or saving QR code: ", error);
         throw error;

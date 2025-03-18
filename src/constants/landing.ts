@@ -3,7 +3,7 @@ import {
     Feature,
     PricingPlan,
     QRMatrixItem
-} from "@/types/landingType";
+} from "@/types";
 
 /** 
  * QR_MATRIX: Defines various QR matrix styles available for selection.

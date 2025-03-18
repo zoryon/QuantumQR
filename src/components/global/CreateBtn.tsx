@@ -8,7 +8,7 @@ const CreateBtn = ({ alwaysDesktop = false }: { alwaysDesktop?: boolean }) => {
     return (
         <>
             {/* Desktop Version - Visible on sm+ or always if alwaysDesktop */}
-            <Link href="/qrcodes/create">
+            <Link href="/q/create">
                 <Button
                     className={cn(
                         `items-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-6 
@@ -23,7 +23,7 @@ const CreateBtn = ({ alwaysDesktop = false }: { alwaysDesktop?: boolean }) => {
             </Link>
 
             {/* Mobile Version - Hidden when alwaysDesktop is true */}
-            <Link href="/qrcodes/create">
+            <Link href="/q/create">
                 <Button
                     className={cn(
                         `h-12 w-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 p-0 shadow-2xl 

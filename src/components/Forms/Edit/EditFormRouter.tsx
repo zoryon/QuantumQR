@@ -2,9 +2,8 @@
 
 import { useQrCodeList } from "@/hooks/useQrCodeList";
 import { notFound, useRouter } from "next/navigation";
-import { ResultType } from "@/types/ResultType";
+import { ResultType, QRCodeTypes } from "@/types";
 import { FormValues } from "@/hooks/useQrCodeCreator";
-import { QRCodeTypes } from "@/types/QRCodeType";
 import EditVCardForm from "./EditVCardForm";
 import EditClassicForm from "./EditClassicForm";
 import { useState } from "react";

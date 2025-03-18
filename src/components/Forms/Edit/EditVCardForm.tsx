@@ -6,12 +6,12 @@ import { Input } from "../../ui/input";
 import { CardDetailsFormValues } from "@/lib/schemas";
 import { UseFormReturn } from "react-hook-form";
 
-const EditVCardForm = ({ 
-    form, 
-    onSubmit, 
-    isPending 
-} : { 
-    form?: UseFormReturn<CardDetailsFormValues>, 
+const EditVCardForm = ({
+    form,
+    onSubmit,
+    isPending
+}: {
+    form?: UseFormReturn<CardDetailsFormValues>,
     onSubmit: any,
     isPending: boolean
 }) => {
@@ -23,14 +23,21 @@ const EditVCardForm = ({
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-gray-800/40 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-700/50">
                 <div className="grid grid-cols-2 gap-4">
-                    {/* Hidden Name field */}
+                    {/* Name field */}
                     <FormField
                         control={form.control}
                         name="name"
                         render={({ field }) => (
-                            <FormControl>
-                                <Input type="hidden" {...field} />
-                            </FormControl>
+                            <FormItem className="col-span-2">
+                                <FormLabel className="text-gray-300">QR Code's Name</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        placeholder="My Professional VCard"
+                                        {...field}
+                                        className="bg-gray-700/20 border-gray-600/50 focus:border-indigo-400/50 focus:ring-indigo-400/50 text-gray-100"
+                                    />
+                                </FormControl>
+                            </FormItem>
                         )}
                     />
 

@@ -4,8 +4,7 @@ import { CardDetailsFormValues, ClassicDetailsFormValues } from "@/lib/schemas";
 import { FormValues, useQrCodeCreator } from "@/hooks/useQrCodeCreator";
 import { useRouter } from "next/navigation";
 import { useQrCodeList } from "@/hooks/useQrCodeList";
-import { QRCode, QRCodeTypes } from "@/types/QRCodeType";
-import { ResultType } from "@/types/ResultType";
+import { QRCode, QRCodeTypes, ResultType } from "@/types";
 import VCardForm from "./VCardForm";
 import ClassicForm from "./ClassicForm";
 

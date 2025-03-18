@@ -1,4 +1,4 @@
-import { PolicyTypes } from "@/types/PolicyTypes";
+import { PolicyTypes } from "@/types";
 import { NextResponse } from "next/server";
 import path from "path";
 import fs from "fs";

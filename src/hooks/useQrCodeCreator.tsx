@@ -1,7 +1,7 @@
 "use client";
 
 import { cardDetailsFormSchema, CardDetailsFormValues, classicDetailsFormSchema, ClassicDetailsFormValues } from "@/lib/schemas";
-import { QRCodeTypes, VCardQRCode } from "@/types/QRCodeType";
+import { QRCodeTypes, VCardQRCode } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createContext, useCallback, useContext, useEffect, useState } from "react"
 import { useForm } from "react-hook-form";
