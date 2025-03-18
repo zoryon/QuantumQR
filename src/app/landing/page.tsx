@@ -6,7 +6,7 @@ import LandingNavbar from "@/components/LandingComp/LandingNavbar";
 import MorphingGrid from "@/components/LandingComp/MorphingGrid";
 import TesseractPricing from "@/components/LandingComp/TesseractPricing";
 import { Button } from "@/components/ui/button";
-import { FRACTAL_FEATURES, QR_MATRIX } from "@/constants/landing";
+import { FRACTAL_FEATURES, QR_MATRIX } from "@/constants";
 import { motion } from "framer-motion";
 import Link from "next/link";
 

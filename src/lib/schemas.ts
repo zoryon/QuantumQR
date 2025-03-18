@@ -64,7 +64,7 @@ export const resetPasswordFormSchema = z.object({
  * Base schema for QR code details with a name field.
  * - Name must be between 2 and 25 characters.
  */
-const BaseQRCodeSchema = z.object({
+const baseQRCodeSchema = z.object({
     name: z.string().min(2).max(25),
 });
 
@@ -72,7 +72,7 @@ const BaseQRCodeSchema = z.object({
  * Schema for classic QR code details.
  * - Inherits from BaseQRCodeSchema and adds a nullable website URL.
  */
-export const classicDetailsFormSchema = BaseQRCodeSchema.merge(
+export const classicDetailsFormSchema = baseQRCodeSchema.merge(
     z.object({
         name: z.string().min(2).max(25),
         websiteUrl: z.string().url().nullable(),
@@ -83,7 +83,7 @@ export const classicDetailsFormSchema = BaseQRCodeSchema.merge(
  * Schema for vCard QR code details.
  * - Inherits from BaseQRCodeSchema and adds fields for first name, last name, email, phone number, address, and website URL.
  */
-export const cardDetailsFormSchema = BaseQRCodeSchema.merge(
+export const cardDetailsFormSchema = baseQRCodeSchema.merge(
     z.object({
         firstName: z.string().min(2).max(25),
         lastName: z.string().min(2).max(25),

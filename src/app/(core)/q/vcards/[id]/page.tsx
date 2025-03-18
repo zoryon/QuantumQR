@@ -3,8 +3,7 @@
 import DownloadButton from "@/components/Buttons/DownloadButton";
 import ScanIncrementer from "@/components/ScanIncrementer";
 import ShareButton from "@/components/Buttons/ShareButton";
-import { ContactPoint } from "@/types/ContactPointsType";
-import { QRCodeTypes, VCardResponse } from "@/types/QRCodeType";
+import { ContactPoint, QRCodeTypes, VCardResponse } from "@/types";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 

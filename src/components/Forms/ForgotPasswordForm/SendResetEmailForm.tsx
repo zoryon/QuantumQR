@@ -1,7 +1,7 @@
 "use client";
 
 import { sendResetEmailFormSchema } from "@/lib/schemas";
-import { ResultType } from "@/types/ResultType";
+import { ResultType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";

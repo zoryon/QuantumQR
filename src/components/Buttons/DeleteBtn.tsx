@@ -2,7 +2,7 @@
 
 import { useQrCodeList } from "@/hooks/useQrCodeList";
 import { Button } from "../ui/button";
-import { QRCode } from "@/types/QRCodeType";
+import { QRCode } from "@/types";
 import { useState } from "react";
 
 const DeleteBtn = ({ 

@@ -1,7 +1,7 @@
 import getPrismaClient from "@/lib/db";
 import { validateConfirmationToken } from "@/lib/mailer";
 import { isLoggedIn } from "@/lib/session";
-import { ResultType } from "@/types/ResultType";
+import { ResultType } from "@/types";
 import { NextResponse } from "next/server";
 
 /**

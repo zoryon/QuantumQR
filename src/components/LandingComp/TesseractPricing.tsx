@@ -4,7 +4,7 @@ import { useScroll, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "../ui/button";
-import { PRICING_PLANS } from "@/constants/landing";
+import { PRICING_PLANS } from "@/constants";
 import ParticleField from "./ParticleField";
 
 const TesseractPricing = () => {

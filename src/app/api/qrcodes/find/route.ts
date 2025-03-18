@@ -1,5 +1,5 @@
 import { getPrismaClient } from "@/lib/db";
-import { QRCodeTypes } from "@/types/QRCodeType";
+import { QRCodeTypes } from "@/types";
 import { NextResponse } from "next/server";
 
 /**

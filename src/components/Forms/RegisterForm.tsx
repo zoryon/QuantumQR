@@ -18,7 +18,7 @@ import { Checkbox } from "../ui/checkbox";
 import Link from "next/link";
 import { useState } from "react";
 import ResultMessage from "../ResultMessage";
-import { ResultType } from "@/types/ResultType";
+import { ResultType } from "@/types";
 import PasswordField from "../PasswordField";
 
 const RegisterForm = () => {

@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import getPrismaClient from "@/lib/db";
 import { isLoggedIn } from "@/lib/session";
 import transporter, { createSignedConfirmationToken } from "@/lib/mailer";
-import { ResultType } from "@/types/ResultType";
+import { ResultType } from "@/types";
 
 /**
  * Handles the POST request for user registration.

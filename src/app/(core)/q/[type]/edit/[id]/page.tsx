@@ -1,6 +1,6 @@
 import EditForm from "@/components/Forms/Edit/EditFormRouter";
 import VCardEditor from "@/components/Editors/VCard/VCardEditor";
-import { ClassicResponse, isQRCodeType, QRCodeTypes, QRCodeTypesArray, VCardResponse } from "@/types/QRCodeType";
+import { ClassicResponse, isQRCodeType, QRCodeTypes, QRCodeTypesArray, VCardResponse } from "@/types";
 import { notFound } from "next/navigation";
 
 export default async function EditVCardPage({
@@ -26,7 +26,7 @@ export default async function EditVCardPage({
         }
     ).then((res) => res.json());
     
-    if (!qrCode) return notFound();
+    if (!qrCode || qrCode.error) return notFound();
 
     return (
         <div className="min-h-screen bg-gray-900 overflow-hidden relative">

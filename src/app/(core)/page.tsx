@@ -1,7 +1,7 @@
 "use client";
 
 import { useQrCodeList } from "@/hooks/useQrCodeList";
-import { QRCode, VCardQRCode } from "@/types/QRCodeType";
+import { QRCode, VCardQRCode } from "@/types";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import DownloadButton from "@/components/Buttons/DownloadButton";

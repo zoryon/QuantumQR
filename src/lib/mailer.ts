@@ -1,4 +1,4 @@
-import { DEFAULT_EXPIRATION, JWT_ALGORITHM } from "@/constants/mailerConstants";
+import { DEFAULT_EXPIRATION, JWT_ALGORITHM } from "@/constants";
 import { JWTPayload, jwtVerify, SignJWT } from "jose";
 import nodemailer from "nodemailer";
 

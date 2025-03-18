@@ -1,7 +1,7 @@
 "use client";
 
 import { resetPasswordFormSchema } from "@/lib/schemas";
-import { ResultType } from "@/types/ResultType";
+import { ResultType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

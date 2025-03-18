@@ -1,6 +1,6 @@
 "use client";
 
-import { QRMatrixItem } from "@/types/landingType";
+import { QRMatrixItem } from "@/types";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 const MorphingGrid = ({ matrix }: { matrix: QRMatrixItem[] }) => {

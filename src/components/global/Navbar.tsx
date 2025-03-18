@@ -1,6 +1,6 @@
 "use client";
 
-import { PublicUser } from "@/types/UserType";
+import { PublicUser } from "@/types";
 import { useEffect, useRef, useState } from "react";
 import CreateBtn from "./CreateBtn";
 import LogoutBtn from "./LogoutBtn";

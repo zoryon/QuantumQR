@@ -1,7 +1,7 @@
-import { TYPE_MAPPING } from "@/constants/qrCodes";
+import { TYPE_MAPPING } from "@/constants";
 import getPrismaClient from "@/lib/db";
 import { verifySession } from "@/lib/session";
-import { QRCode } from "@/types/QRCodeType";
+import { QRCode } from "@/types";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 

@@ -2,11 +2,8 @@ import { NextResponse } from "next/server"
 import getPrismaClient from "@/lib/db";
 import { cookies } from "next/headers";
 import { verifySession } from "@/lib/session";
-import { ResultType } from "@/types/ResultType";
-import { TYPE_MAPPING } from "@/constants/qrCodes";
-import { PrismaModel } from "@/types/prisma";
-import { generateQRCode } from "@/lib/qrcode";
-import { QRCodeTypes } from "@/types/QRCodeType";
+import { ResultType, PrismaModel } from "@/types";
+import { TYPE_MAPPING } from "@/constants";
 
 /**
  * Handles updating a QR code by validating the session, checking for duplicate names,
@@ -77,10 +74,6 @@ export async function PUT(request: Request): Promise<NextResponse<ResultType>> {
             }, { status: 400 });
         }
 
-        // Prepare the QR code URL for classic types
-        const isClassic = (type as QRCodeTypes) === "classics";
-        const qrCodeURL = isClassic ? await generateQRCode(validatedData.websiteUrl) : undefined;
-
         // Create a transaction to update both the main QR code record and the type-specific table
         const transaction = [
             // Update the main QR code entry
@@ -91,7 +84,6 @@ export async function PUT(request: Request): Promise<NextResponse<ResultType>> {
                 },
                 data: { 
                     name: name,
-                    ...(isClassic && { url: qrCodeURL }), // Generate a QR code for the website URL if it's a classic type
                     updatedAt: new Date()
                 }
             }),

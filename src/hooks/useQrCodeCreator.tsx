@@ -1,13 +1,12 @@
 "use client";
 
 import { cardDetailsFormSchema, CardDetailsFormValues, classicDetailsFormSchema, ClassicDetailsFormValues } from "@/lib/schemas";
-import { QRCodeTypes, VCardQRCode } from "@/types/QRCodeType";
+import { QRCodeTypes } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createContext, useCallback, useContext, useEffect, useState } from "react"
 import { useForm } from "react-hook-form";
 
 // Define types for VCard data and design options for the QR code
-type VCardData = Omit<VCardQRCode, 'type' | 'qrCodeId'>;
 type DesignOptions = {
     color: string;
     logo: File | null;
@@ -15,7 +14,7 @@ type DesignOptions = {
 
 // Union type for form values, which can be either for a classic or vCard QR code
 export type FormValues =
-    ClassicDetailsFormValues |
+    ClassicDetailsFormValues &
     CardDetailsFormValues;
 
 // Context type for managing QR code creation state
@@ -24,8 +23,6 @@ type QrCreatorContextType = {
     setStep: React.Dispatch<React.SetStateAction<number>>,
     qrType: QRCodeTypes,
     setQrType: React.Dispatch<React.SetStateAction<QRCodeTypes>>,
-    vCardData: VCardData,
-    setVCardData: React.Dispatch<React.SetStateAction<VCardData>>,
     designOptions: DesignOptions,
     setDesignOptions: React.Dispatch<React.SetStateAction<DesignOptions>>,
     created: boolean,
@@ -38,16 +35,7 @@ type QrCreatorContextType = {
     form: ReturnType<typeof useForm<FormValues>>
 }
 
-// Initial values for vCard data and design options
-const initialVCardData: VCardData = {
-    firstName: "",
-    lastName: "",
-    phoneNumber: "",
-    email: "",
-    websiteUrl: "",
-    address: ""
-};
-
+// Initial values for design options
 const initialDesignOptions: DesignOptions = {
     color: "#000000",
     logo: null
@@ -61,17 +49,27 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
     const [step, setStep] = useState<number>(1);
     const [qrType, setQrType] = useState<QRCodeTypes>("classics");
     const [created, setCreated] = useState<boolean>(false);
-    const [vCardData, setVCardData] = useState<VCardData>(initialVCardData);
     const [designOptions, setDesignOptions] = useState<DesignOptions>(initialDesignOptions);
     const [isPending, setIsPending] = useState<boolean>(false);
 
     // Function to get the appropriate schema and default values based on the QR code type
     const getSchemaAndDefaultValues = useCallback(() => {
+        const baseDefaults = {
+            name: "",
+            websiteUrl: "",
+            firstName: "",
+            lastName: "",
+            email: "",
+            phoneNumber: "",
+            address: ""
+        };
+
         switch (qrType) {
             case "classics":
                 return {
                     schema: classicDetailsFormSchema,
                     defaultValues: {
+                        ...baseDefaults,
                         name: "My Professional Card",
                         websiteUrl: "https://company.com"
                     } as ClassicDetailsFormValues
@@ -80,6 +78,7 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
                 return {
                     schema: cardDetailsFormSchema,
                     defaultValues: {
+                        ...baseDefaults,
                         name: "My Professional Card",
                         firstName: "John",
                         lastName: "Doe",
@@ -105,6 +104,7 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
 
     // Reset the form whenever qrType changes
     useEffect(() => {
+        console.log("Resetting form with default values", defaultValues);
         form.reset(defaultValues);
     }, [qrType]);
 
@@ -112,8 +112,8 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
     function reset() {
         setCreated(false);
         setQrType("classics");
-        setVCardData(initialVCardData);
         setDesignOptions(initialDesignOptions);
+        form.reset(defaultValues);
     }
 
     // Function to move to the previous step, ensuring the step does not go below 1
@@ -129,7 +129,6 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
         <QrCreatorContext.Provider value={{
             step, setStep,
             qrType, setQrType,
-            vCardData, setVCardData,
             designOptions, setDesignOptions,
             created, setCreated,
             reset,
