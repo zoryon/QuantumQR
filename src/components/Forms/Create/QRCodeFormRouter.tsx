@@ -7,6 +7,7 @@ import { useQrCodeList } from "@/hooks/useQrCodeList";
 import { QRCode, QRCodeTypes, ResultType } from "@/types";
 import VCardForm from "./VCardForm";
 import ClassicForm from "./ClassicForm";
+import { api } from "@/lib/endpointBuilder";
 
 // This component is responsible for rendering the form based on the selected QR Code type.
 // It also handles the form submission and optimistic update of the QR Code list.
@@ -51,7 +52,7 @@ const QRCodeForm = () => {
             router.push("/");
 
             // API call to create QR Code
-            const res = await fetch("/api/qrcodes/create", {
+            const res = await fetch(api.qrcodes.create.toString(), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

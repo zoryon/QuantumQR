@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import CreateBtn from "./CreateBtn";
 import LogoutBtn from "./LogoutBtn";
 import Logo from "./Logo";
+import { api } from "@/lib/endpointBuilder";
 
 const Navbar = () => {
     const [userData, setUserData] = useState<PublicUser | null>(null);
@@ -14,7 +15,7 @@ const Navbar = () => {
     useEffect(() => {
         const fetchSessionUser = async () => {
             try {
-                const res = await fetch("/api/users/current");
+                const res = await fetch(api.users.current.toString());
                 if (!res.ok) throw new Error("Failed to fetch user session");
                 const data: PublicUser = await res.json();
                 setUserData(data);

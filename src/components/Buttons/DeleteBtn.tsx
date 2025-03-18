@@ -4,6 +4,7 @@ import { useQrCodeList } from "@/hooks/useQrCodeList";
 import { Button } from "../ui/button";
 import { QRCode } from "@/types";
 import { useState } from "react";
+import { api } from "@/lib/endpointBuilder";
 
 const DeleteBtn = ({ 
     qrCode, 
@@ -25,7 +26,7 @@ const DeleteBtn = ({
                 setIsPending(true);
                 setQrCodes(prev => prev.filter(code => code.id !== qrCode.id));
 
-                const res = await fetch("/api/qrcodes/delete", {
+                const res = await fetch(api.qrcodes.delete.toString(), {
                     method: "DELETE",
                     headers: {
                         "Content-Type": "application/json",

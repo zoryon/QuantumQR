@@ -6,6 +6,7 @@ import ShareButton from "@/components/Buttons/ShareButton";
 import { ContactPoint, QRCodeTypes, VCardResponse } from "@/types";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { api } from "@/lib/endpointBuilder";
 
 const type: QRCodeTypes = "vCards";
 
@@ -22,7 +23,7 @@ export default async function VCardPage({
     if (isNaN(qrCodeId)) return notFound();
 
     const qrCode: VCardResponse = await fetch(
-        `${process.env.WEBSITE_URL}/api/qrcodes/find?id=${qrCodeId}&type=${type}`, { 
+        `${process.env.WEBSITE_URL}${api.qrcodes.find.query({ id: qrCodeId, type: type})}`, { 
             method: "GET",
             headers: { "Content-Type": "application/json" },
         }

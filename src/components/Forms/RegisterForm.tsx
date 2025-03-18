@@ -20,6 +20,7 @@ import { useState } from "react";
 import ResultMessage from "../ResultMessage";
 import { ResultType } from "@/types";
 import PasswordField from "../PasswordField";
+import { api } from "@/lib/endpointBuilder";
 
 const RegisterForm = () => {
     const [isPending, setIsPending] = useState(false);
@@ -28,7 +29,7 @@ const RegisterForm = () => {
     async function onSubmit(values: z.infer<typeof registerFormSchema>) {
         try {
             setIsPending(true);
-            const res = await fetch("/api/auth/register", {
+            const res = await fetch(api.auth.register.toString(), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

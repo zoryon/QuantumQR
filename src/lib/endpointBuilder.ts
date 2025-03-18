@@ -1,37 +1,66 @@
 type Params = Record<string, string | number | undefined>;
 
-interface EndpointBuilder {
-  // Converte l'endpoint in stringa
-  toString: () => string;
-  // Genera una query string a partire da un oggetto di parametri
+interface Endpoint<T extends string> {
+  /**
+   * Convert the path to a string
+   * @example
+   * api.qrcodes.delete.toString() // "/api/qrcodes/delete"
+   */
+  toString: () => T;
+  
+  /**
+   * Add a query string to the path
+   * @example
+   * api.search.query({ q: "test", page: 2 }) // "q=test&page=2"
+   */
   query: (params: Params) => string;
+  
+  /** Access to sub path */
+  [key: string]: Endpoint<`${T}/${string}`> | ((params: Params) => string) | (() => T);
 }
 
-const createEndpointBuilder = (base: string = ""): EndpointBuilder => {
-  return new Proxy(
-    {},
-    {
-      get(_target, prop: string) {
-        // Se si richiede la funzione toString, restituisci il path corrente
-        if (prop === "toString") {
-          return () => base;
+const createEndpoint = <T extends string>(path: T): Endpoint<T> => {
+  const handler = {
+    get: (target: never, prop: string) => {
+      if (prop === "toString") return () => path;
+      
+      if (prop === "query") return (params: Params) => {
+        const query = new URLSearchParams();
+        for (const [key, value] of Object.entries(params)) {
+          if (value !== undefined) query.append(key, value.toString());
         }
-        // Se si richiede query, restituisci una funzione che costruisce la query string
-        if (prop === "query") {
-          return (params: Params) => {
-            const qs = new URLSearchParams();
-            Object.entries(params).forEach(([key, value]) => {
-              if (value !== undefined) qs.append(key, value.toString());
-            });
-            return qs.toString();
-          };
-        }
-        // Altrimenti, concatena il segmento richiesto e ritorna un nuovo builder
-        return createEndpointBuilder(`${base}/${prop}`);
-      },
+        return `${path}?${query}`;
+      };
+
+      return createEndpoint(`${path}/${prop}`);
     }
-  ) as EndpointBuilder;
+  };
+
+  return new Proxy({} as Endpoint<T>, handler);
 };
 
-// Esportiamo l'API root con base "/api"
-export const api = createEndpointBuilder("/api");
+// Implementation of the API endpoints
+export const api = createEndpoint("/api") as Endpoint<"/api"> & {
+  qrcodes: Endpoint<"/api/qrcodes"> & {
+    find: Endpoint<"/api/qrcodes/find">;
+    findAll: Endpoint<"/api/qrcodes/findAll">;
+    create: Endpoint<"/api/qrcodes/create">;
+    update: Endpoint<"/api/qrcodes/update">;
+    delete: Endpoint<"/api/qrcodes/delete">;
+    scan: Endpoint<"/api/qrcodes/scan">;
+  };
+  auth: Endpoint<"/api/auth"> & {
+    register: Endpoint<"/api/auth/register"> & {
+      confirm: Endpoint<"/api/auth/register/confirm">;
+    };
+    login: Endpoint<"/api/auth/login">;
+    logout: Endpoint<"/api/auth/logout">;
+    forgotPassword: Endpoint<"/api/auth/forgotPassword"> & {
+      sendEmail: Endpoint<"/api/auth/forgotPassword/sendEmail">;
+      reset: Endpoint<"/api/auth/forgotPassword/reset">;
+    };
+  };
+  users: Endpoint<"/api/users"> & {
+    current: Endpoint<"/api/users/current">;
+  };
+};

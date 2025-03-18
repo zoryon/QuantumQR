@@ -19,6 +19,7 @@ import { useState } from "react";
 import { ResultType } from "@/types";
 import ResultMessage from "../ResultMessage";
 import PasswordField from "../PasswordField";
+import { api } from "@/lib/endpointBuilder";
 
 const LoginForm = () => {
     const [isPending, setIsPending] = useState(false);
@@ -28,7 +29,7 @@ const LoginForm = () => {
     async function onSubmit(values: z.infer<typeof loginFormSchema>) {
         try {
             setIsPending(true);
-            const res = await fetch("/api/auth/login", {
+            const res = await fetch(api.auth.login.toString(), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
