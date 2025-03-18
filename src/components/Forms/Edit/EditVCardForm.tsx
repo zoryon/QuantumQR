@@ -29,7 +29,7 @@ const EditVCardForm = ({
                         name="name"
                         render={({ field }) => (
                             <FormItem className="col-span-2">
-                                <FormLabel className="text-gray-300">QR Code's Name</FormLabel>
+                                <FormLabel className="text-gray-300">QR Code&apos;s Name</FormLabel>
                                 <FormControl>
                                     <Input
                                         placeholder="My Professional VCard"
