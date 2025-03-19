@@ -3,11 +3,11 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Points, PointMaterial, OrbitControls } from "@react-three/drei";
 import * as random from "maath/random";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGesture } from "@use-gesture/react";
 import { Vector3 } from "three";
 
-const Particles = () => {
+const Particles = ({ isTouchDevice }: { isTouchDevice: boolean }) => {
     const ref = useRef<any>(null);
     const [sphere] = useState(() =>
         new Float32Array(random.inSphere(new Float32Array(2000 * 3), { radius: 1.5 }))
@@ -22,6 +22,7 @@ const Particles = () => {
 
     const bind = useGesture({
         onMove: ({ xy: [x, y] }) => {
+            if (isTouchDevice) return;
             const vec = new Vector3(
                 (x / window.innerWidth) * 2 - 1,
                 -(y / window.innerHeight) * 2 + 1,
@@ -47,14 +48,27 @@ const Particles = () => {
     );
 };
 
-const ParticleField = () => (
-    <div className="fixed inset-0 z-0">
-        <Canvas camera={{ position: [0, 0, 2] }}>
-            <ambientLight intensity={0.5} />
-            <Particles />
-            <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.5} />
-        </Canvas>
-    </div>
-);
+const ParticleField = () => {
+    const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+    useEffect(() => {
+        const checkTouch = () => {
+            return ("ontouchstart" in window || navigator.maxTouchPoints > 0);
+        };
+        setIsTouchDevice(checkTouch());
+    }, []);
+
+    return (
+        <div className={`fixed inset-0 z-0 ${isTouchDevice ? "pointer-events-none" : ""}`}>
+            <Canvas camera={{ position: [0, 0, 2] }}>
+                <ambientLight intensity={0.5} />
+                <Particles isTouchDevice={isTouchDevice} />
+                {!isTouchDevice && (
+                    <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.5} />
+                )}
+            </Canvas>
+        </div>
+    );
+};
 
 export default ParticleField;
