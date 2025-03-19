@@ -73,8 +73,9 @@ body {
   }
 }
 
-/* float */
+/* Float */
 @keyframes float {
+
   0%,
   100% {
     transform: translateY(0);
@@ -89,7 +90,7 @@ body {
   animation: float 3s ease-in-out infinite;
 }
 
-/* gradient rotate */
+/* Gradient rotate */
 @keyframes gradient-rotate {
   0% {
     transform: rotate(0deg);
@@ -104,7 +105,7 @@ body {
   animation: gradient-rotate 20s linear infinite;
 }
 
-/* others */
+/* Others */
 @keyframes gradient-drift {
   0% {
     transform: rotate(0deg) scale(1);
@@ -149,6 +150,7 @@ body {
 
 /* Edit form */
 @keyframes gradientDrift {
+
   0%,
   100% {
     transform: translate(0, 0);
@@ -161,4 +163,29 @@ body {
 
 .animate-gradient-drift {
   animation: gradientDrift 10s ease infinite;
+}
+
+/* Login button */
+@keyframes quantum-line {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes shine {
+  to {
+    transform: rotate(45deg) translate(500px, 0);
+  }
+}
+
+.animate-quantum-line {
+  animation: quantum-line 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-shine {
+  animation: shine 1.5s ease-out;
+}
+
+.text-gradient {
+  -webkit-background-clip: text;
+  background-clip: text;
 }

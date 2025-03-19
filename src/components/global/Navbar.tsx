@@ -63,7 +63,7 @@ const Navbar = () => {
 
                             {/* Regular desktop button (hidden on mobile) */}
                             <div className="hidden sm:flex bottom-6 right-6 z-[60]">
-                                <CreateBtn />
+                                {userData && (<CreateBtn />)}
                             </div>
                         </div>
                     </div>
@@ -72,7 +72,7 @@ const Navbar = () => {
 
             {/* Mobile floating button (outside navbar) */}
             <div className="fixed sm:hidden bottom-6 right-6 z-[60]">
-                <CreateBtn />
+                {userData && (<CreateBtn />)}
             </div>
         </>
     );
