@@ -1,5 +1,5 @@
 export type { ContactPoint, ContactPointsType } from "@/types/ContactPointsType";
-export type { QRMatrixItem, DemoStat, Feature, PricingPlan } from "@/types/landingType";
+export type { Feature } from "@/types/landingType";
 export type { PolicyTypes } from "@/types/PolicyTypes";
 export type { PrismaModel } from "@/types/prisma";
 export type { 

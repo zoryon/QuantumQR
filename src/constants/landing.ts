@@ -1,62 +1,41 @@
-import {
-    DemoStat,
-    Feature,
-    PricingPlan,
-    QRMatrixItem
-} from "@/types";
-
-/** 
- * QR_MATRIX: Defines various QR matrix styles available for selection.
- * Each item includes:
- * - `id`: A unique identifier for the style.
- * - `type`: The name of the style (e.g., 'hologram', 'animated').
- * - `color`: A gradient color representation for UI styling.
- * - `icon`: An associated FontAwesome icon for visual representation.
- */
-export const QR_MATRIX: QRMatrixItem[] = [
-    { id: 1, type: 'hologram', color: 'from-purple-500 to-cyan-500', icon: 'fa-burst' },
-    { id: 2, type: 'animated', color: 'from-pink-500 to-orange-500', icon: 'fa-motion' },
-    { id: 3, type: 'ar', color: 'from-cyan-500 to-emerald-500', icon: 'fa-cube' },
-    { id: 4, type: 'neon', color: 'from-violet-500 to-fuchsia-500', icon: 'fa-lightbulb' },
-];
+import { Feature } from "@/types";
 
 /**
  * FRACTAL_FEATURES: Lists the key features of the "Fractal" plan.
  * Each feature contains:
  * - `title`: A brief title of the feature.
  * - `description`: A short explanation of the feature's functionality.
- * - `symbol`: A unique unicode symbol for visual differentiation.
+ * - `icon`: A unique font awesome class for visual differentiation.
  */
-export const FRACTAL_FEATURES: Feature[] = [
-    { title: "Easy Management", description: "Manage all your QR Codes in a single place.", symbol: "⟁⃒" },
-    { title: "Fluid Morphology", description: "Edit your QR Codes whenever.", symbol: "⤲⤹" },
-    { title: "Scan Tracking", description: "Real-time analytics.", symbol: "⌖⃘" },
-    { title: "Networks", description: "Build connection sharing your virtual card.", symbol: "ꝏ⃟" },
+export const FEATURES: Feature[] = [
+    { 
+        title: "Dynamic QR Generation", 
+        description: "Create updatable QR codes that evolve with your content. Change destinations instantly without reprinting.", 
+        icon: "fa-solid fa-terminal",
+    },
+    { 
+        title: "Real-time Analytics", 
+        description: "Track scans with quantum precision. Get location, device, and time analytics in your dashboard.", 
+        icon: "fa-solid fa-chart-pie",
+    },
+    { 
+        title: "Custom Branding", 
+        description: "Embed logos, colors, and patterns. Maintain brand consistency across all touchpoints.", 
+        icon: "fa-solid fa-copyright", 
+    },
+    { 
+        title: "Bulk Management", 
+        description: "Generate & manage thousands of QRs in clicks. Perfect for enterprise campaigns.", 
+        icon: "fa-solid fa-users",
+    },
+    { 
+        title: "Military-grade Security", 
+        description: "Quantum-resistant encryption protects your codes from next-gen threats.", 
+        icon: "fa-solid fa-shield-halved",
+    },
+    { 
+        title: "API Integration", 
+        description: "Seamless integration with our developer API. Build QR solutions directly into your apps.", 
+        icon: "fa-solid fa-globe",
+    },
 ];
-
-/**
- * DEMO_STATS: Represents demo analytics data to be displayed in the UI.
- * Each metric includes:
- * - `metric`: The name of the statistic being measured.
- * - `value`: The current numerical value of the statistic (formatted as a string).
- * - `change`: The percentage increase, decrease, or stability indicator.
- */
-export const DEMO_STATS: DemoStat[] = [
-    { metric: "Active Scans", value: "24.8K", change: "+12.4%" },
-    { metric: "Unique Devices", value: "18.3K", change: "+8.2%" },
-    { metric: "Data Density", value: "94%", change: "±3.1%" },
-] as const;
-
-/**  
- * PRICING_PLANS: Defines the available pricing tiers and their respective benefits.
- * Each plan includes:
- * - `tier`: The name of the plan (e.g., "Nova", "Chrono").
- * - `price`: The subscription cost in USD.
- * - `features`: A list of key features included in the plan.
- * - `gradient`: A gradient color to visually distinguish pricing tiers.
- */
-export const PRICING_PLANS: PricingPlan[] = [
-    { tier: "Nova", price: "2.99", features: ["3D Patterns", "Basic Analytics", "API Access"], gradient: "from-cyan-500 to-emerald-500" },
-    { tier: "Chrono", price: "5.99", features: ["4D Tracking", "Temporal Scans", "Holo Previews"], gradient: "from-pink-500 to-orange-500" },
-    { tier: "Quantum", price: "11.99", features: ["11D Matrices", "AI Encryption", "Neural Analytics"], gradient: "from-purple-500 to-cyan-500" },
-] as const;
