@@ -164,7 +164,7 @@ async function createVCardQRCode({
         });
 
         // Generate a dynamic URL for the QR code
-        const dynamicURL = `${process.env.WEBSITE_URL!}/qrcodes/vcards/${qrCode.id}`;
+        const dynamicURL = `${process.env.WEBSITE_URL!}/q/vcards/${qrCode.id}`;
 
         // Generate the QR Code URL
         const qrCodeURL = await generateQRCode(dynamicURL);
