@@ -24,15 +24,16 @@ export default async function EditVCardPage({
     // Retrieve the session token from cookies
     const cookieStore = await cookies();
     const sessionToken = cookieStore.get("session_token")?.value;
-    const cookieStr = sessionToken ? `session_token=${sessionToken}` : "session_token=";
+    // const cookieStr = sessionToken ? `session_token=${sessionToken}` : "session_token=";
 
     const res: ResultType = await fetch(
         `${process.env.WEBSITE_URL}${api.qrcodes.find.query({ id: qrCodeId, type: normalizedType})}`, {
             method: "GET",
             headers: { 
                 "Accept": "application/json",
-                "Cookie": cookieStr
+                "Cookie": cookieStore.toString()
             },
+            cache: "no-store"
         }
     ).then((res) => res.json());
     
