@@ -23,7 +23,7 @@ export default async function EditVCardPage({
 
     // Retrieve the session token from cookies
     const cookieStore = await cookies();
-    const sessionToken = cookieStore.get("session_token")?.value;
+    // const sessionToken = cookieStore.get("session_token")?.value;
     // const cookieStr = sessionToken ? `session_token=${sessionToken}` : "session_token=";
 
     const res: ResultType = await fetch(
