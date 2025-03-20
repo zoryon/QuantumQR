@@ -42,7 +42,7 @@ export default function NotFound() {
             className="flex flex-col items-start text-left space-y-6 max-w-md"
           >
             <p className="text-xl text-gray-300 leading-relaxed">
-              You've slipped through a quantum tunnel.<br />
+              You&apos;ve slipped through a quantum tunnel.<br />
               Unfortunately, this page doesn&apos;t exists.
             </p>
             <Button
