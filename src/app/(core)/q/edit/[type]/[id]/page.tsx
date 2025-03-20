@@ -30,7 +30,7 @@ export default async function EditVCardPage({
             method: "GET",
             headers: { 
                 "Content-Type": "application/json",
-                "Cookie": `session_token=${sessionToken};`
+                "Cookie": `session_token=${sessionToken}`
             },
         }
     ).then((res) => res.json());
@@ -51,9 +51,6 @@ export default async function EditVCardPage({
 
             <main className="relative mx-auto max-w-7xl px-4 py-12 sm:py-16">
                 <div className="group relative rounded-[2.5rem] border border-gray-800 bg-gray-850/80 backdrop-blur-2xl shadow-2xl shadow-indigo-500/10 overflow-hidden isolate">
-                    {/* Interactive Glass Effect */}
-                    <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-soft-light" />
-
                     <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
                         {RenderEditor({ type: normalizedType, qrCode })}
                     </div>
