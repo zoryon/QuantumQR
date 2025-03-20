@@ -22,15 +22,16 @@ export default async function EditVCardPage({
     if (isNaN(qrCodeId)) return notFound();
 
     // Retrieve the session token from cookies
-    const cookieStore = cookies();
-    const sessionToken = (await cookieStore).get("session_token")?.value;
+    const cookieStore = await cookies();
+    const sessionToken = cookieStore.get("session_token")?.value;
+    const cookieStr = sessionToken ? `session_token=${sessionToken}` : "session_token=";
 
     const res: ResultType = await fetch(
         `${process.env.WEBSITE_URL}${api.qrcodes.find.query({ id: qrCodeId, type: normalizedType})}`, {
             method: "GET",
             headers: { 
-                "Content-Type": "application/json",
-                "Cookie": `session_token=${sessionToken}`
+                "Accept": "application/json",
+                "Cookie": cookieStr
             },
         }
     ).then((res) => res.json());

@@ -20,7 +20,7 @@ export default async function RedirectPage({
     const res: ResultType = await fetch(
         `${process.env.WEBSITE_URL}${api.qrcodes.find.query({ id: qrCodeId, type: normalizedType})}`, {
             method: "GET",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Accept": "application/json" },
         }
     ).then((res) => res.json());
     
