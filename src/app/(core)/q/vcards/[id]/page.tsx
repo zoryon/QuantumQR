@@ -3,7 +3,7 @@
 import DownloadButton from "@/components/Buttons/DownloadButton";
 import ScanIncrementer from "@/components/ScanIncrementer";
 import ShareButton from "@/components/Buttons/ShareButton";
-import { ContactPoint, QRCodeTypes, VCardResponse } from "@/types";
+import { ContactPoint, QRCodeTypes, ResultType, VCardResponse } from "@/types";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { api } from "@/lib/endpointBuilder";
@@ -22,14 +22,16 @@ export default async function VCardPage({
     const qrCodeId = Number(id);
     if (isNaN(qrCodeId)) return notFound();
 
-    const qrCode: VCardResponse = await fetch(
+    const res: ResultType = await fetch(
         `${process.env.WEBSITE_URL}${api.qrcodes.find.query({ id: qrCodeId, type: type})}`, { 
             method: "GET",
             headers: { "Content-Type": "application/json" },
         }
     ).then((res) => res.json());
 
-    if (!qrCode) return notFound();
+    if (!res.success) return notFound();
+
+    const qrCode: VCardResponse = res.body;
 
     const contactPoints: ContactPoint[] = [
         { icon: "fa-envelope", value: qrCode.email, type: "mailto" },

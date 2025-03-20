@@ -104,7 +104,6 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
 
     // Reset the form whenever qrType changes
     useEffect(() => {
-        console.log("Resetting form with default values", defaultValues);
         form.reset(defaultValues);
     }, [qrType]);
 

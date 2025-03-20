@@ -1,5 +1,7 @@
-import { getPrismaClient } from "@/lib/db";
-import { QRCodeTypes } from "@/types";
+import getPrismaClient from "@/lib/db";
+import { verifySession } from "@/lib/session";
+import { QRCodeTypes, ResultType } from "@/types";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 /**
@@ -12,35 +14,51 @@ import { NextResponse } from "next/server";
  * - Combines and returns the structured response.
  *
  * @param {Request} req - The incoming request object.
- * @returns {Promise<NextResponse>} A JSON response containing the requested QR code data or an error message.
+ * @returns {Promise<NextResponse<ResultType>>} A JSON response containing the requested QR code data or an error message.
  */
-export async function GET(req: Request): Promise<NextResponse> {
-    const prisma = getPrismaClient();
-
-    // Extract query parameters from request URL
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
-    const type = searchParams.get("type") as QRCodeTypes | null;
-
-    // Validate ID parameter
-    const qrCodeId = Number(id);
-    if (isNaN(qrCodeId)) {
-        return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
-    }
-
-    // Validate Type parameter
-    if (!type) {
-        return NextResponse.json({ error: "Type is required" }, { status: 400 });
-    }
-
+export async function GET(req: Request): Promise<NextResponse<ResultType>> {
     try {
+        // Retrieve the session token from cookies and verify the user's session
+        const sessionToken = (await cookies()).get("session_token")?.value;
+        const session = await verifySession(sessionToken);
+
+        const prisma = getPrismaClient();
+
+        // Extract query parameters from request URL
+        const { searchParams } = new URL(req.url);
+        const id = searchParams.get("id");
+        const type = searchParams.get("type") as QRCodeTypes | null;
+
+        // Validate ID parameter
+        const qrCodeId = Number(id);
+        if (isNaN(qrCodeId)) {
+            return NextResponse.json({
+                success: false,
+                message: "Invalid QR code ID",
+                body: null
+            }, { status: 400 });
+        }
+
+        // Validate Type parameter
+        if (!type) {
+            return NextResponse.json({
+                success: false,
+                message: "Type parameter is required",
+                body: null
+            }, { status: 400 });
+        }
+
         // Retrieve the base QR code record
         const baseQr = await prisma.qrcodes.findUnique({
             where: { id: qrCodeId },
         });
 
         if (!baseQr) {
-            return NextResponse.json({ error: "QR Code not found" }, { status: 404 });
+            return NextResponse.json({
+                success: false,
+                message: "QR Code not found",
+                body: null
+            }, { status: 404 });
         }
 
         // Retrieve type-specific data
@@ -62,24 +80,40 @@ export async function GET(req: Request): Promise<NextResponse> {
             //     break;
 
             default:
-                return NextResponse.json({ error: "Unsupported QR code type" }, { status: 400 });
+                return NextResponse.json({
+                    success: false,
+                    message: "Unsupported QR Code type",
+                    body: null
+                }, { status: 400 });
         }
 
         // If no type-specific data is found, return an error
         if (!specificData) {
-            return NextResponse.json({ error: "Detailed data not found" }, { status: 404 });
+            return NextResponse.json({
+                success: false,
+                message: "Detailed data not found",
+                body: null
+            }, { status: 404 });
         }
 
-        // Build typed response
-        const response = {
-            ...baseQr,
-            type: type,
-            ...specificData,
-        };
+        const isOwner = session?.userId === baseQr.userId;
 
-        return NextResponse.json(response, { status: 200 });
+        // Build typed response
+        const response = isOwner
+            ? { ...baseQr, type, ...specificData, isOwner }
+            : { type, ...specificData, isOwner };
+
+        return NextResponse.json({
+            success: true,
+            message: "QR Code found",
+            body: response
+        }, { status: 200 });
     } catch (error) {
         console.error("Error fetching QR code:", error);
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return NextResponse.json({
+            success: false,
+            message: "Internal server error",
+            body: null
+        }, { status: 500 });
     }
 }

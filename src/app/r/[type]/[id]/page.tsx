@@ -1,5 +1,5 @@
 import { api } from "@/lib/endpointBuilder";
-import { isQRCodeType, QRCodeTypesArray } from "@/types";
+import { isQRCodeType, QRCodeTypesArray, ResultType } from "@/types";
 import { notFound, redirect } from "next/navigation";
 
 export default async function RedirectPage({
@@ -17,15 +17,16 @@ export default async function RedirectPage({
     const qrCodeId = Number(id);
     if (isNaN(qrCodeId)) return notFound();
     
-    const qrCode = await fetch(
+    const res: ResultType = await fetch(
         `${process.env.WEBSITE_URL}${api.qrcodes.find.query({ id: qrCodeId, type: normalizedType})}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
         }
     ).then((res) => res.json());
     
-    if (!qrCode) return notFound();
-    if (!qrCode.websiteUrl) return notFound();
+    if (!res || !res.success) return notFound();
+
+    const qrCode = res.body;
 
     redirect(qrCode.websiteUrl);
 }

@@ -1,8 +1,9 @@
 import EditForm from "@/components/Forms/Edit/EditFormRouter";
 import VCardEditor from "@/components/Editors/VCard/VCardEditor";
-import { ClassicResponse, isQRCodeType, QRCodeTypes, QRCodeTypesArray, VCardResponse } from "@/types";
+import { ClassicResponse, isQRCodeType, QRCodeTypes, QRCodeTypesArray, ResultType, VCardResponse } from "@/types";
 import { notFound } from "next/navigation";
 import { api } from "@/lib/endpointBuilder";
+import { cookies } from "next/headers";
 
 export default async function EditVCardPage({
     params: paramsPromise,
@@ -19,15 +20,27 @@ export default async function EditVCardPage({
 
     const qrCodeId = Number(id);
     if (isNaN(qrCodeId)) return notFound();
-    
-    const qrCode = await fetch(
+
+    // Retrieve the session token from cookies
+    const cookieStore = cookies();
+    const sessionToken = (await cookieStore).get("session_token")?.value;
+
+    const res: ResultType = await fetch(
         `${process.env.WEBSITE_URL}${api.qrcodes.find.query({ id: qrCodeId, type: normalizedType})}`, {
             method: "GET",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+                "Content-Type": "application/json",
+                "Cookie": `session_token=${sessionToken};`
+            },
         }
     ).then((res) => res.json());
     
-    if (!qrCode || qrCode.error) return notFound();
+    if (!res || !res.success) return notFound();
+
+    const qrCode = res.body;
+
+    // Check if the user is the owner of the QR code
+    if (!qrCode.isOwner) return notFound();
 
     return (
         <div className="min-h-screen bg-gray-900 overflow-hidden relative">

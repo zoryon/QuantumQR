@@ -11,7 +11,7 @@ let prisma: PrismaClient;
  * 
  * @returns The PrismaClient instance.
  */
-export const getPrismaClient = () => {
+const getPrismaClient = () => {
     if (process.env.NODE_ENV === "production") {
         // In production, create a new PrismaClient instance every time.
         prisma = new PrismaClient();

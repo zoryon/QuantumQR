@@ -32,7 +32,7 @@ export async function PUT(request: Request): Promise<NextResponse<ResultType>> {
                 body: null
             }, { status: 401 });
         }
-
+console.log(session)
         // Parse the request body to extract data
         const body = await request.json();
         const { id, type, ...values } = body;
