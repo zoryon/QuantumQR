@@ -97,7 +97,7 @@ export async function middleware(req: NextRequest) {
     }
 
     // Allow access to public QR Code pages except the create page
-    if (pathname.startsWith("/q/") && !pathname.startsWith("/q/create")) {
+    if (pathname.startsWith("/q/") && !pathname.startsWith("/q/create") && !pathname.startsWith("/q/edit")) {
         return NextResponse.next();
     }
 
