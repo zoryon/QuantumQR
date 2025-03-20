@@ -11,7 +11,7 @@ const EditBtn = ({
 }) => {
     return (
         <Link 
-            href={isDisabled ? "#" : `/q/${qrCode.type.toLowerCase()}/edit/${qrCode.id}`}
+            href={isDisabled ? "#" : `/q/edit/${qrCode.type.toLowerCase()}/${qrCode.id}`}
             onClick={(e) => isDisabled && e.preventDefault()}
         >
             <Button
