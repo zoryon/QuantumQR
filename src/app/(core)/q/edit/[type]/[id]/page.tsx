@@ -1,50 +1,85 @@
+"use client";
+
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import EditForm from "@/components/Forms/Edit/EditFormRouter";
 import VCardEditor from "@/components/Editors/VCard/VCardEditor";
-import { ClassicResponse, isQRCodeType, QRCodeTypes, QRCodeTypesArray, ResultType, VCardResponse } from "@/types";
-import { notFound } from "next/navigation";
+import { 
+    ClassicResponse, 
+    isQRCodeType, 
+    QRCodeTypes, 
+    QRCodeTypesArray, 
+    ResultType, 
+    VCardResponse 
+} from "@/types";
 import { api } from "@/lib/endpointBuilder";
-import { cookies } from "next/headers";
+import NotFound from "@/app/(core)/not-found";
 
-export default async function EditVCardPage({
-    params: paramsPromise,
-}: {
-    params: Promise<{ type: string, id: string }>;
-}) {
-    const params = await paramsPromise;
-    const { type, id } = params;
-    if (!type || !id) return notFound();
+export default function EditVCardPage() {
+    const params = useParams();
+    const type = params.type as string;
+    const id = params.id as string;
 
-    // Normalize the type before the checks
-    const normalizedType = QRCodeTypesArray.find(t => t.toLowerCase() === type.toLowerCase());
-    if (!normalizedType || !isQRCodeType(normalizedType)) return notFound();
+    const [qrCode, setQrCode] = useState<any>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [notFound, setNotFound] = useState<boolean>(false);
 
-    const qrCodeId = Number(id);
-    if (isNaN(qrCodeId)) return notFound();
+    const normalizedType = QRCodeTypesArray.find(
+        (t) => t.toLowerCase() === type.toLowerCase()
+    ) as QRCodeTypes;
 
-    // Retrieve the session token from cookies
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get("session_token")?.value;
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                if (!type || !id) throw new Error("Missing parameters");
+                if (!normalizedType || !isQRCodeType(normalizedType)) {
+                    throw new Error("Invalid QR code type");
+                }
 
-    const res: ResultType = await fetch(
-        `${process.env.WEBSITE_URL}${api.qrcodes.find.query({ id: qrCodeId, type: normalizedType})}`, {
-            method: "GET",
-            headers: { 
-                "Accept": "application/json",
-                "Cookie": `session_token=${sessionToken}`
-            },
-        }
-    ).then((res) => res.json());
-    
-    if (!res || !res.success) return notFound();
+                const qrCodeId = Number(id);
+                if (isNaN(qrCodeId)) throw new Error("Invalid QR code ID");
 
-    const qrCode = res.body;
+                const res: ResultType = await fetch(api.qrcodes.find.query({ id: qrCodeId, type: normalizedType }), {
+                    method: "GET",
+                    headers: { "Accept": "application/json" },
+                    credentials: "include",
+                }).then((res) => res.json());
 
-    // Check if the user is the owner of the QR code
-    if (!qrCode.isOwner) return notFound();
+                if (!res.success) throw new Error("QR code not found");
+                setQrCode(res.body);
+            } catch (err) {
+                console.error(err);
+                setNotFound(true);
+            } finally {
+                setLoading(false);
+            }
+        };
 
+        fetchData();
+    }, [type, id]);
+
+    useEffect(() => {
+        if (qrCode && !qrCode.isOwner) setNotFound(true);
+    }, [qrCode]);
+
+    // Handle loading state
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+                <div className="text-white">...</div>
+            </div>
+        );
+    }
+
+    // Handle not found state
+    if (notFound) {
+        return <NotFound />;
+    }
+
+    // Render main content when data is available
     return (
         <div className="min-h-screen bg-gray-900 overflow-hidden relative">
-            {/* Dynamic Gradient Background */}
             <div className="absolute inset-0 opacity-40">
                 <div className="absolute w-[1200px] h-[1200px] -top-96 -right-96 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-full animate-gradient-drift" />
             </div>
@@ -52,7 +87,7 @@ export default async function EditVCardPage({
             <main className="relative mx-auto max-w-7xl px-4 py-12 sm:py-16">
                 <div className="group relative rounded-[2.5rem] border border-gray-800 bg-gray-850/80 backdrop-blur-2xl shadow-2xl shadow-indigo-500/10 overflow-hidden isolate">
                     <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
-                        {RenderEditor({ type: normalizedType, qrCode })}
+                        <RenderEditor type={normalizedType} qrCode={qrCode} />
                     </div>
                 </div>
             </main>
@@ -60,13 +95,13 @@ export default async function EditVCardPage({
     );
 }
 
-const RenderEditor = ({ type, qrCode }: { type: QRCodeTypes, qrCode: any }) => {
+const RenderEditor = ({ type, qrCode }: { type: QRCodeTypes; qrCode: any }) => {
     switch (type) {
         case "vCards":
             return <VCardEditor id={qrCode.id} initialData={qrCode as VCardResponse} />;
         case "classics":
             return <EditForm type={type} id={qrCode.id} initialData={qrCode as ClassicResponse} />;
         default:
-            return notFound();
+            return <div className="text-red-500">Unsupported QR code type</div>;
     }
-}
+};
