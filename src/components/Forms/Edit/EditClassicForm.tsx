@@ -17,7 +17,6 @@ const EditClassicForm = ({
     isPending: boolean,
     initialData: any
 }) => {
-    console.log(initialData);
     const form = useForm<z.infer<typeof classicDetailsFormSchema>>({
         resolver: zodResolver(classicDetailsFormSchema),
         defaultValues: initialData,

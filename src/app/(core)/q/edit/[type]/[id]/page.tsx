@@ -30,7 +30,7 @@ export default async function EditVCardPage({
             method: "GET",
             headers: { 
                 "Accept": "application/json",
-                "Cookie": sessionToken ? `session_token=${sessionToken}` : "session_token="
+                "Cookie": `session_token=${sessionToken}`
             },
         }
     ).then((res) => res.json());

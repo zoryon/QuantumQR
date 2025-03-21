@@ -27,7 +27,7 @@ export async function GET(req: Request): Promise<NextResponse<ResultType>> {
         // Extract query parameters from request URL
         const { searchParams } = new URL(req.url);
         const id = searchParams.get("id");
-        const type = searchParams.get("type") as QRCodeTypes | null;
+        const type = searchParams.get("type");
 
         // Validate ID parameter
         const qrCodeId = Number(id);
@@ -96,7 +96,7 @@ export async function GET(req: Request): Promise<NextResponse<ResultType>> {
             }, { status: 404 });
         }
 
-        const isOwner = session?.userId === baseQr.userId;
+        const isOwner = session?.userId as number === baseQr.userId;
 
         // Build typed response
         const response = isOwner
