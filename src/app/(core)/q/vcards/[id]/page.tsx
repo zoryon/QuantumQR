@@ -1,5 +1,3 @@
-"use server";
-
 import DownloadButton from "@/components/Buttons/DownloadButton";
 import ScanIncrementer from "@/components/ScanIncrementer";
 import ShareButton from "@/components/Buttons/ShareButton";
