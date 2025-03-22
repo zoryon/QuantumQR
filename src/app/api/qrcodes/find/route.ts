@@ -101,7 +101,7 @@ export async function GET(req: Request): Promise<NextResponse<ResultType>> {
         // Build typed response
         const response = isOwner
             ? { ...baseQr, type, ...specificData, isOwner }
-            : { type, ...specificData, isOwner };
+            : { url: baseQr.url, type, ...specificData, isOwner };
 
         return NextResponse.json({
             success: true,
