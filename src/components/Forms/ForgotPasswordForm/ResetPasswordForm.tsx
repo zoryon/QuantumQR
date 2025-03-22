@@ -11,7 +11,7 @@ import PasswordField from "../../PasswordField";
 import { Button } from "../../ui/button";
 import ResultMessage from "../../ResultMessage";
 import { Form } from "../../ui/form";
-import { api } from "@/lib/endpointBuilder";
+import { api } from "@/lib/endpoint-builder";
 
 const ResetPasswordForm = ({ token }: { token: string }) => {
     const [isPending, setIsPending] = useState(false);
@@ -63,7 +63,7 @@ const ResetPasswordForm = ({ token }: { token: string }) => {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-gray-800/40 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-700/50">
-                <PasswordField control={form.control} />
+                <PasswordField control={form.control} fieldLabel="New password" />
                 <PasswordField control={form.control} isConfirmation />
 
                 <Button

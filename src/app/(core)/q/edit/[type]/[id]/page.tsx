@@ -6,14 +6,14 @@ import EditForm from "@/components/Forms/Edit/EditFormRouter";
 import VCardEditor from "@/components/Editors/VCard/VCardEditor";
 import { 
     ClassicResponse, 
-    isQRCodeType, 
     QRCodeTypes, 
-    QRCodeTypesArray, 
     ResultType, 
     VCardResponse 
 } from "@/types";
-import { api } from "@/lib/endpointBuilder";
+import { api } from "@/lib/endpoint-builder";
 import NotFound from "@/app/(core)/not-found";
+import { isQRCodeType } from "@/lib/qrcode";
+import { QR_CODES_TYPES_ARRAY } from "@/constants";
 
 export default function EditVCardPage() {
     const params = useParams();
@@ -24,7 +24,7 @@ export default function EditVCardPage() {
     const [loading, setLoading] = useState<boolean>(true);
     const [notFound, setNotFound] = useState<boolean>(false);
 
-    const normalizedType = QRCodeTypesArray.find(
+    const normalizedType = QR_CODES_TYPES_ARRAY.find(
         (t) => t.toLowerCase() === type.toLowerCase()
     ) as QRCodeTypes;
 

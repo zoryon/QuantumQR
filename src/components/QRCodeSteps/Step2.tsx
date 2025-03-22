@@ -1,6 +1,6 @@
 "use client";
 
-import { useQrCodeCreator } from "@/hooks/useQrCodeCreator";
+import { useQrCodeCreator } from "@/hooks/use-qrcode-creator";
 import { useEffect } from "react";
 import { Button } from "../ui/button";
 import CreateVCardEditor from "../Editors/VCard/CreateVCardEditor";

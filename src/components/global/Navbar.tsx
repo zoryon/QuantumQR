@@ -2,10 +2,10 @@
 
 import { PublicUser } from "@/types";
 import { useEffect, useRef, useState } from "react";
-import CreateBtn from "./CreateBtn";
-import LogoutBtn from "./LogoutBtn";
+import CreateBtn from "../Buttons/CreateBtn";
+import LogoutBtn from "../Buttons/LogoutBtn";
 import Logo from "./Logo";
-import { api } from "@/lib/endpointBuilder";
+import { api } from "@/lib/endpoint-builder";
 
 const Navbar = () => {
     const [userData, setUserData] = useState<PublicUser | null>(null);

@@ -4,7 +4,7 @@ import ShareButton from "@/components/Buttons/ShareButton";
 import { ContactPoint, QRCodeTypes, ResultType, VCardResponse } from "@/types";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { api } from "@/lib/endpointBuilder";
+import { api } from "@/lib/endpoint-builder";
 
 const type: QRCodeTypes = "vCards";
 

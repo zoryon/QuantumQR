@@ -74,7 +74,7 @@ const EditClassicForm = ({
                     <Button
                         type="submit"
                         className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 
-                                        transition-all shadow-lg shadow-indigo-500/20"
+                            transition-all shadow-lg shadow-indigo-500/20"
                         disabled={isPending}
                     >
                         Update classic

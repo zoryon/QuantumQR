@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "../../ui/input";
 import { Button } from "../../ui/button";
 import ResultMessage from "../../ResultMessage";
-import { api } from "@/lib/endpointBuilder";
+import { api } from "@/lib/endpoint-builder";
 
 
 const SendResetEmailForm = () => {

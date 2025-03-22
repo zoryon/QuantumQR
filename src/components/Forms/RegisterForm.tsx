@@ -20,7 +20,7 @@ import { useState } from "react";
 import ResultMessage from "../ResultMessage";
 import { ResultType } from "@/types";
 import PasswordField from "../PasswordField";
-import { api } from "@/lib/endpointBuilder";
+import { api } from "@/lib/endpoint-builder";
 
 const RegisterForm = () => {
     const [isPending, setIsPending] = useState(false);

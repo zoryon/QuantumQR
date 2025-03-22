@@ -1,6 +1,6 @@
 "use client";
 
-import { api } from "@/lib/endpointBuilder";
+import { api } from "@/lib/endpoint-builder";
 import { useEffect } from "react";
 
 export default function ScanIncrementer({ qrCodeId }: { qrCodeId: number }) {

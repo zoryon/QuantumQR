@@ -1,15 +1,15 @@
 "use client";
 
-import { useQrCodeList } from "@/hooks/useQrCodeList";
+import { useQrCodeList } from "@/hooks/use-qrcode-list";
 import { QRCode, VCardQRCode } from "@/types";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import DownloadButton from "@/components/Buttons/DownloadButton";
 import DeleteBtn from "@/components/Buttons/DeleteBtn";
-import CreateBtn from "@/components/global/CreateBtn";
+import CreateBtn from "@/components/Buttons/CreateBtn";
 import EditBtn from "@/components/Buttons/EditBtn";
 import { cn } from "@/lib/utils";
-import useSafeToast from "@/hooks/useSafeToast";
+import useSafeToast from "@/hooks/use-safe-toast";
 
 const HomePage = () => {
   const toast = useSafeToast();

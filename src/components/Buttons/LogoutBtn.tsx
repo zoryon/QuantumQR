@@ -1,6 +1,6 @@
 "use client";
 
-import { logout } from "@/actions/authActions";
+import { logout } from "@/actions/auth.actions";
 import { useState } from "react";
 
 const LogoutBtn = () => {

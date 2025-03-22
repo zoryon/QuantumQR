@@ -19,7 +19,7 @@ import { useState } from "react";
 import { ResultType } from "@/types";
 import ResultMessage from "../ResultMessage";
 import PasswordField from "../PasswordField";
-import { api } from "@/lib/endpointBuilder";
+import { api } from "@/lib/endpoint-builder";
 
 const LoginForm = () => {
     const [isPending, setIsPending] = useState(false);

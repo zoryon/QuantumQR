@@ -1,13 +1,13 @@
 "use client";
 
 import { CardDetailsFormValues, ClassicDetailsFormValues } from "@/lib/schemas";
-import { FormValues, useQrCodeCreator } from "@/hooks/useQrCodeCreator";
+import { FormValues, useQrCodeCreator } from "@/hooks/use-qrcode-creator";
 import { useRouter } from "next/navigation";
-import { useQrCodeList } from "@/hooks/useQrCodeList";
+import { useQrCodeList } from "@/hooks/use-qrcode-list";
 import { QRCode, QRCodeTypes, ResultType } from "@/types";
 import VCardForm from "./VCardForm";
 import ClassicForm from "./ClassicForm";
-import { api } from "@/lib/endpointBuilder";
+import { api } from "@/lib/endpoint-builder";
 
 // This component is responsible for rendering the form based on the selected QR Code type.
 // It also handles the form submission and optimistic update of the QR Code list.

@@ -1,35 +1,9 @@
 import { cardDetailsFormSchema, classicDetailsFormSchema } from "@/lib/schemas";
-import { QRCodeTypes } from "@/types";
-import { PrismaClient } from "@prisma/client";
-import { z } from "zod";
+import { QRCodeCard, QrTypeMapping } from "@/types/qrcode.types";
 
-/**
- * Represents the structure of a QR code card displayed in the UI.
- * 
- * - `title`: The type of QR code.
- * - `description`: A brief explanation of what the QR code does.
- * - `icon`: A FontAwesome class representing the icon for this QR code type.
- */
-type QRCodeCard = {
-    title: QRCodeTypes;
-    description: string;
-    icon: string;
-}
-
-/**
- * Defines the mapping between QR code types, database models, and validation schemas.
- * 
- * - `type`: The category of the QR code (e.g., "classics", "vCards").
- * - `relation`: The name of the Prisma relation corresponding to this QR code type.
- * - `model`: The database model used for storing and retrieving data for this QR type.
- * - `schema`: The Zod validation schema associated with this QR code type.
- */
-type QrTypeMapping = {
-    type: QRCodeTypes;
-    relation: keyof PrismaClient;
-    model: keyof PrismaClient;
-    schema: z.ZodSchema;
-};
+// String types for QR Code categories
+// This array contains the types of QR codes available: "vCards" and "classics".
+export const QR_CODES_TYPES_ARRAY = ["vCards", "classics"] as const;
 
 /**
  * A predefined list of QR code categories available for users.
