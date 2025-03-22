@@ -14,7 +14,7 @@ export type EndpointFor<T extends ApiDefinition, Path extends string = ""> = {
   [K in keyof T]:
   T[K] extends { method: HttpMethod }
   ? EndpointWithMethod<Path, K & string, T[K]["method"]> &
-  (T[K]["children"] extends ApiDefinition ? EndpointFor<T[K]["children"], BuildPath<Path, K & string>> : {})
+  (T[K]["children"] extends ApiDefinition ? EndpointFor<T[K]["children"], BuildPath<Path, K & string>> : object)
   : T[K] extends ApiDefinition
   ? EndpointFor<T[K], BuildPath<Path, K & string>>
   : never
