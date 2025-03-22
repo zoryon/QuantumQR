@@ -1,13 +1,13 @@
 "use client";
 
-import { useQrCodeList } from "@/hooks/useQrCodeList";
+import { useQrCodeList } from "@/hooks/use-qrcode-list";
 import { notFound, useRouter } from "next/navigation";
 import { ResultType, QRCodeTypes } from "@/types";
-import { FormValues } from "@/hooks/useQrCodeCreator";
+import { FormValues } from "@/hooks/use-qrcode-creator";
 import EditVCardForm from "./EditVCardForm";
 import EditClassicForm from "./EditClassicForm";
 import { useState } from "react";
-import { api } from "@/lib/endpointBuilder";
+import { api } from "@/lib/endpoint-builder";
 
 // This component is used to update the vCards data
 // It contains the form to update the vCard data

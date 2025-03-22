@@ -7,12 +7,14 @@ interface PasswordFieldProps {
     control: any;
     isLogin?: boolean;
     isConfirmation?: boolean;
+    fieldLabel?: string;
 }
 
 const PasswordField = ({
     control,
     isLogin = false,
-    isConfirmation = false
+    isConfirmation = false,
+    fieldLabel = "Password"
 }: PasswordFieldProps) => {
     const [showPassword, setShowPassword] = useState(false);
 
@@ -24,7 +26,7 @@ const PasswordField = ({
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel className="text-gray-300 flex justify-between items-center">
-                            <p>Password</p>
+                            <p>{fieldLabel}</p>
 
                             {isLogin && (
                                 <Link

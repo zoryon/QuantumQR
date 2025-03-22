@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import { FILE_FORMATS } from "@/constants";
-import { convertSvgToImage } from "@/lib/fileUtils";
+import { convertSvgToImage } from "@/lib/file-utils";
 
 const DownloadButton = ({
     url,

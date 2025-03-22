@@ -1,6 +1,6 @@
 "use client";
 
-import { api } from "@/lib/endpointBuilder";
+import { api } from "@/lib/endpoint-builder";
 import { QRCode, ResultType } from "@/types";
 import { createContext, useContext, useEffect, useState } from "react"
 

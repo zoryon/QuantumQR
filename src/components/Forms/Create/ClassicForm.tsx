@@ -2,7 +2,7 @@
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useQrCodeCreator } from "@/hooks/useQrCodeCreator";
+import { useQrCodeCreator } from "@/hooks/use-qrcode-creator";
 
 const ClassicForm = ({ onSubmit } : { onSubmit: any }) => {
     const { qrType, form } = useQrCodeCreator();

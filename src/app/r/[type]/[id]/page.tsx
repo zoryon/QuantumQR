@@ -1,5 +1,7 @@
-import { api } from "@/lib/endpointBuilder";
-import { isQRCodeType, QRCodeTypesArray, ResultType } from "@/types";
+import { QR_CODES_TYPES_ARRAY } from "@/constants";
+import { api } from "@/lib/endpoint-builder";
+import { isQRCodeType } from "@/lib/qrcode";
+import { ResultType } from "@/types";
 import { notFound, redirect } from "next/navigation";
 
 export default async function RedirectPage({
@@ -11,7 +13,7 @@ export default async function RedirectPage({
     const { type, id } = params;
     if (!type || !id) return notFound();
 
-    const normalizedType = QRCodeTypesArray.find(t => t.toLowerCase() === type.toLowerCase());
+    const normalizedType = QR_CODES_TYPES_ARRAY.find(t => t.toLowerCase() === type.toLowerCase());
     if (!normalizedType || !isQRCodeType(normalizedType)) return notFound();
 
     const qrCodeId = Number(id);

@@ -1,10 +1,10 @@
 "use client";
 
-import { useQrCodeList } from "@/hooks/useQrCodeList";
+import { useQrCodeList } from "@/hooks/use-qrcode-list";
 import { Button } from "../ui/button";
 import { QRCode } from "@/types";
 import { useState } from "react";
-import { api } from "@/lib/endpointBuilder";
+import { api } from "@/lib/endpoint-builder";
 
 const DeleteBtn = ({ 
     qrCode, 

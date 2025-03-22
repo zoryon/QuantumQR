@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FEATURES } from "@/constants/landing";
+import { FEATURES } from "@/constants/landing.constants";
 import { cn } from "@/lib/utils";
 
 const FeatureCard = ({ icon, title, description }: { icon: string, title: string, description: string }) => (

@@ -2,7 +2,7 @@
 
 import PreviewCard from "@/components/Editors/VCard/PreviewCard";
 import QRCodeForm from "../../Forms/Create/QRCodeFormRouter";
-import { useQrCodeCreator } from "@/hooks/useQrCodeCreator";
+import { useQrCodeCreator } from "@/hooks/use-qrcode-creator";
 import { CardDetailsFormValues } from "@/lib/schemas";
 
 // This component is used to create the vCards data
