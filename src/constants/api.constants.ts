@@ -1,6 +1,9 @@
 import { ApiDefinition } from "@/types";
 
 export const API_CONFIG = {
+  users: {
+    current: { method: "GET" },
+  },
   qrcodes: {
     find: { method: "GET" },
     findAll: { method: "GET" },
