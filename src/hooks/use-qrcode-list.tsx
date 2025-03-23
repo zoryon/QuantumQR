@@ -25,20 +25,16 @@ export function QrCodeListProvider({ children }: { children: React.ReactNode }) 
   async function fetchQrCodes() {
     try {
       setIsLoading(true);
-      const res = await fetch(api.qrcodes.findAll.toString(), {
+      const res: ResultType = await fetch(api.qrcodes.findAll.toString(), {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
-      });
+      }).then((res) => res.json());
 
-      if (!res.ok) {
-        throw new Error("Failed to fetch QR codes");
-      }
+      if (!res.success) throw new Error("Failed to fetch QR codes");
 
-      const data = await res.json();
-
-      setQrCodes(data);
+      setQrCodes(res.body);
     } catch (err) {
       console.log(err);
       setError("Failed to load QR codes");

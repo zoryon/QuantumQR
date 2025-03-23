@@ -1,7 +1,7 @@
 import { TYPE_MAPPING } from "@/constants";
 import getPrismaClient from "@/lib/db";
 import { verifySession } from "@/lib/session";
-import { QRCode } from "@/types";
+import { QRCode, ResultType } from "@/types";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -13,9 +13,9 @@ import { NextResponse } from "next/server";
  * - Retrieves QR codes from the database, including their respective type-specific data.
  * - Transforms and returns the data in a structured format.
  *
- * @returns {Promise<NextResponse>} A JSON response containing the user's QR codes or an error message.
+ * @returns {Promise<NextResponse<ResultType>>} A JSON response containing the user's QR codes or an error message.
  */
-export async function GET(): Promise<NextResponse> {
+export async function GET(): Promise<NextResponse<ResultType>> {
     try {
         // Retrieve session token from cookies
         const sessionToken = (await cookies()).get("session_token")?.value;
@@ -23,7 +23,11 @@ export async function GET(): Promise<NextResponse> {
 
         // If the user is not logged in, deny access
         if (!session?.userId) {
-            return NextResponse.json({ error: "Not authorized" }, { status: 401 });
+            return NextResponse.json({
+                success: false,
+                message: "Unauthorized access",
+                body: null
+            }, { status: 401 });
         }
 
         const prisma = getPrismaClient();
@@ -44,7 +48,11 @@ export async function GET(): Promise<NextResponse> {
 
         // Handle potential query failure
         if (!qrCodes) {
-            return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+            return NextResponse.json({
+                success: false,
+                message: "Internal server error",
+                body: null
+            }, { status: 500 });
         }
 
         // Transform results into a structured `QRCode` response
@@ -78,9 +86,17 @@ export async function GET(): Promise<NextResponse> {
         }));
 
         // Return the processed QR codes
-        return NextResponse.json(safeQRCodes, { status: 200 });
+        return NextResponse.json({
+            success: true,
+            message: "QR codes retrieved successfully",
+            body: safeQRCodes
+        }, { status: 200 });
     } catch (error) {
         console.error(error);
-        return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+        return NextResponse.json({
+            success: false,
+            message: (error as Error).message,
+            body: null
+        }, { status: 500 });
     }
 }
