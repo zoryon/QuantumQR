@@ -30,14 +30,14 @@ const ConfirmationDialog = ({
 
     return (
         <AlertDialog open={isOpen}>
-            <AlertDialogContent>
+            <AlertDialogContent className="bg-gray-900 border-gray-700">
                 <AlertDialogHeader>
                     <AlertDialogTitle className="text-red-500">{title}</AlertDialogTitle>
                     <AlertDialogDescription>
                         {message}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter>
+                <AlertDialogFooter className="mt-6">
                     <AlertDialogCancel 
                         onClick={() => onCancel()}
                     >
