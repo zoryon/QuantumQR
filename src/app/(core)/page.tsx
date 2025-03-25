@@ -43,7 +43,7 @@ const HomePage = () => {
           My QR codes
         </h1>
         <p className="text-sm text-gray-400 mb-6">
-          Manage, download and analyze your QR Codes in a simple and modern way.
+          Manage, share and analyze your QR Codes in a simple and modern way.
         </p>
 
         {/* Search bar (optional) */}

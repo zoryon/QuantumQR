@@ -1,11 +1,11 @@
 "use client";
 
-import LandingNavbar from "@/components/LandingComp/LandingNavbar";
-import HeroSection from "@/components/LandingComp/HeroSection";
-import ParticleField from "@/components/LandingComp/ParticleField";
-import InfiniteOrb from "@/components/LandingComp/InfiniteOrb";
-import NeonGradient from "@/components/LandingComp/NeonGradient";
-import FeaturesShowcase from "@/components/LandingComp/FeaturesShowcase";
+import LandingNavbar from "@/components/LandingComponents/LandingNavbar";
+import HeroSection from "@/components/LandingComponents/HeroSection";
+import ParticleField from "@/components/LandingComponents/ParticleField";
+import InfiniteOrb from "@/components/LandingComponents/InfiniteOrb";
+import NeonGradient from "@/components/LandingComponents/NeonGradient";
+import FeaturesShowcase from "@/components/LandingComponents/FeaturesShowcase";
 
 const LandingPage = () => {
     return (

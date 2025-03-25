@@ -1,4 +1,4 @@
-import Navbar from "@/components/global/Navbar";
+import Navbar from "@/components/global/Navbar/Navbar";
 import Providers from "@/components/Providers";
 import { Metadata } from "next";
 
