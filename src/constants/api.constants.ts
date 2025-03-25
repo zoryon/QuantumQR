@@ -21,6 +21,7 @@ export const API_CONFIG = {
       reset: { method: "POST" },
       sendEmail: { method: "POST" },
     },
+    logout: { method: "GET" },
   },
   policies: { method: "GET" },
 } satisfies ApiDefinition;

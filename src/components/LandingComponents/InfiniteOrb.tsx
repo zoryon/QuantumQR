@@ -1,18 +1,19 @@
 "use client";
 
-import { motion, useMotionTemplate, useMotionValue, animate } from "framer-motion";
+import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { useEffect } from "react";
 
 const InfiniteOrb = () => {
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
+    const translateX = useMotionValue(0);
+    const translateY = useMotionValue(0);
     const scale = useMotionValue(1);
-    const background = useMotionTemplate`radial-gradient(40% 40% at ${x}px ${y}px, rgba(138,43,226,0.2) 0%, transparent 100%)`;
+    const background = useMotionTemplate`radial-gradient(40% 40% at ${translateX}px ${translateY}px, rgba(138, 43, 226, 0.1) 0%, transparent 100%)`;
 
     useEffect(() => {
         const moveOrb = (e: MouseEvent) => {
-            animate(x, e.clientX, { duration: 0.8 });
-            animate(y, e.clientY, { duration: 0.8 });
+            // Aggiorna le posizioni con una transizione spring per un movimento più fluido
+            translateX.set(e.clientX);
+            translateY.set(e.clientY);
         };
 
         window.addEventListener("mousemove", moveOrb);
@@ -26,12 +27,22 @@ const InfiniteOrb = () => {
         >
             <motion.div
                 className="w-24 h-24 rounded-full absolute bg-gradient-to-br from-purple-500 to-blue-500 blur-3xl opacity-30"
-                style={{ x, y, scale }}
-                animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.3, 0.5, 0.3],
+                style={{ 
+                    translateX, 
+                    translateY,
+                    scale,
+                    transformOrigin: "center"
                 }}
-                transition={{ duration: 4, repeat: Infinity }}
+                animate={{
+                    scale: [1, 1.4, 1],
+                    opacity: [0.2, 0.4, 0.2],
+                }}
+                transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    repeatType: "loop"
+                }}
             />
         </motion.div>
     );

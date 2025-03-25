@@ -6,8 +6,8 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Button } from "../../ui/button";
-import { logout } from "@/actions/auth.actions";
 import { PublicUser } from "@/types";
+import LogoutBtn from "@/components/Buttons/LogoutBtn";
 
 const AccountSettings = ({ userData }: { userData: PublicUser}) => {
     return (
@@ -47,18 +47,12 @@ const AccountSettings = ({ userData }: { userData: PublicUser}) => {
                     <div className="space-y-2">
                         <Button
                             variant="outline"
-                            className="w-full bg-gray-700/50 border-gray-600 hover:bg-gray-600/50 text-gray-100"
+                            className="w-full bg-gray-700/50 border-gray-600 hover:bg-gray-600/50 c"
                             disabled // TODO: implement this functionality and remove disabled
                         >
                             View Profile
                         </Button>
-                        <Button
-                            onClick={() => logout()}
-                            variant="destructive"
-                            className="w-full"
-                        >
-                            Log Out
-                        </Button>
+                        <LogoutBtn />
                     </div>
                 </div>
             </DialogContent>
