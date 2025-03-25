@@ -31,15 +31,21 @@ These are the best options imo:
 
 However, if you do not want to spend time looking into them, you can start with a simple [XAMPP](https://www.apachefriends.org/it/index.html)
 
+Remember to save this data:
+- DATABASE_HOST
+- DATABASE_USER
+- DATABASE_PASSWORD
+- DATABASE_NAME
+
 # Step 3.3 - Configure prisma
 Prisma has a good amount of tutorials, you can either check the ([Docs](https://www.prisma.io/docs/orm/prisma-client/setup-and-configuration/introduction)) or look a video on [YT](https://www.youtube.com/watch?v=QXxy8Uv1LnQ&t=1567s).  
-In the .env file at #3, substitute the $DATABASE_SOMETHING with the data you've set up in the previos step
+In the .env file at #3 (DATABASE_URL string), substitute $DATABASE_USER, $DATABASE_PASSWORD, $DATABASE_HOST, and $DATABASE_NAME with the data you've set up in the previous step
 
 # Step 3.4 - Secrets
 You have already generated the secrets, now is the time to use them
 
 # Step 3.5 - Set up an SMTP server
-I raccomend
+I recommend
 - [SMTP on GMAIL](https://www.youtube.com/watch?v=ZfEK3WP73eY)
 - [Resend](https://resend.com/)
 
