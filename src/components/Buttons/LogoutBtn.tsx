@@ -1,15 +1,27 @@
 "use client";
 
-import { logout } from "@/actions/auth.actions";
+import { ResultType } from "@/types";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Button } from "../ui/button";
+import { api } from "@/lib/endpoint-builder";
 
 const LogoutBtn = () => {
     const [isPending, setIsPending] = useState(false);
+    const router = useRouter();
 
     const handleLogout = async () => {
         try {
             setIsPending(true);
-            await logout();
+            const res: ResultType = await fetch(api.auth.logout.toString(), {
+                method: "GET",
+            }).then((res) => res.json());
+
+            if (res.success) {
+                router.push("/");
+            } else {
+                throw new Error(res.message || "Logout failed");
+            }
         } catch (error) {
             console.error("Logout failed: ", error);
             setIsPending(false);
@@ -17,17 +29,14 @@ const LogoutBtn = () => {
     };
 
     return (
-        <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-xl bg-gray-800/90 p-2 shadow-2xl backdrop-blur-xl animate-pop-in">
-            <button
-                onClick={handleLogout}
-                className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm text-gray-300 transition-all
-                hover:bg-red-500/20 hover:text-red-400"
-                disabled={isPending}
-            >
-                <i className="fas fa-rocket text-xs" />
-                Log Out
-            </button>
-        </div>
+        <Button
+            onClick={handleLogout}
+            className="w-full text-gray-100"
+            variant={"destructive"}
+            disabled={isPending}
+        >
+            {isPending ? "Logging Out..." : "Log Out"}
+        </Button>
     );
 }
 
