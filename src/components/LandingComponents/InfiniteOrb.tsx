@@ -11,7 +11,7 @@ const InfiniteOrb = () => {
 
     useEffect(() => {
         const moveOrb = (e: MouseEvent) => {
-            // Aggiorna le posizioni con una transizione spring per un movimento più fluido
+            // Update positions
             translateX.set(e.clientX);
             translateY.set(e.clientY);
         };
