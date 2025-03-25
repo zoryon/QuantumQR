@@ -45,7 +45,7 @@ In the .env file at #3 (DATABASE_URL string), substitute $DATABASE_USER, $DATABA
 You have already generated the secrets, now is the time to use them
 
 # Step 3.5 - Set up an SMTP server
-I recommend
+I recommend:
 - [SMTP on GMAIL](https://www.youtube.com/watch?v=ZfEK3WP73eY)
 - [Resend](https://resend.com/)
 
