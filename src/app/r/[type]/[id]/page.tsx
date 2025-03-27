@@ -1,3 +1,4 @@
+import ScanIncrementer from "@/components/ScanIncrementer";
 import { QR_CODES_TYPES_ARRAY } from "@/constants";
 import { api } from "@/lib/endpoint-builder";
 import { isQRCodeType } from "@/lib/qrcode";
@@ -18,17 +19,21 @@ export default async function RedirectPage({
 
     const qrCodeId = Number(id);
     if (isNaN(qrCodeId)) return notFound();
-    
+
     const res: ResultType = await fetch(
-        `${process.env.WEBSITE_URL}${api.qrcodes.find.query({ id: qrCodeId, type: normalizedType})}`, {
-            method: "GET",
-            headers: { "Accept": "application/json" },
-        }
+        `${process.env.WEBSITE_URL}${api.qrcodes.find.query({ id: qrCodeId, type: normalizedType })}`, {
+        method: "GET",
+        headers: { "Accept": "application/json" },
+    }
     ).then((res) => res.json());
-    
+
     if (!res || !res.success) return notFound();
 
     const qrCode = res.body;
 
-    redirect(qrCode.websiteUrl);
+    return (
+        <>
+            <ScanIncrementer qrCodeId={qrCodeId} redirectUrl={qrCode.websiteUrl} />
+        </>
+    );
 }

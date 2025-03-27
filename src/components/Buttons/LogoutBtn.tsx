@@ -1,14 +1,12 @@
 "use client";
 
 import { ResultType } from "@/types";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { api } from "@/lib/endpoint-builder";
 
 const LogoutBtn = () => {
     const [isPending, setIsPending] = useState(false);
-    const router = useRouter();
 
     const handleLogout = async () => {
         try {
@@ -18,7 +16,7 @@ const LogoutBtn = () => {
             }).then((res) => res.json());
 
             if (res.success) {
-                router.push("/");
+                window.location.href = "/login";
             } else {
                 throw new Error(res.message || "Logout failed");
             }
