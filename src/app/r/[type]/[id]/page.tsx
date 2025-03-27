@@ -3,7 +3,7 @@ import { QR_CODES_TYPES_ARRAY } from "@/constants";
 import { api } from "@/lib/endpoint-builder";
 import { isQRCodeType } from "@/lib/qrcode";
 import { ResultType } from "@/types";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 export default async function RedirectPage({
     params: paramsPromise,
