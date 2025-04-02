@@ -2,7 +2,6 @@
 
 import { useQrCodeCreator } from "@/hooks/use-qrcode-creator";
 import { Label } from "./ui/label";
-import { Input } from "./ui/input";
 import { Slider } from "./ui/slider";
 import { useCallback, useEffect, useState } from "react";
 import { debounce } from "lodash";
