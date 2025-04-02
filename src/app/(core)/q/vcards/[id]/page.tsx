@@ -114,12 +114,12 @@ export default async function VCardPage({
                                 {contactPoints.map((item, index) => (
                                     <div
                                         key={index}
-                                        className="p-5 rounded-2xl bg-gray-800/50 hover:bg-gray-800/70 transition-all border-2 border-gray-700/50 hover:border-indigo-500/30 relative overflow-hidden"
+                                        className="text-sm md:text-lg p-5 rounded-2xl bg-gray-800/50 hover:bg-gray-800/70 transition-all border-2 border-gray-700/50 hover:border-indigo-500/30 relative overflow-hidden"
                                     >
                                         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                         <div className="flex items-start space-x-4 relative">
                                             <div className="p-3 rounded-xl bg-indigo-500/10 backdrop-blur-sm">
-                                                <i className={`fas ${item.icon} text-indigo-400 text-xl`} />
+                                                <i className={`fas ${item.icon} text-indigo-400 text-lg md:text-xl`} />
                                             </div>
                                             <div className="flex-1">
                                                 {item.type ? (
@@ -128,13 +128,13 @@ export default async function VCardPage({
                                                     <Link
                                                         href={item.type !== "url" ? `${item.type}:${item.value}` : item.value}
                                                         target={item.type === "url" ? "_blank" : undefined}
-                                                        className="text-lg font-medium text-gray-100 hover:text-indigo-400 transition-colors flex items-center"
+                                                        className="font-medium text-gray-100 hover:text-indigo-400 transition-colors flex items-center"
                                                     >
                                                         {item.value}
                                                         <i className="fas fa-external-link-alt ml-2 text-sm opacity-70" />
                                                     </Link>
                                                 ) : (
-                                                    <p className="text-lg font-medium text-gray-100">{item.value}</p>
+                                                    <p className="font-medium text-gray-100">{item.value}</p>
                                                 )}
                                                 <div className="mt-2 flex items-center space-x-2">
                                                     <span className="text-xs font-mono text-indigo-400/70 uppercase tracking-widest">
@@ -152,17 +152,17 @@ export default async function VCardPage({
                             <div className="mt-8 p-6 rounded-2xl bg-gray-800/50 border-2 border-gray-700/50 backdrop-blur-sm">
                                 <div className="flex items-center space-x-4">
                                     <div className="p-3 rounded-xl bg-purple-500/10">
-                                        <i className="fas fa-wave-pulse text-purple-400 text-2xl" />
+                                        <i className="fas fa-wave-pulse text-purple-400 text-xl md:text-2xl" />
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-semibold text-gray-100">Quantum Stats</h3>
+                                        <h3 className="text-sm md:text-lg font-semibold text-gray-100">Quantum Stats</h3>
                                         <div className="flex space-x-6 mt-2">
                                             <div className="text-indigo-400">
-                                                <span className="text-2xl font-bold">{qrCode.scans}</span>
+                                                <span className="text-lg font-bold">{qrCode.scans}</span>
                                                 <span className="text-sm ml-1">Scans</span>
                                             </div>
                                             <div className="text-purple-400">
-                                                <span className="text-2xl font-bold">24h</span>
+                                                <span className="text-lg md:text-2xl font-bold">24h</span>
                                                 <span className="text-sm ml-1">Active</span>
                                             </div>
                                         </div>
@@ -181,7 +181,7 @@ export default async function VCardPage({
             </main>
 
             {/* Signature */}
-            <footer className="mt-12 text-center animate-float">
+            <footer className="mt-12 text-center animate-float mb-3">
                 <p className="text-sm text-gray-500 font-mono">
                     <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
                         ▲ QUANTUMQR v1.0
