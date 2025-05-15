@@ -31,8 +31,8 @@ export async function POST(request: Request): Promise<NextResponse<ResultType>> 
         }
 
         // Check if admin user exists and has admin role
-        const adminUser = await prisma.active_users.findUnique({
-            where: { id: adminId },
+        const adminUser = await prisma.users.findUnique({
+            where: { id: adminId, isEmailConfirmed: true },
         });
 
         if (!adminUser || adminUser.role !== UserRole.ADMIN) {
