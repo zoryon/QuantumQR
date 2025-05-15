@@ -19,7 +19,6 @@ export default function AuthLayout({
       
       <FloatingOrbs />
       
-      {/* Main Content */}
       {children}
     </div>
   );
