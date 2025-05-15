@@ -41,8 +41,8 @@ export async function POST(request: Request): Promise<NextResponse> {
         }
 
         // Check if user exists and is active
-        const user = await prisma.active_users.findUnique({
-            where: { id: Number(input.banId) },
+        const user = await prisma.users.findUnique({
+            where: { id: Number(input.banId), isEmailConfirmed: true },
         });
 
         if (!user) {
