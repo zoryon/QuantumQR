@@ -31,8 +31,8 @@ export async function GET(): Promise<NextResponse<ResultType>> {
         }
 
         // Check if user is admin
-        const user = await prisma.active_users.findUnique({
-            where: { id: userId },
+        const user = await prisma.users.findUnique({
+            where: { id: userId, isEmailConfirmed: true },
         });
         if (!user || user.role !== UserRole.ADMIN) {
             return NextResponse.json({
