@@ -44,6 +44,7 @@ const VCardPage = () => {
                     setError("QR code not found");
                 }
             } catch (err) {
+                console.error(err);
                 setError("Failed to load QR code data");
             } finally {
                 setLoading(false);

@@ -6,7 +6,7 @@ import { ResultType } from "@/types";
 import { Tier } from "@/types/tier.types";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronRight, BadgeCheck, CreditCard, CalendarClock } from "lucide-react";
+import { ChevronRight, BadgeCheck } from "lucide-react";
 
 const UpgradePage = () => {
     const { userData } = useUserData();
