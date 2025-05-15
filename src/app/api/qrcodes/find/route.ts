@@ -35,7 +35,7 @@ export async function GET(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json({
                 success: false,
                 message: "Invalid QR code ID",
-                body: null
+                data: null
             }, { status: 400 });
         }
 
@@ -44,12 +44,12 @@ export async function GET(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json({
                 success: false,
                 message: "Type parameter is required",
-                body: null
+                data: null
             }, { status: 400 });
         }
 
         // Retrieve the base QR code record
-        const baseQr = await prisma.qrcodes.findUnique({
+        const baseQr = await prisma.qr_codes.findUnique({
             where: { id: qrCodeId },
         });
 
@@ -57,7 +57,7 @@ export async function GET(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json({
                 success: false,
                 message: "QR Code not found",
-                body: null
+                data: null
             }, { status: 404 });
         }
 
@@ -65,12 +65,12 @@ export async function GET(req: Request): Promise<NextResponse<ResultType>> {
         let specificData;
         switch (type) {
             case "vCards":
-                specificData = await prisma.vcardqrcodes.findUnique({
+                specificData = await prisma.vcard_qr_codes.findUnique({
                     where: { qrCodeId: baseQr.id },
                 });
                 break;
             case "classics":
-                specificData = await prisma.classicqrcodes.findUnique({
+                specificData = await prisma.classic_qr_codes.findUnique({
                     where: { qrCodeId: baseQr.id },
                 });
                 break;
@@ -83,7 +83,7 @@ export async function GET(req: Request): Promise<NextResponse<ResultType>> {
                 return NextResponse.json({
                     success: false,
                     message: "Unsupported QR Code type",
-                    body: null
+                    data: null
                 }, { status: 400 });
         }
 
@@ -92,7 +92,7 @@ export async function GET(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json({
                 success: false,
                 message: "Detailed data not found",
-                body: null
+                data: null
             }, { status: 404 });
         }
 
@@ -106,14 +106,14 @@ export async function GET(req: Request): Promise<NextResponse<ResultType>> {
         return NextResponse.json({
             success: true,
             message: "QR Code found",
-            body: response
+            data: response
         }, { status: 200 });
     } catch (error) {
         console.error("Error fetching QR code:", error);
         return NextResponse.json({
             success: false,
             message: "Internal server error",
-            body: null
+            data: null
         }, { status: 500 });
     }
 }

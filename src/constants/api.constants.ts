@@ -3,18 +3,27 @@ import { ApiDefinition } from "@/types";
 export const API_CONFIG = {
   users: {
     current: { method: "GET" },
+    requestPromotion: { method: "POST" },
+    changeUsername: { method: "POST" },
+  },
+  admin: {
+    findPromotions: { method: "GET" },
+    reviewPromotion: { method: "POST" },
+    banUser: { method: "POST" },
+    findAllUsers: { method: "GET" },
+    appStats: { method: "GET" },
   },
   qrcodes: {
     find: { method: "GET" },
     findAll: { method: "GET" },
     create: { method: "POST" },
     delete: { method: "DELETE" },
-    scan: { method: "POST" },
+    trackScan: { method: "POST" },
     update: { method: "PUT" },
   },
   auth: {
     register: {
-      confirm: { method: "POST" },
+      confirm: { method: "GET" },
     },
     login: { method: "POST" },
     forgotPassword: {
@@ -24,4 +33,8 @@ export const API_CONFIG = {
     logout: { method: "GET" },
   },
   policies: { method: "GET" },
+  subscriptions: {
+    tiers: { method: "GET" },
+    change: { method: "POST" },
+  },
 } satisfies ApiDefinition;

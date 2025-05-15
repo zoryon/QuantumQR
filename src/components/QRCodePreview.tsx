@@ -24,13 +24,7 @@ const QRCodePreview = () => {
     // Handle logo file
     useEffect(() => {
         if (designOptions.logo) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                if (e.target?.result) {
-                    setLogoDataUrl(e.target.result as string);
-                }
-            };
-            reader.readAsDataURL(designOptions.logo);
+            setLogoDataUrl(designOptions.logo);
         } else {
             setLogoDataUrl(null);
         }
@@ -48,11 +42,11 @@ const QRCodePreview = () => {
                     imageSettings={
                         logoDataUrl
                             ? {
-                                  src: logoDataUrl,
-                                  height: (designOptions.logoSize / 100) * 512,
-                                  width: (designOptions.logoSize / 100) * 512,
-                                  excavate: true,
-                              }
+                                src: logoDataUrl,
+                                height: (designOptions.logoScale / 100) * 512,
+                                width: (designOptions.logoScale / 100) * 512,
+                                excavate: true,
+                            }
                             : undefined
                     }
                     style={{ width: "100%", height: "auto" }}

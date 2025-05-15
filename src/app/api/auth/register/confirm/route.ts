@@ -17,7 +17,7 @@ export async function GET(req: Request): Promise<NextResponse<ResultType>> {
         return NextResponse.json<ResultType>({ 
             success: false,
             message: "You are already logged in.",
-            body: null
+            data: null
         }, { status: 401 });
     }
 
@@ -32,7 +32,7 @@ export async function GET(req: Request): Promise<NextResponse<ResultType>> {
         return NextResponse.json<ResultType>({ 
             success: false,
             message: "Invalid token.",
-            body: null
+            data: null
         }, { status: 401 });
     }
 
@@ -53,7 +53,7 @@ export async function GET(req: Request): Promise<NextResponse<ResultType>> {
         return NextResponse.json<ResultType>({ 
             success: false,
             message: "User not found.",
-            body: null
+            data: null
         }, { status: 404 });
     }
 
@@ -61,6 +61,6 @@ export async function GET(req: Request): Promise<NextResponse<ResultType>> {
     return NextResponse.json<ResultType>({ 
         success: true,
         message: "Email confirmed successfully.",
-        body: null
+        data: null
     }, { status: 200 });
 }

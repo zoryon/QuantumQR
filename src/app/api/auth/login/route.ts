@@ -18,20 +18,20 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({ 
                 success: false, 
                 message: "You are already logged in",
-                body: null
+                data: null
             }, { status: 401 });
         }
 
         // Proceed with login if the user is not logged in
         const prisma = getPrismaClient();
-        const { emailOrUsername, password } = await req.json(); // Extract login credentials from the request body
+        const { emailOrUsername, password } = await req.json(); // Extract login credentials from the request data
 
         // Validate input credentials
         if (typeof emailOrUsername !== "string" || typeof password !== "string" || !emailOrUsername.trim() || !password.trim()) {
             return NextResponse.json<ResultType>({ 
                 success: false, 
                 message: "Invalid credentials",
-                body: null
+                data: null
             }, { status: 400 });
         }
 
@@ -51,7 +51,7 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({ 
                 success: false, 
                 message: "Invalid email or username",
-                body: null
+                data: null
             }, { status: 401 });
         }
 
@@ -61,7 +61,7 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({ 
                 success: false, 
                 message: "Invalid password",
-                body: null
+                data: null
             }, { status: 401 });
         }
 
@@ -82,14 +82,14 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
         return NextResponse.json<ResultType>({ 
             success: true, 
             message: "Logged in successfully",
-            body: true
+            data: true
         }, { status: 200 });
     } catch (error: any) {
         console.error(error);
         return NextResponse.json<ResultType>({ 
             success: false, 
             message: error.message,
-            body: null
+            data: null
         }, { status: 500 });
     }
 }

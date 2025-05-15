@@ -3,7 +3,7 @@
 import { cardDetailsFormSchema, CardDetailsFormValues, classicDetailsFormSchema, ClassicDetailsFormValues } from "@/lib/schemas";
 import { QRCodeTypes, DesignOptions, QRCode, ResultType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createContext, useCallback, useContext, useEffect, useState } from "react"
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQrCodeList } from "./use-qrcode-list";
 import { useRouter } from "next/navigation";
@@ -36,9 +36,9 @@ type QrCreatorContextType = {
 // Initial values for design options
 const initialDesignOptions: DesignOptions = {
     fgColor: "#000000",
-    bgColor: "#FFFFFF",
+    bgColor: "#ffffff",
     logo: null,
-    logoSize: 20,
+    logoScale: 20,
 };
 
 // Create a context to share QR code creation state across components
@@ -60,6 +60,7 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
         const baseDefaults = {
             name: "",
             websiteUrl: "",
+            targetUrl: "",
             firstName: "",
             lastName: "",
             email: "",
@@ -74,7 +75,7 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
                     defaultValues: {
                         ...baseDefaults,
                         name: "My Professional Card",
-                        websiteUrl: "https://company.com"
+                        targetUrl: "https://company.com"
                     } as ClassicDetailsFormValues
                 };
             case "vCards":
@@ -91,7 +92,7 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
                         websiteUrl: "https://company.com"
                     } as CardDetailsFormValues
                 };
-            // Add more cases here for future QR types
+            // Add HERE for other QR code types
             default:
                 throw new Error(`Unsupported qrType: ${qrType}`);
         }
@@ -101,7 +102,7 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
 
     // Initialize the form using the schema and default values
     const form = useForm<FormValues>({
-        resolver: zodResolver(schema) as any, // Use Zod for form validation
+        resolver: zodResolver(schema as any) , // Use Zod for form validation
         defaultValues: defaultValues as FormValues // Set the default form values
     });
 
@@ -133,12 +134,12 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
         // Get form values
         const formValues = form.getValues();
 
-        // temporary ID for optimistic update
+        // Temporary ID for optimistic update
         const tempId = -Date.now();
         const previousQrCodes = [...qrCodes];
 
         try {
-            // creating a non-accessable temporary QR Code object
+            // Creating a non-accessable temporary QR Code object
             const tempQRCode: QRCode = {
                 id: tempId,
                 name: (formValues  as ClassicDetailsFormValues).name || "Loading...",
@@ -154,46 +155,48 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
                 email: (formValues as CardDetailsFormValues).email || null,
                 phoneNumber: (formValues as CardDetailsFormValues).phoneNumber || null,
                 websiteUrl: formValues.websiteUrl || null,
+                targetUrl: formValues.targetUrl || null,
                 address: (formValues as CardDetailsFormValues).address || null,
             };
 
-            // optimistic update
+            // Optimistic update
             setQrCodes([tempQRCode, ...qrCodes]);
-
             router.push("/");
 
+            // Logo scale is in percentage, so we need to convert it to a decimal value
+            designOptions.logoScale = designOptions.logoScale ? designOptions.logoScale / 100 : 0.2;
+
             // API call to create QR Code
-            const res = await fetch(api.qrcodes.create.toString(), {
+            const res: ResultType = await fetch(api.qrcodes.create.toString(), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ 
                     ...formValues, 
+                    ...designOptions,
                     qrType, 
-                    ...designOptions 
                 }),
-            });
+            }).then(res => res.json());
 
-            const data: ResultType = await res.json()
-            if (data.success) {
-                // sync temporary QR Code object with the newly created
+            if (res.success) {
+                // Sync temporary QR Code object with the newly created
                 setQrCodes(prev => [
                     {
-                        ...data.body,
+                        ...res.data,
                         type: qrType as QRCodeTypes,
                     },
                     ...prev.filter(qr => qr.id !== tempId)
                 ]);
-                    setCreated(true);
+                setCreated(true);
             } else {
                 setQrCodes(previousQrCodes);
             }
 
             setResult({ 
-                success: data.success, 
-                message: data.message,
-                body: data.body
+                success: res.success, 
+                message: res.message,
+                data: res.data
             });
             setIsPending(false);
         } catch (error: any) {
@@ -203,7 +206,7 @@ export function QrCreatorProvider({ children }: { children: React.ReactNode }) {
             setResult({ 
                 success: error.success, 
                 message: error.message,
-                body: error.body
+                data: error.data
             });
             setIsPending(false);
         }

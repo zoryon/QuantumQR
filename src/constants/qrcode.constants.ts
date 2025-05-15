@@ -1,5 +1,6 @@
 import { cardDetailsFormSchema, classicDetailsFormSchema } from "@/lib/schemas";
 import { QRCodeCard, QrTypeMapping } from "@/types/qrcode.types";
+import { z } from "zod";
 
 // String types for QR Code categories
 // This array contains the types of QR codes available: "vCards" and "classics".
@@ -24,7 +25,7 @@ export const QR_CODE_CARDS: QRCodeCard[] = [
         description: "Share your virtual business card",
         icon: "fa-solid fa-address-card",
     },
-    
+
 ] as const;
 
 /**
@@ -36,16 +37,26 @@ export const QR_CODE_CARDS: QRCodeCard[] = [
  * - Data validation (Zod schemas).
  */
 export const TYPE_MAPPING: QrTypeMapping[] = [
-    { 
-        type: "vCards" as const, 
-        relation: "vcardqrcodes", 
-        model: "vcardqrcodes",
-        schema: cardDetailsFormSchema
-    },
-    { 
-        type: "classics" as const, 
-        relation: "classicqrcodes", 
-        model: "classicqrcodes",
-        schema: classicDetailsFormSchema
-    },
+    { type: 'vCards', relation: 'vcard_qr_codes' },
+    { type: 'classics', relation: 'classic_qr_codes' },
 ];
+
+export const UPDATE_TYPE_MAPPING = {
+    vCards: {
+        table: 'vcard_qr_codes',
+        model: 'vcard_qr_codes',
+        schema: z.object({
+            name: z.string().min(1).max(255),
+            firstName: z.string().min(1).max(255),
+            lastName: z.string().min(1).max(255),
+        })
+    },
+    classics: {
+        table: 'classic_qr_codes',
+        model: 'classic_qr_codes',
+        schema: z.object({
+            name: z.string().min(1).max(255),
+            targetUrl: z.string().url().max(255),
+        })
+    }
+};

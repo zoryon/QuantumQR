@@ -24,31 +24,31 @@ import { api } from "@/lib/endpoint-builder";
 
 const RegisterForm = () => {
     const [isPending, setIsPending] = useState(false);
-    const [result, setResult] = useState<ResultType>({ success: false, message: null, body: null });
+    const [result, setResult] = useState<ResultType>({ success: false, message: null, data: null });
 
     async function onSubmit(values: z.infer<typeof registerFormSchema>) {
         try {
             setIsPending(true);
-            const res = await fetch(api.auth.register.toString(), {
+            console.log(api.auth.register.toString())
+            const res: ResultType = await fetch(api.auth.register.toString(), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(values),
-            });
+            }).then(res => res.json());
             
-            const data = await res.json();
             setResult({
-                success: data.success,
-                message: data.message,
-                body: data.body,
+                success: res.success,
+                message: res.message,
+                data: res.data,
             });
         } catch (error: any) {
             console.error("Error during registration: ", error.message);
             setResult({
                 success: error.success,
                 message: error.message,
-                body: null,
+                data: null,
             });
         } finally {
             setIsPending(false);
@@ -124,10 +124,7 @@ const RegisterForm = () => {
                     )}
                 />
                 <p className="text-xs text-gray-300">
-                    By creating an account, you agree to QuantumQR&apos;s{" "}
-                    <Link href={"/policies/privacy-policy"} className="underline text-blue-400">Privacy Policy</Link>
-                    {" "}and{" "}
-                    <Link href={"/policies/terms-of-service"} className="underline text-blue-400">Terms of Service</Link>.
+                    By creating an account, you agree to QuantumQR&apos;s{" "}Privacy Policy{" "}and{" "}Terms of Service.
                 </p>
 
                 <Button

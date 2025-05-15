@@ -23,22 +23,21 @@ import { api } from "@/lib/endpoint-builder";
 
 const LoginForm = () => {
     const [isPending, setIsPending] = useState(false);
-    const [result, setResult] = useState<ResultType>({ success: false, message: null, body: null });
+    const [result, setResult] = useState<ResultType>({ success: false, message: null, data: null });
     const router = useRouter();
 
     async function onSubmit(values: z.infer<typeof loginFormSchema>) {
         try {
             setIsPending(true);
-            const res = await fetch(api.auth.login.toString(), {
+            const res: ResultType = await fetch(api.auth.login.toString(), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(values)
-            });
+            }).then(res => res.json());
 
-            const data = await res.json();
-            if (res.ok && data.success) {
+            if (res.success) {
                 router.push("/");
                 router.refresh();
             } else {
@@ -46,16 +45,16 @@ const LoginForm = () => {
             }
             
             setResult({
-                success: data.success,
-                message: data.message,
-                body: data.body
+                success: res.success,
+                message: res.message,
+                data: res.data
             });
         } catch (error: any) {
             console.error("Error during login: ", error.message);
             setResult({
                 success: error.success,
                 message: error.message,
-                body: null
+                data: null
             });
             setIsPending(false);
         }

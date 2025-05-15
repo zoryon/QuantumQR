@@ -20,13 +20,13 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({ 
                 success: false,
                 message: "You are already logged in.",
-                body: null
+                data: null
             }, { status: 401 });
         }
 
         const prisma = getPrismaClient();
 
-        // Destructuring input values from the request body
+        // Destructuring input values from the request data
         const { email, username, password, passwordConfirmation, hasAllowedEmails } = await req.json();
 
         // Validating parameters for required types and non-empty values
@@ -46,7 +46,7 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({ 
                 success: false,
                 message: "Invalid parameters.",
-                body: null
+                data: null
             }, { status: 400 });
         }
 
@@ -55,16 +55,16 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({ 
                 success: false,
                 message: "Username must be at least 2 characters long.",
-                body: null
+                data: null
             }, { status: 400 });
         }
 
-        // Password length validation (must be at least 5 characters long)
-        if (password.length < 5) {
+        // Password length validation (must be at least 4 characters long)
+        if (password.length < 4) {
             return NextResponse.json<ResultType>({ 
                 success: false,
-                message: "Password must be at least 5 characters long.",
-                body: null
+                message: "Password must be at least 4 characters long.",
+                data: null
             }, { status: 400 });
         }
 
@@ -73,7 +73,7 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({ 
                 success: false,
                 message: "Passwords do not match.",
-                body: null
+                data: null
             }, { status: 400 });
         }
 
@@ -92,7 +92,7 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({ 
                 success: false,
                 message: "User already exists. Please login instead.",
-                body: null
+                data: null
             }, { status: 409 });
         }
 
@@ -114,7 +114,7 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({ 
                 success: false,
                 message: "An error occurred on our end. Please try again later.",
-                body: null
+                data: null
             }, { status: 500 });
         }
 
@@ -134,14 +134,14 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
         return NextResponse.json<ResultType>({ 
             success: true,
             message: "Registration successful. Please check your email to confirm your account.",
-            body: true
+            data: true
         }, { status: 200 });
     } catch (error: any) {
         console.error(error);
         return NextResponse.json<ResultType>({ 
             success: false,
             message: error,
-            body: null
+            data: null
         }, { status: 500 });
     }
 }

@@ -27,11 +27,11 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({
                 success: false,
                 message: "You are not logged in",
-                body: null
+                data: null
             }, { status: 401 });
         }
 
-        // Parse the request body, separating qrType (QR type) from the rest of the QR data
+        // Parse the request data, separating qrType (QR type) from the rest of the QR data
         const {
             qrType,
             ...values
@@ -41,7 +41,7 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({ 
                 success: false, 
                 message: "Invalid input",
-                body: null
+                data: null
             }, { status: 400 });
         }
 
@@ -50,7 +50,7 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({ 
                 success: false, 
                 message: "Name must be less than 20 characters",
-                body: null
+                data: null
             }, { status: 400 });
         }
 
@@ -69,7 +69,7 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
                     return NextResponse.json<ResultType>({ 
                         success: false, 
                         message: parsedValues.error.message,
-                        body: null
+                        data: null
                     }, { status: 400 });
                 }
 
@@ -86,7 +86,7 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
                     return NextResponse.json<ResultType>({ 
                         success: false, 
                         message: parsedValues.error.message,
-                        body: null
+                        data: null
                     }, { status: 400 });
                 }
 
@@ -100,21 +100,21 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
                 return NextResponse.json<ResultType>({ 
                     success: false, 
                     message: "Invalid QR code type",
-                    body: null
+                    data: null
                 }, { status: 400 });
         }
 
         return NextResponse.json<ResultType>({
             success: true,
             message: "QR code created successfully",
-            body: qrCode
+            data: qrCode
         }, { status: 200 });
     } catch (error: any) {
         console.error(error.message);
         return NextResponse.json<ResultType>({
             success: error.success,
             message: error.message,
-            body: null
+            data: null
         }, { status: 500 });
     }
 }
@@ -135,7 +135,7 @@ async function createVCardQRCode({
 }) {
     try {
         // Check if a QR code with the same name already exists for the user
-        const existingQrCode = await prisma.qrcodes.findFirst({
+        const existingQrCode = await prisma.qr_codes.findFirst({
             where: { userId, name: values.name }
         });
         
@@ -144,12 +144,12 @@ async function createVCardQRCode({
         }
 
         // Create the QR code entry in the database for a vCard
-        const qrCode = await prisma.qrcodes.create({
+        const qrCode = await prisma.qr_codes.create({
             data: {
                 name: values.name,
                 userId: userId,
                 url: "", // URL will be populated later
-                vcardqrcodes: {
+                vcard_qr_codes: {
                     create: {
                         firstName: values.firstName,
                         lastName: values.lastName,
@@ -160,7 +160,7 @@ async function createVCardQRCode({
                     }
                 }
             },
-            include: { vcardqrcodes: true }
+            include: { vcard_qr_codes: true }
         });
 
         // Generate a dynamic URL for the QR code
@@ -170,10 +170,10 @@ async function createVCardQRCode({
         const qrCodeURL = await generateQRCode(dynamicURL);
 
         // Update the QR code entry with the generated URL
-        const updatedQrCode = await prisma.qrcodes.update({
+        const updatedQrCode = await prisma.qr_codes.update({
             where: { id: qrCode.id },
             data: { url: qrCodeURL },
-            include: { vcardqrcodes: true }
+            include: { vcard_qr_codes: true }
         });
 
         // Return the updated QR code entry
@@ -200,12 +200,12 @@ async function createClassicQRCode({
 }) {
     try {
         // Ensure that a website URL is provided for the classic QR code
-        if (!values.websiteUrl) {
+        if (!values.targetUrl) {
             throw new Error("Website URL is required");
         }
 
         // Check if a QR code with the same name already exists for the user
-        const existingQrCode = await prisma.qrcodes.findFirst({
+        const existingQrCode = await prisma.qr_codes.findFirst({
             where: { userId, name: values.name }
         });
         
@@ -214,18 +214,18 @@ async function createClassicQRCode({
         }
         
         // Create the QR code entry in the database for a classic QR code
-        const qrCode = await prisma.qrcodes.create({
+        const qrCode = await prisma.qr_codes.create({
             data: {
                 name: values.name,
                 userId: userId,
                 url: "", // URL will be populated later
-                classicqrcodes: {
+                classic_qr_codes: {
                     create: {
-                        websiteUrl: values.websiteUrl, // Store the website URL in the database
+                        targetUrl: values.targetUrl, // Store the website URL in the database
                     }
                 }
             },
-            include: { classicqrcodes: true }
+            include: { classic_qr_codes: true }
         });
 
         // Generate the QR Code URL
@@ -234,10 +234,10 @@ async function createClassicQRCode({
         const qrCodeBase64 = await generateQRCode(url);
 
         // Update the QR code entry with the generated URL
-        const updatedQrCode = await prisma.qrcodes.update({
+        const updatedQrCode = await prisma.qr_codes.update({
             where: { id: qrCode.id },
             data: { url: qrCodeBase64 },
-            include: { classicqrcodes: true }
+            include: { classic_qr_codes: true }
         });
 
         // Return the created QR code entry

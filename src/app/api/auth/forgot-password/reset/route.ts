@@ -18,11 +18,11 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({
                 success: false,
                 message: "You are already logged in.",
-                body: null
+                data: null
             }, { status: 401 });
         }
 
-        // Extract necessary data from the request body
+        // Extract necessary data from the request data
         const { token, password, passwordConfirmation } = await req.json();
 
         // Validate the reset token, which will also return the user ID if the token is valid
@@ -33,7 +33,7 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({
                 success: false,
                 message: "Invalid token.",
-                body: null
+                data: null
             }, { status: 401 });
         }
 
@@ -46,7 +46,7 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({
                 success: false,
                 message: "Malformed data.",
-                body: null
+                data: null
             }, { status: 400 });
         }
 
@@ -55,7 +55,7 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({
                 success: false,
                 message: "Password must be at least 6 characters long.",
-                body: null
+                data: null
             }, { status: 400 });
         }
 
@@ -64,7 +64,7 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({
                 success: false,
                 message: "Passwords do not match.",
-                body: null
+                data: null
             }, { status: 400 })
         };
 
@@ -86,21 +86,21 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({
                 success: false,
                 message: "User not found.",
-                body: null
+                data: null
             }, { status: 404 });
         }
 
         return NextResponse.json<ResultType>({
             success: true,
             message: "Password updated successfully.",
-            body: null
+            data: null
         }, { status: 200 });
     } catch (error) {
         console.error("Error while updating passwords: ", error);
         return NextResponse.json<ResultType>({
             success: false,
             message: "Something went wrong.",
-            body: null
+            data: null
         }, { status: 500 });
     }
 }

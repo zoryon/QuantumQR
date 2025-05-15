@@ -18,20 +18,20 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({
                 success: false,
                 message: "You are already logged in",
-                body: null
+                data: null
             }, { status: 401 });
         }
 
         // Proceed with the password reset process if the user is not logged in
         const prisma = getPrismaClient();
-        const { emailOrUsername } = await req.json(); // Extract email or username from request body
+        const { emailOrUsername } = await req.json(); // Extract email or username from request data
 
         // Validate the input: check if the email/username is provided and is a valid string
         if (typeof emailOrUsername !== "string" || !emailOrUsername.trim()) {
             return NextResponse.json<ResultType>({
                 success: false,
                 message: "Invalid credentials",
-                body: null
+                data: null
             }, { status: 400 });
         }
 
@@ -51,7 +51,7 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
             return NextResponse.json<ResultType>({
                 success: false,
                 message: "Invalid email or username",
-                body: null
+                data: null
             }, { status: 401 });
         }
 
@@ -72,14 +72,14 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
         return NextResponse.json<ResultType>({
             success: true,
             message: "Please check your email to reset your password.",
-            body: true
+            data: true
         }, { status: 200 });
     } catch (error: any) {
         console.error(error);
         return NextResponse.json<ResultType>({
             success: false,
             message: error.message,
-            body: null
+            data: null
         }, { status: 500 });
     }
 }

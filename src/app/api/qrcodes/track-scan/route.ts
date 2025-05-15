@@ -25,7 +25,7 @@ export async function PUT(req: Request): Promise<NextResponse> {
         const prisma = getPrismaClient();
 
         // Increment the scan count for the specified QR code
-        const updated = await prisma.qrcodes.update({
+        const updated = await prisma.qr_codes.update({
             where: { id },
             data: {
                 scans: {

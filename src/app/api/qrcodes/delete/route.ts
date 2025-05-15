@@ -1,65 +1,71 @@
-import getPrismaClient from "@/lib/db";
-import { verifySession } from "@/lib/session";
-import { ResultType } from "@/types";
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import getPrismaClient from "@/lib/db";
+import { verifySession, isBanned } from "@/lib/session";
+import { z } from "zod";
+import { ResultType } from "@/types";
 
-/**
- * Deletes a QR code belonging to the authenticated user.
- *
- * - Ensures the user is logged in before proceeding.
- * - Validates the provided QR code ID.
- * - Deletes the QR code only if it belongs to the authenticated user.
- * - Returns an appropriate response based on the result.
- *
- * @param {Request} req - The incoming request object.
- * @returns {Promise<NextResponse>} A JSON response indicating success or failure.
- */
-export async function DELETE(req: Request): Promise<NextResponse> {
+const DeleteSchema = z.object({
+    ids: z.array(z.number().int().positive())
+});
+
+export async function DELETE(request: Request): Promise<NextResponse<ResultType>> {
     try {
-        // Verify user session
         const sessionToken = (await cookies()).get("session_token")?.value;
         const session = await verifySession(sessionToken);
 
         if (!session?.userId) {
-            return NextResponse.json<ResultType>({
-                success: false,
-                message: "You are not logged in",
-                body: null
-            }, { status: 401 });
+            return NextResponse.json({ success: false, message: "You are not logged in or your session has expired", data: null }, { status: 401 });
         }
 
-        // Parse and validate request body
-        const { id } = await req.json();
-        if (isNaN(Number(id))) {
-            return NextResponse.json<ResultType>({
-                success: false,
-                message: "Invalid QR code ID",
-                body: null
-            }, { status: 400 });
+        if (await isBanned(session?.userId as number)) {
+            return NextResponse.json({ success: false, message: "You are currently under a ban", data: null }, { status: 403 });
         }
 
-        // Delete the QR code
+        const body = await request.json();
+
+        let parsed;
+        try {
+            parsed = DeleteSchema.parse(body);
+        } catch (e: any) {
+            return NextResponse.json({ success: false, message: "Missing or invalid QR code IDs. Expected an array of positive integers.", data: e.errors }, { status: 400 });
+        }
+
+        const { ids } = parsed;
+
+        if (ids.length === 0) {
+            return NextResponse.json({ success: false, message: "No valid QR code IDs provided", data: null }, { status: 400 });
+        }
+
         const prisma = getPrismaClient();
-        const deleted = await prisma.qrcodes.delete({
+
+        const deleteResult = await prisma.qr_codes.deleteMany({
             where: {
-                id,
-                userId: session.userId,
-            },
+                id: { in: ids },
+                userId: session.userId
+            }
         });
 
-        return NextResponse.json<ResultType>({
+        if (deleteResult.count === 0) {
+            return NextResponse.json({
+                success: true,
+                message: "No matching QR codes found for deletion or you do not have permission for the provided IDs",
+                data: 0
+            }, { status: 200 });
+        }
+
+        return NextResponse.json({
             success: true,
-            message: "QR code deleted",
-            body: deleted
+            message: `${deleteResult.count} QR code(s) deleted successfully`,
+            data: deleteResult.count
         }, { status: 200 });
-    } catch (error) {
-        console.error(error);
-        return NextResponse.json<ResultType>({ 
-            success: false, 
+
+    } catch (error: any) {
+        console.error("QR code deletion failed:", error);
+        return NextResponse.json({
+            success: false,
             message: "Internal server error",
-            body: null
+            data: null
         }, { status: 500 });
     }
-
 }

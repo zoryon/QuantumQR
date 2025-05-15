@@ -15,7 +15,7 @@ export async function GET(): Promise<NextResponse<ResultType>> {
         return NextResponse.json({
             success: false,
             message: "Not authorized",
-            body: null
+            data: null
         }, { status: 401 });
     }
 
@@ -26,6 +26,6 @@ export async function GET(): Promise<NextResponse<ResultType>> {
     return NextResponse.json({
         success: true,
         message: "Logged out successfully",
-        body: true
+        data: true
     }, { status: 200 });
 }
