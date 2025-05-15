@@ -1,6 +1,5 @@
 import { QR_CODES_TYPES_ARRAY } from "@/constants";
-import { PrismaClient, qr_codes, classic_qr_codes, vcard_qr_codes } from "@prisma/client";
-import { z } from "zod";
+import { qr_codes, classic_qr_codes, vcard_qr_codes } from "@prisma/client";
 
 // Define a union type `QRCodeTypes` that is derived from the elements of `QR_CODES_TYPES_ARRAY`.
 export type QRCodeTypes = typeof QR_CODES_TYPES_ARRAY[number];

@@ -1,4 +1,3 @@
-import { cardDetailsFormSchema, classicDetailsFormSchema } from "@/lib/schemas";
 import { QRCodeCard, QrTypeMapping } from "@/types/qrcode.types";
 import { z } from "zod";
 
