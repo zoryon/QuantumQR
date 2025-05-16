@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { PrismaClientInitializationError } from "@prisma/client/runtime/library";
+import { PrismaClientInitializationError, PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { ResultType } from "@/types";
 import { DuplicateEntryError } from "./custom-errors";
 import { ZodError } from "zod";
@@ -41,7 +41,7 @@ export class ResponseHandler {
         console.error("API Error:", error);
 
         // Handle Prisma errors
-        if (error instanceof PrismaClientInitializationError) {
+        if (error instanceof PrismaClientKnownRequestError || error instanceof PrismaClientInitializationError) {
             return this.internalServerError("Having some trouble reaching the server, please try again later"); 
         }
 
