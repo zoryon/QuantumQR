@@ -41,7 +41,7 @@ export class ResponseHandler {
         console.error("API Error:", error);
 
         // Handle Prisma errors
-        if (error instanceof PrismaClientKnownRequestError || error instanceof PrismaClientInitializationError) {
+        if (error instanceof PrismaClientInitializationError) {
             return this.internalServerError("Having some trouble reaching the server, please try again later"); 
         }
 
