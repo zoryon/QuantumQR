@@ -4,16 +4,17 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import EditForm from "@/components/Forms/Edit/EditFormRouter";
 import VCardEditor from "@/components/Editors/VCard/VCardEditor";
-import { 
-    ClassicResponse, 
-    QRCodeTypes, 
-    ResultType, 
-    VCardResponse 
+import {
+    ClassicResponse,
+    QRCodeTypes,
+    ResultType,
+    VCardResponse
 } from "@/types";
 import { api } from "@/lib/endpoint-builder";
 import NotFound from "@/app/(core)/not-found";
 import { isQRCodeType } from "@/lib/qrcode";
 import { QR_CODES_TYPES_ARRAY } from "@/constants";
+import LoadingScreen from "@/components/Loading/LoadingScreen";
 
 export default function EditVCardPage() {
     const params = useParams();
@@ -32,6 +33,7 @@ export default function EditVCardPage() {
         const fetchData = async () => {
             try {
                 setLoading(true);
+
                 if (!type || !id) throw new Error("Missing parameters");
                 if (!normalizedType || !isQRCodeType(normalizedType)) {
                     throw new Error("Invalid QR code type");
@@ -46,7 +48,10 @@ export default function EditVCardPage() {
                     credentials: "include",
                 }).then((res) => res.json());
 
-                if (!res.success) throw new Error("QR code not found");
+                if (!res.success || !res.data?.isOwner) {
+                    throw new Error("QR code not found");
+                }
+
                 setQrCode(res.data);
             } catch (err) {
                 console.error(err);
@@ -55,20 +60,13 @@ export default function EditVCardPage() {
                 setLoading(false);
             }
         };
-
         fetchData();
     }, [type, id]);
-
-    useEffect(() => {
-        if (qrCode && !qrCode.isOwner) setNotFound(true);
-    }, [qrCode]);
 
     // Handle loading state
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-                <div className="text-white">...</div>
-            </div>
+            <LoadingScreen />
         );
     }
 
