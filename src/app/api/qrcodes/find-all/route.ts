@@ -70,7 +70,7 @@ export async function GET(): Promise<NextResponse> {
             return entry;
         });
 
-        return ResponseHandler.success(formatted, 'QR codes retrieved successfully');
+        return ResponseHandler.success('QR codes retrieved successfully', formatted);
     } catch (error) {
         console.error('API Error fetching QR codes:', error);
         return ResponseHandler.error(error);

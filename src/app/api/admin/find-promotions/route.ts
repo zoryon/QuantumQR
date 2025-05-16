@@ -22,7 +22,7 @@ export async function GET(): Promise<NextResponse<ResultType>> {
       where: { reviewedAt: null },
     });
 
-    return ResponseHandler.success(promotionRequests, 'Promotion requests found successfully');
+    return ResponseHandler.success('Promotion requests found successfully', promotionRequests);
   } catch (error) {
     return ResponseHandler.error(error);
   }

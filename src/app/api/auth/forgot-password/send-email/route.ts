@@ -45,7 +45,7 @@ export async function POST(req: Request): Promise<NextResponse> {
             html: `<p>Reset: <a href="${link}">Click here</a></p>`,
         });
 
-        return ResponseHandler.success(true, "Please check your email to reset your password.");
+        return ResponseHandler.success("Please check your email to reset your password.", true);
     } catch (error) {
         return ResponseHandler.error(error);
     }

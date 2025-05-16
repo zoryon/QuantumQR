@@ -5,11 +5,11 @@ import { DuplicateEntryError } from "./custom-errors";
 import { ZodError } from "zod";
 
 export class ResponseHandler {
-    static success(data: any, message: string = "Success"): NextResponse<ResultType> {
+    static success(message: string = "Success", data: any): NextResponse<ResultType> {
         return NextResponse.json({ success: true, message, data }, { status: 200 });
     }
 
-    static created(data: any, message: string = "Resource created"): NextResponse<ResultType> {
+    static created(message: string = "Resource created", data: any): NextResponse<ResultType> {
         return NextResponse.json({ success: true, message, data }, { status: 201 });
     }
 

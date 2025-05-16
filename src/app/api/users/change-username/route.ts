@@ -35,8 +35,8 @@ export async function POST(req: Request): Promise<NextResponse> {
         }
 
         return ResponseHandler.success(
-            null,
-            'Username updated successfully'
+            'Username updated successfully',
+            null
         );
     } catch (error) {
         return ResponseHandler.error(error);

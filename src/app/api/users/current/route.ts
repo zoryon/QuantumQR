@@ -58,8 +58,8 @@ export async function GET(): Promise<NextResponse> {
         };
 
         return ResponseHandler.success(
-            publicUserData,
-            "User data retrieved successfully"
+            "User data retrieved successfully",
+            publicUserData
         );
 
     } catch (error) {

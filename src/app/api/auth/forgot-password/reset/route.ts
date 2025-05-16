@@ -58,7 +58,7 @@ export async function POST(req: Request): Promise<NextResponse> {
             return ResponseHandler.notFound("User not found.");
         }
 
-        return ResponseHandler.success(null, "Password updated successfully.");
+        return ResponseHandler.success("Password updated successfully.", true);
     } catch (error) {
         return ResponseHandler.error(error);
     }

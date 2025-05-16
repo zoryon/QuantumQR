@@ -71,7 +71,7 @@ export async function POST(req: Request): Promise<NextResponse> {
                 return ResponseHandler.badRequest('Invalid QR code type');
         }
 
-        return ResponseHandler.success(result, 'QR code created successfully');
+        return ResponseHandler.success('QR code created successfully', result);
     } catch (error: any) {
         console.error('QR Code Creation Error:', error);
         return ResponseHandler.error(error);

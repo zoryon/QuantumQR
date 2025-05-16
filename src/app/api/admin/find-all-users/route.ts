@@ -36,7 +36,7 @@ export async function GET(): Promise<NextResponse<ResultType>> {
             totalScans: user.totalScans?.toString(),
         }));
 
-        return ResponseHandler.success(serializedUsers, "User list found successfully");
+        return ResponseHandler.success("User list found successfully", serializedUsers);
     } catch (error) {
         return ResponseHandler.error(error);
     }

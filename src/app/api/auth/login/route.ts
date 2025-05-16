@@ -60,7 +60,7 @@ export async function POST(req: Request): Promise<NextResponse> {
             path: "/",
         });
 
-        return ResponseHandler.success(true, "Logged in successfully");
+        return ResponseHandler.success("Logged in successfully", true);
     } catch (error) {
         return ResponseHandler.error(error);
     }

@@ -53,8 +53,8 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
         }
 
         return ResponseHandler.success(
-            updateResult.count,
             "Promotion successfully reviewed",
+            updateResult.count,
         );
     } catch (error) {
         return ResponseHandler.error(error);

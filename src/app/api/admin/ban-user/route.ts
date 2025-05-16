@@ -45,8 +45,8 @@ export async function POST(request: Request): Promise<NextResponse> {
         });
 
         return ResponseHandler.success(
+            'User banned successfully',
             true,
-            'User banned successfully'
         );
 
     } catch (error) {

@@ -32,7 +32,7 @@ export async function PUT(req: Request): Promise<NextResponse> {
             select: { scans: true },
         });
 
-        return ResponseHandler.success({ scans: updated.scans }, "Scan count updated");
+        return ResponseHandler.success("Scan count updated", { scans: updated.scans });
     } catch (error) {
         console.error("Error updating scan count:", error);
         return ResponseHandler.error(error);

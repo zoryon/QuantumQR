@@ -41,14 +41,14 @@ export async function DELETE(req: Request): Promise<NextResponse> {
 
         if (result.count === 0) {
             return ResponseHandler.success(
-                0,
-                "No matching QR codes found for deletion or you do not have permission for the provided IDs"
+                "No matching QR codes found for deletion or you do not have permission for the provided IDs",
+                0
             );
         }
 
         return ResponseHandler.success(
-            result.count,
-            `${result.count} QR code(s) deleted successfully`
+            `${result.count} QR code(s) deleted successfully`,
+            result.count
         );
     } catch (error) {
         return ResponseHandler.error(error);

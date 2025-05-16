@@ -13,5 +13,5 @@ export async function GET(): Promise<NextResponse> {
 
     (await cookies()).delete("session_token");
 
-    return ResponseHandler.success(true, "Logged out successfully");
+    return ResponseHandler.success("Logged out successfully", true);
 }

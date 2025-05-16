@@ -91,8 +91,8 @@ export async function POST(req: Request): Promise<NextResponse<ResultType>> {
     });
 
     return ResponseHandler.success(
+      "Registration successful. Please check your email to confirm your account.",
       true,
-      "Registration successful. Please check your email to confirm your account."
     );
   } catch (error) {
     return ResponseHandler.error(error);

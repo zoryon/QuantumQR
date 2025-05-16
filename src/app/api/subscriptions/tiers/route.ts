@@ -14,7 +14,7 @@ export async function GET(): Promise<NextResponse> {
         // Fetch all subscription tiers
         const tiers = await prisma.tiers.findMany();
 
-        return ResponseHandler.success(tiers, 'Tiers retrieved successfully');
+        return ResponseHandler.success('Tiers retrieved successfully', tiers);
     } catch (error) {
         return ResponseHandler.error(error);
     }

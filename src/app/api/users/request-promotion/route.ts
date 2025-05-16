@@ -52,8 +52,8 @@ export async function POST(request: Request): Promise<NextResponse> {
     });
 
     return ResponseHandler.success(
-      { requestId: newRequest.id },
-      'Promotion request sent successfully'
+      'Promotion request sent successfully',
+      { requestId: newRequest.id }
     );
 
   } catch (error) {

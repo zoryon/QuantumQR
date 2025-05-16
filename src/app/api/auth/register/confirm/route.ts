@@ -31,11 +31,17 @@ export async function GET(req: Request): Promise<NextResponse<ResultType>> {
             data: { isEmailConfirmed: true },
         });
 
-        if (!updatedUser) {
-            return ResponseHandler.notFound("User not found.");
-        }
+        if (!updatedUser) return ResponseHandler.notFound("User not found.");
 
-        return ResponseHandler.success(null, "Email confirmed successfully.");
+        const subscription = await prisma.subscriptions.create({
+            data: {
+                userId: confirmedToken.userId,
+                tierId: 1,
+            }
+        });
+        if (!subscription) ResponseHandler.internalServerError();
+
+        return ResponseHandler.success("Email confirmed successfully.", true);
     } catch (error) {
         return ResponseHandler.error(error);
     }

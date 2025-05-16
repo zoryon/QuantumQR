@@ -61,7 +61,7 @@ export async function GET(req: Request): Promise<NextResponse> {
             ? { ...baseQr, type, ...specificData, isOwner }
             : { url: baseQr.url, type, ...specificData, isOwner };
 
-        return ResponseHandler.success(response, 'QR Code found');
+        return ResponseHandler.success('QR Code found', response);
     } catch (error) {
         console.error('Error fetching QR code:', error);
         return ResponseHandler.error(error);

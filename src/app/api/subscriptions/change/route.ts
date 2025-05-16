@@ -56,7 +56,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       data: { tierId },
     });
 
-    return ResponseHandler.success(updatedSubscription, 'Subscription tier changed successfully');
+    return ResponseHandler.success('Subscription tier changed successfully', updatedSubscription);
   } catch (error) {
     return ResponseHandler.error(error);
   }

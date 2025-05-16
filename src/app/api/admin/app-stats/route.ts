@@ -21,8 +21,8 @@ export async function GET(): Promise<NextResponse> {
         ]);
 
         return ResponseHandler.success(
+            "Stats calculated successfully",
             { usersCount, pendingReviewsCount },
-            "Stats calculated successfully"
         );
 
     } catch (error) {

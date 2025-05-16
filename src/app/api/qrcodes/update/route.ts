@@ -63,7 +63,7 @@ export async function PUT(request: Request): Promise<NextResponse<ResultType>> {
             })
         ]);
 
-        return ResponseHandler.success(result, "QR code updated successfully");
+        return ResponseHandler.success("QR code updated successfully", result);
     } catch (error) {
         console.error("Update failed:", error);
         return ResponseHandler.error(error);
