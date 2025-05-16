@@ -35,6 +35,9 @@ export async function POST(req: Request): Promise<NextResponse> {
                     { username: emailOrUsername.trim() },
                 ],
                 isEmailConfirmed: true,
+                banned_users_banned_users_userIdTousers: {
+                    is: null
+                },
             },
         });
 
