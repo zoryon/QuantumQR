@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import getPrismaClient from "@/lib/db";
-import { cookies } from "next/headers";
 import { UPDATE_TYPE_MAPPING } from "@/constants";
 import { ResultType, PrismaModel } from "@/types";
 import { ResponseHandler } from "@/lib/ResponseHandler";
