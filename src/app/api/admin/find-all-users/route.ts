@@ -1,51 +1,24 @@
 import { NextResponse } from 'next/server';
-import { isBanned, verifySession } from '@/lib/session';
-import { cookies } from 'next/headers';
 import getPrismaClient from '@/lib/db';
-import { UserRole, ResultType } from '@/types';
+import { UserRole } from '@/types';
+import { ResponseHandler } from '@/lib/ResponseHandler';
+import { ResultType } from '@/types';
+import { verifyActiveUserSession } from '@/lib/auth-helpers';
 
 export async function GET(): Promise<NextResponse<ResultType>> {
     try {
         const prisma = getPrismaClient();
 
-        // Retrieve session token from cookies and verify session
-        const sessionToken = (await cookies()).get('session_token')?.value;
-        const session = await verifySession(sessionToken);
+        // Verify active session and get user ID
+        const authCheck = await verifyActiveUserSession(UserRole.ADMIN);
+        if (authCheck instanceof NextResponse) return authCheck;
+        const { userId } = authCheck;
 
-        if (!session?.userId) {
-            return NextResponse.json({
-                success: false,
-                message: 'Not Found',
-                data: null,
-            }, { status: 404 });
+        if (!userId) {
+            return ResponseHandler.notFound("Not Found");
         }
 
-        const userId: number = session.userId as number;
-
-        // Check if user is banned
-        if (await isBanned(userId)) {
-            return NextResponse.json({
-                success: false,
-                message: 'You are currently under a ban',
-                data: null,
-            }, { status: 403 });
-        }
-
-        // Check if user is admin
-        const currentUser = await prisma.users.findUnique({
-            where: { id: userId, isEmailConfirmed: true },
-        });
-
-        if (!currentUser || currentUser.role !== UserRole.ADMIN) {
-            return NextResponse.json({
-                success: false,
-                message: 'Not Found',
-                data: null,
-            }, { status: 404 });
-        }
-
-        // Get all users with role USER along with subscription tier and QR stats
-        // Since Prisma doesn't support subqueries easily, use raw SQL query
+        // Raw SQL query to get users with subscription info and QR stats
         const users = await prisma.$queryRaw`
             SELECT u.*, t.name AS tier,
                 (SELECT COUNT(*) FROM qr_codes WHERE userId = u.id) AS qrCodesCount,
@@ -56,24 +29,15 @@ export async function GET(): Promise<NextResponse<ResultType>> {
             WHERE u.role = ${UserRole.USER}
         `;
 
-        // Manually convert BigInt fields to string
+        // Convert BigInt fields to string
         const serializedUsers = (users as any).map((user: any) => ({
             ...user,
             qrCodesCount: user.qrCodesCount?.toString(),
             totalScans: user.totalScans?.toString(),
-            // Also check any other BigInt fields you might have
         }));
 
-        return NextResponse.json({
-            success: true,
-            message: 'User list found successfully',
-            data: serializedUsers,
-        });
-    } catch (e: any) {
-        return NextResponse.json({
-            success: false,
-            message: e.message,
-            data: null,
-        }, { status: 500 });
+        return ResponseHandler.success(serializedUsers, "User list found successfully");
+    } catch (error) {
+        return ResponseHandler.error(error);
     }
 }

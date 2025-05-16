@@ -1,3 +1,4 @@
+import { ResponseHandler } from "@/lib/ResponseHandler";
 import getPrismaClient from "@/lib/db";
 import { NextResponse } from "next/server";
 
@@ -14,30 +15,26 @@ import { NextResponse } from "next/server";
  */
 export async function PUT(req: Request): Promise<NextResponse> {
     try {
-        // Parse the request body to extract the QR code ID
         const { id } = await req.json();
 
-        // Validate that the provided ID is a number
-        if (isNaN(id)) {
-            return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+        const qrCodeId = Number(id);
+        if (isNaN(qrCodeId)) {
+            return ResponseHandler.badRequest("Invalid QR code ID");
         }
 
         const prisma = getPrismaClient();
 
-        // Increment the scan count for the specified QR code
         const updated = await prisma.qr_codes.update({
-            where: { id },
+            where: { id: qrCodeId },
             data: {
-                scans: {
-                    increment: 1 // Increase the scan count by 1
-                }
-            }
+                scans: { increment: 1 },
+            },
+            select: { scans: true },
         });
 
-        // Return the updated scan count in the response
-        return NextResponse.json({ scans: updated.scans }, { status: 200 });
+        return ResponseHandler.success({ scans: updated.scans }, "Scan count updated");
     } catch (error) {
-        console.error("Error updating scan count: ", error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        console.error("Error updating scan count:", error);
+        return ResponseHandler.error(error);
     }
 }

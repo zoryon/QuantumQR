@@ -14,6 +14,7 @@ import { api } from "@/lib/endpoint-builder";
 const ProfilePage = () => {
     const { userData } = useUserData();
     const router = useRouter();
+
     const [isEditing, setIsEditing] = useState(false);
     const [newUsername, setNewUsername] = useState(userData?.username || "");
     const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
@@ -26,12 +27,15 @@ const ProfilePage = () => {
             },
             body: JSON.stringify({ username: newUsername }),
         }).then(res => res.json());
-
-        if (!res.success) console.error(res.message);
-
+        
         setIsEditing(false);
         setShowConfirmationDialog(false);
-        window.location.href = "/profile";
+
+        if (res.success) {
+            window.location.reload();
+        } else {
+            console.error(res.message);
+        }
     }
 
     return userData && (

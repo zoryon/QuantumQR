@@ -1,107 +1,63 @@
-import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import getPrismaClient from "@/lib/db";
-import { verifySession, isBanned } from "@/lib/session";
-import { ResultType } from "@/types";
+import { ResponseHandler } from '@/lib/ResponseHandler';
+import { verifyActiveUserSession } from '@/lib/auth-helpers';
+import getPrismaClient from '@/lib/db';
+import { NextResponse } from 'next/server';
 
-export async function POST(request: Request): Promise<NextResponse<ResultType>> {
-    try {
-        const prisma = getPrismaClient();
+type RequestBody = {
+  id: number; // The desired subscription tier ID
+};
 
-        // 1. Verifica sessione utente
-        const sessionToken = (await cookies()).get("session_token")?.value;
-        const session = await verifySession(sessionToken);
-        if (!session?.userId) {
-            return NextResponse.json({
-                message: "You are not logged in or your session has expired",
-                success: false,
-                data: null,
-            }, { status: 401 });
-        }
+export async function POST(req: Request): Promise<NextResponse> {
+  try {
+    const prisma = getPrismaClient();
 
-        const userId = session.userId;
+    // 1. Validate session and ban status
+    const authCheck = await verifyActiveUserSession();
+    if (authCheck instanceof NextResponse) return authCheck;
+    const { userId } = authCheck;
 
-        // 2. Controllo ban
-        if (await isBanned(userId as number)) {
-            return NextResponse.json({
-                message: "You are currently under a ban",
-                success: false,
-                data: null,
-            }, { status: 403 });
-        }
+    // 2. Parse and validate request body
+    const body: RequestBody = await req.json();
+    const tierId = body?.id;
 
-        // 3. Leggi input JSON (body)
-        const input = await request.json();
-
-        if (
-            !input ||
-            typeof input !== "object" ||
-            input.id === undefined ||
-            typeof input.id !== "number"
-        ) {
-            return NextResponse.json({
-                message: 'Invalid input. Expecting object with a numeric "id"',
-                success: false,
-                data: null,
-            }, { status: 400 });
-        }
-
-        // 4. Recupera abbonamento attivo dell'utente
-        const subscription = await prisma.subscriptions.findFirst({
-            where: {
-                userId,
-                canceledAt: null,
-            },
-        });
-
-        // 5. Controlla se l'utente ha già il tier richiesto
-        if (subscription && subscription.tierId === input.id) {
-            return NextResponse.json({
-                message: "You already have the selected subscription tier",
-                success: false,
-                data: null,
-            }, { status: 400 });
-        }
-
-        // 6. Controlla se il tier richiesto esiste
-        const newTier = await prisma.tiers.findUnique({
-            where: { id: input.id },
-        });
-        if (!newTier) {
-            return NextResponse.json({
-                message: "The selected subscription tier does not exist",
-                success: false,
-                data: null,
-            }, { status: 404 });
-        }
-
-        // 7. Aggiorna l'abbonamento con il nuovo tier (se esiste)
-        if (!subscription) {
-            // Caso in cui non esiste abbonamento attivo: potresti creare un nuovo record,
-            // oppure dare errore, a seconda della logica app.
-            return NextResponse.json({
-                message: "No active subscription found",
-                success: false,
-                data: null,
-            }, { status: 404 });
-        }
-
-        const updatedSubscription = await prisma.subscriptions.update({
-            where: { id: subscription.id },
-            data: { tierId: input.id },
-        });
-
-        return NextResponse.json({
-            message: "Subscription tier changed successfully",
-            success: true,
-            data: updatedSubscription,
-        }, { status: 200 });
-    } catch (error) {
-        console.error("API Error updating subscription tier:", error);
-        return NextResponse.json({
-            message: "Internal server error",
-            success: false,
-            data: null,
-        }, { status: 500 });
+    if (typeof tierId !== 'number') {
+      return ResponseHandler.badRequest('Invalid input. Expected a numeric "id"');
     }
+
+    // 3. Retrieve active subscription
+    const subscription = await prisma.subscriptions.findFirst({
+      where: {
+        userId,
+        canceledAt: null,
+      },
+    });
+
+    if (!subscription) {
+      return ResponseHandler.notFound('No active subscription found');
+    }
+
+    // 4. Check if the user already has this tier
+    if (subscription.tierId === tierId) {
+      return ResponseHandler.badRequest('You already have the selected subscription tier');
+    }
+
+    // 5. Check if the target tier exists
+    const newTier = await prisma.tiers.findUnique({
+      where: { id: tierId },
+    });
+
+    if (!newTier) {
+      return ResponseHandler.notFound('The selected subscription tier does not exist');
+    }
+
+    // 6. Update the subscription to the new tier
+    const updatedSubscription = await prisma.subscriptions.update({
+      where: { id: subscription.id },
+      data: { tierId },
+    });
+
+    return ResponseHandler.success(updatedSubscription, 'Subscription tier changed successfully');
+  } catch (error) {
+    return ResponseHandler.error(error);
+  }
 }

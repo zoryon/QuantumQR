@@ -1,105 +1,62 @@
-import { NextResponse } from 'next/server';
-import { isBanned, verifySession } from '@/lib/session';
-import { cookies } from 'next/headers';
-import getPrismaClient from '@/lib/db';
-import { UserRole, ResultType } from '@/types';
+import { NextResponse } from "next/server";
+import getPrismaClient from "@/lib/db";
+import { UserRole, ResultType } from "@/types";
+import { ResponseHandler } from "@/lib/ResponseHandler";
+import { verifyActiveUserSession } from "@/lib/auth-helpers";
 
-export async function POST(request: Request): Promise<NextResponse<ResultType>> {
+export async function POST(req: Request): Promise<NextResponse<ResultType>> {
     try {
         const prisma = getPrismaClient();
 
-        // Retrieve session token from cookies and verify if the user is logged in
-        const sessionToken = (await cookies()).get('session_token')?.value;
-        const session = await verifySession(sessionToken);
+        /* ───────────────────── Session & Auth ───────────────────── */
+        // Verify active session and get user ID
+        const authCheck = await verifyActiveUserSession(UserRole.ADMIN);
+        if (authCheck instanceof NextResponse) return authCheck;
+        const { userId: adminId } = authCheck;
 
-        if (!session?.userId) {
-            return NextResponse.json({
-                success: false,
-                message: 'Not Found',
-                data: null,
-            }, { status: 404 });
+        if (!adminId) {
+            return ResponseHandler.notFound("Not Found");
         }
 
-        const adminId: number = session.userId as number;
+        /* ───────────────────── Input Validation ─────────────────── */
+        const { userId, acceptedAt, rejectedAt } = await req.json();
 
-        if (await isBanned(adminId)) {
-            return NextResponse.json({
-                success: false,
-                message: 'You are currently under a ban',
-                data: null,
-            }, { status: 403 });
+        if (typeof userId !== "number" || (!acceptedAt && !rejectedAt)) {
+            return ResponseHandler.badRequest("Wrong data was passed");
         }
 
-        // Check if admin user exists and has admin role
-        const adminUser = await prisma.users.findUnique({
-            where: { id: adminId, isEmailConfirmed: true },
+        /* ─────────────────────– Review Update ───────────────────── */
+        const updateResult = await prisma.promotion_requests.updateMany({
+            where: { userId },
+            data: {
+                reviewerAdminId: adminId,
+                acceptedAt: acceptedAt ?? null,
+                rejectedAt: rejectedAt ?? null,
+                reviewedAt: new Date(),
+            },
         });
 
-        if (!adminUser || adminUser.role !== UserRole.ADMIN) {
-            return NextResponse.json({
-                success: false,
-                message: 'Not Found',
-                data: null,
-            }, { status: 404 });
+        if (updateResult.count !== 1) {
+            return ResponseHandler.badRequest("Wrong data was passed or request not found");
         }
 
-        // Parse JSON input from request body
-        const input = await request.json();
-
-        if (!input.userId) {
-            return NextResponse.json({
-                success: false,
-                message: 'Wrong data was passed',
-                data: null,
-            }, { status: 400 });
-        }
-
-        // Add the admin's ID as the reviewer
-        input.reviewerAdminId = adminId;
-
-        // Update promotion_requests with review data
-        const updatePromotion = await prisma.promotion_requests.updateMany({
-            where: { userId: input.userId },
-            data: input,
-        });
-
-        if (updatePromotion.count !== 1) {
-            return NextResponse.json({
-                success: false,
-                message: 'Wrong data was passed or request not found',
-                data: null,
-            }, { status: 400 });
-        }
-
-        // If acceptedAt is set and not null, promote user to admin if email confirmed
-        if (input.acceptedAt) {
-            const updateUser = await prisma.users.updateMany({
-                where: {
-                    id: input.userId,
-                    isEmailConfirmed: true,
-                },
+        /* ─────────────── Promote user if accepted ──────────────── */
+        if (acceptedAt) {
+            const promote = await prisma.users.updateMany({
+                where: { id: userId, isEmailConfirmed: true },
                 data: { role: UserRole.ADMIN },
             });
 
-            if (updateUser.count !== 1) {
-                return NextResponse.json({
-                    success: false,
-                    message: 'Failed to update user role after accepting request',
-                    data: null,
-                }, { status: 500 });
+            if (promote.count !== 1) {
+                return ResponseHandler.error("Failed to update user role after accepting request");
             }
         }
 
-        return NextResponse.json({
-            success: true,
-            message: 'Promotion successfully reviewed',
-            data: updatePromotion.count,
-        }, { status: 200 });
-    } catch (e: any) {
-        return NextResponse.json({
-            success: false,
-            message: e.message,
-            data: null,
-        }, { status: 500 });
+        return ResponseHandler.success(
+            updateResult.count,
+            "Promotion successfully reviewed",
+        );
+    } catch (error) {
+        return ResponseHandler.error(error);
     }
 }

@@ -1,104 +1,62 @@
-import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import getPrismaClient from "@/lib/db";
-import { verifySession, isBanned } from "@/lib/session";
-import { ResultType, UserRole } from "@/types";
+import { ResponseHandler } from '@/lib/ResponseHandler';
+import { verifyActiveUserSession } from '@/lib/auth-helpers';
+import getPrismaClient from '@/lib/db';
+import { UserRole } from '@/types';
+import { NextResponse } from 'next/server';
 
-export async function POST(request: Request): Promise<NextResponse<ResultType>> {
+export async function POST(request: Request): Promise<NextResponse> {
   try {
     const prisma = getPrismaClient();
 
-    // 1. Verifica sessione
-    const sessionToken = (await cookies()).get("session_token")?.value;
-    const session = await verifySession(sessionToken);
-    if (!session?.userId) {
-      return NextResponse.json({
-        message: "You are not logged in or your session has expired",
-        success: false,
-        data: null,
-      }, { status: 401 });
-    }
+    // Verify active session and get user ID
+    const authCheck = await verifyActiveUserSession();
+    if (authCheck instanceof NextResponse) return authCheck;
+    const { userId } = authCheck;
 
-    const userId: number = session.userId as number;
-
-    if (await isBanned(userId)) {
-      return NextResponse.json({
-        message: "You are currently under a ban",
-        success: false,
-        data: null,
-      }, { status: 403 });
-    }
-
+    // Fetch user with email confirmation check
     const user = await prisma.users.findUnique({
       where: { id: userId, isEmailConfirmed: true },
     });
 
     if (!user) {
-      return NextResponse.json({
-        message: "User not found",
-        success: false,
-        data: null,
-      }, { status: 404 });
+      return ResponseHandler.notFound('User not found');
     }
 
     if (user.role === UserRole.ADMIN) {
-      return NextResponse.json({
-        message: "You are already an admin",
-        success: false,
-        data: null,
-      }, { status: 400 });
+      return ResponseHandler.badRequest('You are already an admin');
     }
 
+    // Validate request body
     const input = await request.json();
+    const requestReason = input?.requestReason?.trim();
 
-    if (!input?.requestReason || typeof input.requestReason !== "string" || input.requestReason.trim() === "") {
-      return NextResponse.json({
-        message: "Request reason is required",
-        success: false,
-        data: null,
-      }, { status: 400 });
+    if (!requestReason) {
+      return ResponseHandler.badRequest('Request reason is required');
     }
 
-    const trimmedReason = input.requestReason.trim();
-
+    // Check for existing request
     const existingRequest = await prisma.promotion_requests.findUnique({
-      where: { userId: userId as number },
+      where: { userId },
     });
 
     if (existingRequest) {
-      return NextResponse.json({
-        message: "You have already sent a promotion request",
-        success: false,
-        data: null,
-      }, { status: 409 });
+      return ResponseHandler.conflict('You have already sent a promotion request');
     }
 
+    // Create new promotion request
     const newRequest = await prisma.promotion_requests.create({
       data: {
-        userId: userId as number,
-        requestReason: trimmedReason,
+        userId,
+        requestReason,
       },
     });
 
-    if (!newRequest || !newRequest.id) {
-      return NextResponse.json({
-        message: "Failed to submit promotion request",
-        success: false,
-        data: null,
-      }, { status: 500 });
-    }
+    return ResponseHandler.success(
+      { requestId: newRequest.id },
+      'Promotion request sent successfully'
+    );
 
-    return NextResponse.json({
-      message: "Promotion request sent successfully",
-      success: true,
-      data: { requestId: newRequest.id },
-    }, { status: 200 });
   } catch (error) {
-    console.error("API Error submitting promotion request:", error);
-    return NextResponse.json({
-      message: "Internal server error",
-      success: false,
-      data: null,
-    }, { status: 500 });
+    return ResponseHandler.error(error);
   }
 }

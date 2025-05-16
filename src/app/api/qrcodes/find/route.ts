@@ -1,119 +1,69 @@
-import getPrismaClient from "@/lib/db";
-import { verifySession } from "@/lib/session";
-import { ResultType } from "@/types";
-import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import getPrismaClient from '@/lib/db';
+import { verifySession } from '@/lib/session';
+import { cookies } from 'next/headers';
+import { ResponseHandler } from '@/lib/ResponseHandler';
+import { NextResponse } from 'next/server';
 
 /**
  * Handles retrieving a specific QR code by ID and type.
- *
- * - Extracts query parameters (`id` and `type`) from the request URL.
- * - Validates the `id` and `type` values.
- * - Fetches the base QR code record from the database.
- * - Retrieves type-specific data based on the provided `type`.
- * - Combines and returns the structured response.
- *
- * @param {Request} req - The incoming request object.
- * @returns {Promise<NextResponse<ResultType>>} A JSON response containing the requested QR code data or an error message.
  */
-export async function GET(req: Request): Promise<NextResponse<ResultType>> {
+export async function GET(req: Request): Promise<NextResponse> {
     try {
-        // Retrieve the session token from cookies and verify the user's session
-        const sessionToken = (await cookies()).get("session_token")?.value;
+        const sessionToken = (await cookies()).get('session_token')?.value;
         const session = await verifySession(sessionToken);
+
+        const { searchParams } = new URL(req.url);
+        const id = Number(searchParams.get('id'));
+        const type = searchParams.get('type');
+
+        if (isNaN(id)) {
+            return ResponseHandler.badRequest('Invalid QR code ID');
+        }
+
+        if (!type) {
+            return ResponseHandler.badRequest('Type parameter is required');
+        }
 
         const prisma = getPrismaClient();
 
-        // Extract query parameters from request URL
-        const { searchParams } = new URL(req.url);
-        const id = searchParams.get("id");
-        const type = searchParams.get("type");
-
-        // Validate ID parameter
-        const qrCodeId = Number(id);
-        if (isNaN(qrCodeId)) {
-            return NextResponse.json({
-                success: false,
-                message: "Invalid QR code ID",
-                data: null
-            }, { status: 400 });
-        }
-
-        // Validate Type parameter
-        if (!type) {
-            return NextResponse.json({
-                success: false,
-                message: "Type parameter is required",
-                data: null
-            }, { status: 400 });
-        }
-
-        // Retrieve the base QR code record
-        const baseQr = await prisma.qr_codes.findUnique({
-            where: { id: qrCodeId },
-        });
+        const baseQr = await prisma.qr_codes.findUnique({ where: { id } });
 
         if (!baseQr) {
-            return NextResponse.json({
-                success: false,
-                message: "QR Code not found",
-                data: null
-            }, { status: 404 });
+            return ResponseHandler.notFound('QR Code not found');
         }
 
-        // Retrieve type-specific data
         let specificData;
+
         switch (type) {
-            case "vCards":
+            case 'vCards':
                 specificData = await prisma.vcard_qr_codes.findUnique({
-                    where: { qrCodeId: baseQr.id },
+                    where: { qrCodeId: baseQr.id }
                 });
                 break;
-            case "classics":
+
+            case 'classics':
                 specificData = await prisma.classic_qr_codes.findUnique({
-                    where: { qrCodeId: baseQr.id },
+                    where: { qrCodeId: baseQr.id }
                 });
                 break;
-            // Add other cases here
-            // case 'url':
-            //     specificData = await prisma.urlqrcodes.findUnique(...);
-            //     break;
 
             default:
-                return NextResponse.json({
-                    success: false,
-                    message: "Unsupported QR Code type",
-                    data: null
-                }, { status: 400 });
+                return ResponseHandler.badRequest('Unsupported QR code type');
         }
 
-        // If no type-specific data is found, return an error
         if (!specificData) {
-            return NextResponse.json({
-                success: false,
-                message: "Detailed data not found",
-                data: null
-            }, { status: 404 });
+            return ResponseHandler.notFound('Detailed data not found');
         }
 
-        const isOwner = session?.userId as number === baseQr.userId;
+        const isOwner = session?.userId === baseQr.userId;
 
-        // Build typed response
         const response = isOwner
             ? { ...baseQr, type, ...specificData, isOwner }
             : { url: baseQr.url, type, ...specificData, isOwner };
 
-        return NextResponse.json({
-            success: true,
-            message: "QR Code found",
-            data: response
-        }, { status: 200 });
+        return ResponseHandler.success(response, 'QR Code found');
     } catch (error) {
-        console.error("Error fetching QR code:", error);
-        return NextResponse.json({
-            success: false,
-            message: "Internal server error",
-            data: null
-        }, { status: 500 });
+        console.error('Error fetching QR code:', error);
+        return ResponseHandler.error(error);
     }
 }

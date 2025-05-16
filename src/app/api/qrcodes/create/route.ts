@@ -1,249 +1,171 @@
-import { cardDetailsFormSchema, CardDetailsFormValues, classicDetailsFormSchema, ClassicDetailsFormValues } from "@/lib/schemas";
-import { QRCodeTypes, ResultType } from "@/types";
-import { NextResponse } from "next/server";
-import getPrismaClient from "@/lib/db";
-import { verifySession } from "@/lib/session";
-import { cookies } from "next/headers";
-import { generateQRCode } from "@/lib/qrcode";
-import { ROUTER_URL } from "@/constants";
+import {
+    cardDetailsFormSchema,
+    classicDetailsFormSchema,
+} from '@/lib/schemas';
+import { QRCodeTypes } from '@/types';
+import { generateQRCode } from '@/lib/qrcode';
+import { ROUTER_URL } from '@/constants';
+import { ResponseHandler } from '@/lib/ResponseHandler';
+import getPrismaClient from '@/lib/db';
+import { NextResponse } from 'next/server';
+import { verifyActiveUserSession } from '@/lib/auth-helpers';
+import { DuplicateEntryError } from '@/lib/custom-errors';
 
 const prisma = getPrismaClient();
 
 /**
- * Handles POST requests to create a QR code.
- * Verifies the user's session and processes QR code creation based on the QR type.
- * 
- * @param req - The incoming request object containing the QR code data.
- * @returns {Promise<NextResponse<ResultType>>} A JSON response indicating success or failure with the created QR code or error message.
+ * Handles QR code creation (vCards or classic URLs).
  */
-export async function POST(req: Request): Promise<NextResponse<ResultType>> {
+export async function POST(req: Request): Promise<NextResponse> {
     try {
-        // Retrieve session token from cookies and verify if the user is logged in
-        const sessionToken = (await cookies()).get("session_token")?.value;
-        const session = await verifySession(sessionToken);
+        // Verify active session and get user ID
+        const authCheck = await verifyActiveUserSession();
+        if (authCheck instanceof NextResponse) return authCheck;
+        const { userId } = authCheck;
 
-        // If the session is invalid or no user is logged in, return a 401 Unauthorized response
-        if (!session?.userId) {
-            return NextResponse.json<ResultType>({
-                success: false,
-                message: "You are not logged in",
-                data: null
-            }, { status: 401 });
+        if (!userId) {
+            return ResponseHandler.unauthorized('You are not logged in');
         }
 
-        // Parse the request data, separating qrType (QR type) from the rest of the QR data
-        const {
-            qrType,
-            ...values
-        } = await req.json();
+        const { qrType, ...values } = await req.json();
 
-        if (!qrType.trim()) {
-            return NextResponse.json<ResultType>({ 
-                success: false, 
-                message: "Invalid input",
-                data: null
-            }, { status: 400 });
+        if (!qrType?.trim()) {
+            return ResponseHandler.badRequest('Invalid input: qrType is required');
         }
 
-        // Validate the length of the name field (it should not exceed 20 characters)
-        if (values.name.trim().length > 20) {
-            return NextResponse.json<ResultType>({ 
-                success: false, 
-                message: "Name must be less than 20 characters",
-                data: null
-            }, { status: 400 });
+        if (values.name?.trim().length < 2) {
+            return ResponseHandler.badRequest('Name must be at least 2 characters long');
         }
 
-        // Define variables to hold the QR code and parsed values
-        let qrCode: any = null;
-        let parsedValues: any = null;
+        if (values.name?.trim().length > 20) {
+            return ResponseHandler.badRequest('Name must be less than 20 characters long');
+        }
 
-        // Switch based on the QR type (either vCards or classics)
+        const [subscription, userQRCodeCount] = await prisma.$transaction([
+            prisma.subscriptions.findFirst({
+                where: { userId },
+                include: { tiers: true }
+            }),
+            prisma.qr_codes.count({
+                where: { userId }
+            })
+        ]);
+
+        if (!subscription || !subscription.tiers?.maxQRCodes) {
+            return ResponseHandler.internalServerError('Subscription or tier limit not found');
+        }
+
+        if (userQRCodeCount >= subscription.tiers.maxQRCodes) {
+            return ResponseHandler.forbidden('You have reached your QR code limit for this subscription tier');
+        }
+
+        let result;
         switch (qrType as QRCodeTypes) {
-            case "vCards":
-                // Parse the vCard data using a schema for validation
-                parsedValues = cardDetailsFormSchema.safeParse(values);
-
-                // If parsing fails, return a 400 Bad Request response with the error message
-                if (!parsedValues.success) {
-                    return NextResponse.json<ResultType>({ 
-                        success: false, 
-                        message: parsedValues.error.message,
-                        data: null
-                    }, { status: 400 });
-                }
-
-                // Create a vCard QR code using the parsed values
-                qrCode = await createVCardQRCode({
-                    userId: session.userId as number,
-                    values: parsedValues.data
-                });
+            case 'vCards':
+                result = await handleVCard(userId, values);
                 break;
-            case "classics":
-                parsedValues = classicDetailsFormSchema.safeParse(values);
-
-                if (!parsedValues.success) {
-                    return NextResponse.json<ResultType>({ 
-                        success: false, 
-                        message: parsedValues.error.message,
-                        data: null
-                    }, { status: 400 });
-                }
-
-                qrCode = await createClassicQRCode({
-                    userId: session.userId as number,
-                    values: parsedValues.data
-                });
+            case 'classics':
+                result = await handleClassic(userId, values);
                 break;
             default:
-                // If qrType is neither "vCards" nor "classics", return a 400 Bad Request response
-                return NextResponse.json<ResultType>({ 
-                    success: false, 
-                    message: "Invalid QR code type",
-                    data: null
-                }, { status: 400 });
+                return ResponseHandler.badRequest('Invalid QR code type');
         }
 
-        return NextResponse.json<ResultType>({
-            success: true,
-            message: "QR code created successfully",
-            data: qrCode
-        }, { status: 200 });
+        return ResponseHandler.success(result, 'QR code created successfully');
     } catch (error: any) {
-        console.error(error.message);
-        return NextResponse.json<ResultType>({
-            success: error.success,
-            message: error.message,
-            data: null
-        }, { status: 500 });
+        console.error('QR Code Creation Error:', error);
+        return ResponseHandler.error(error);
     }
 }
 
 /**
- * Creates a vCard QR code, validates the input, and stores it in the database.
- * 
- * @param userId - The ID of the user creating the QR code
- * @param values - The vCard details for the QR code
- * @returns The saved QR code entry with the generated URL
+ * Creates a vCard QR code entry in the database.
  */
-async function createVCardQRCode({
-    userId,
-    values
-}: {
-    userId: number,
-    values: CardDetailsFormValues
-}) {
-    try {
-        // Check if a QR code with the same name already exists for the user
-        const existingQrCode = await prisma.qr_codes.findFirst({
-            where: { userId, name: values.name }
-        });
-        
-        if (existingQrCode) {
-            throw new Error("A QR Code with the same name already exists");
-        }
-
-        // Create the QR code entry in the database for a vCard
-        const qrCode = await prisma.qr_codes.create({
-            data: {
-                name: values.name,
-                userId: userId,
-                url: "", // URL will be populated later
-                vcard_qr_codes: {
-                    create: {
-                        firstName: values.firstName,
-                        lastName: values.lastName,
-                        phoneNumber: values.phoneNumber,
-                        email: values.email,
-                        address: values.address,
-                        websiteUrl: values.websiteUrl,
-                    }
-                }
-            },
-            include: { vcard_qr_codes: true }
-        });
-
-        // Generate a dynamic URL for the QR code
-        const dynamicURL = `${process.env.WEBSITE_URL!}/q/vcards/${qrCode.id}`;
-
-        // Generate the QR Code URL
-        const qrCodeURL = await generateQRCode(dynamicURL);
-
-        // Update the QR code entry with the generated URL
-        const updatedQrCode = await prisma.qr_codes.update({
-            where: { id: qrCode.id },
-            data: { url: qrCodeURL },
-            include: { vcard_qr_codes: true }
-        });
-
-        // Return the updated QR code entry
-        return updatedQrCode;
-    } catch (error: any) {
-        console.error("Error generating or saving QR code: ", error);
-        throw error;
+async function handleVCard(userId: number, values: any) {
+    const parsed = cardDetailsFormSchema.safeParse(values);
+    if (!parsed.success) {
+        throw parsed.error;
     }
+
+    const validatedData = parsed.data;
+
+    await assertUniqueName(userId, validatedData.name);
+
+    const qrCode = await prisma.qr_codes.create({
+        data: {
+            name: validatedData.name,
+            userId,
+            url: '',
+            vcard_qr_codes: {
+                create: {
+                    firstName: validatedData.firstName,
+                    lastName: validatedData.lastName,
+                    phoneNumber: validatedData.phoneNumber,
+                    email: validatedData.email,
+                    address: validatedData.address,
+                    websiteUrl: validatedData.websiteUrl,
+                }
+            }
+        },
+        include: { vcard_qr_codes: true }
+    });
+
+    const dynamicURL = `${process.env.WEBSITE_URL!}/q/vcards/${qrCode.id}`;
+    const qrCodeURL = await generateQRCode(dynamicURL);
+
+    return await prisma.qr_codes.update({
+        where: { id: qrCode.id },
+        data: { url: qrCodeURL },
+        include: { vcard_qr_codes: true }
+    });
 }
 
 /**
- * Creates a classic QR code (URL-based), validates the input, and stores it in the database.
- * 
- * @param userId - The ID of the user creating the QR code
- * @param values - The details for the classic QR code, such as the website URL
- * @returns The saved QR code entry with the generated URL
+ * Creates a classic QR code entry in the database.
  */
-async function createClassicQRCode({
-    userId,
-    values
-}: {
-    userId: number,
-    values: ClassicDetailsFormValues
-}) {
-    try {
-        // Ensure that a website URL is provided for the classic QR code
-        if (!values.targetUrl) {
-            throw new Error("Website URL is required");
-        }
+async function handleClassic(userId: number, values: any) {
+    const parsed = classicDetailsFormSchema.safeParse(values);
+    if (!parsed.success) {
+        throw parsed.error;
+    }
 
-        // Check if a QR code with the same name already exists for the user
-        const existingQrCode = await prisma.qr_codes.findFirst({
-            where: { userId, name: values.name }
-        });
-        
-        if (existingQrCode) {
-            throw new Error("A QR Code with the same name already exists");
-        }
-        
-        // Create the QR code entry in the database for a classic QR code
-        const qrCode = await prisma.qr_codes.create({
-            data: {
-                name: values.name,
-                userId: userId,
-                url: "", // URL will be populated later
-                classic_qr_codes: {
-                    create: {
-                        targetUrl: values.targetUrl, // Store the website URL in the database
-                    }
+    const validatedData = parsed.data
+
+    await assertUniqueName(userId, validatedData.name);
+
+    const qrCode = await prisma.qr_codes.create({
+        data: {
+            name: validatedData.name,
+            userId,
+            url: '',
+            classic_qr_codes: {
+                create: {
+                    targetUrl: validatedData.targetUrl
                 }
-            },
-            include: { classic_qr_codes: true }
-        });
+            }
+        },
+        include: { classic_qr_codes: true }
+    });
 
-        // Generate the QR Code URL
-        const url = `${ROUTER_URL}/classics/${qrCode.id}`; 
-        
-        const qrCodeBase64 = await generateQRCode(url);
+    const qrCodeURL = await generateQRCode(`${ROUTER_URL}/classics/${qrCode.id}`);
 
-        // Update the QR code entry with the generated URL
-        const updatedQrCode = await prisma.qr_codes.update({
-            where: { id: qrCode.id },
-            data: { url: qrCodeBase64 },
-            include: { classic_qr_codes: true }
-        });
+    return await prisma.qr_codes.update({
+        where: { id: qrCode.id },
+        data: { url: qrCodeURL },
+        include: { classic_qr_codes: true }
+    });
+}
 
-        // Return the created QR code entry
-        return updatedQrCode;
-    } catch (error: any) {
-        console.error("Error generating or saving QR code: ", error);
-        throw error;
+/**
+ * Ensures the QR code name is unique for the user.
+ * @throws DuplicateEntryError if the name already exists.
+ */
+async function assertUniqueName(userId: number, name: string) {
+    const exists = await prisma.qr_codes.findFirst({
+        where: { userId, name }
+    });
+
+    if (exists) {
+        throw new DuplicateEntryError('A QR Code with the same name already exists');;
     }
 }
