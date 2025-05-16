@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { PrismaClientInitializationError, PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { PrismaClientInitializationError } from "@prisma/client/runtime/library";
 import { ResultType } from "@/types";
 import { DuplicateEntryError } from "./custom-errors";
 import { ZodError } from "zod";
