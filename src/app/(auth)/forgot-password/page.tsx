@@ -19,11 +19,9 @@ const ForgotPasswordPage = async ({ searchParams }: PageProps) => {
                     <p className="text-gray-400">Re-gain access to your QuantumQR account</p>
                 </div>
             </header>
-
             <main>
                 <ForgotPasswordForm token={params.token} />
             </main>
-
             <footer className="backdrop-blur-sm">
                 <p className="text-center text-gray-400">
                 Go back to{" "}
